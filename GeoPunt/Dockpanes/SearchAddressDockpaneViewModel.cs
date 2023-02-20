@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Security.AccessControl;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -26,6 +29,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using Newtonsoft.Json;
 
 
 namespace GeoPunt.Dockpanes
@@ -505,7 +509,45 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        
+        List<string> suggestions = new List<string>() { "koko" };
+        private void sugCallback(object sender, DownloadStringCompletedEventArgs e)
+        {
+            if (!e.Cancelled && e.Error == null)
+            {
+                datacontract.crabSuggestion sug = JsonConvert.DeserializeObject<datacontract.crabSuggestion>(e.Result);
+                suggestions = sug.SuggestionResult;
+                MessageBox.Show($@"callback!!");
+                //suggestionList.DataSource = suggestions;
+                //infoLabel.Text = "";
+            }
+            else
+            {
+                if (e.Error != null)
+                {
+                    MessageBox.Show(e.Error.Message);
+                }
+            }
+        }
+
+        DataHandler.adresSuggestion adresSuggestion;
+        private void updateSuggestions()
+        {
+            adresSuggestion = new DataHandler.adresSuggestion(sugCallback, 5000);
+            //if (adresSuggestion.client.IsBusy) { return; }
+
+            //string searchString = zoekText.Text + ", " + gemeenteBox.Text;
+            //adresSuggestion.getAdresSuggestionAsync(searchString, 25);
+            adresSuggestion.getAdresSuggestionAsync("wemmel", 80);
+            MessageBox.Show($@"end {suggestions.Count}");
+            foreach (var t in suggestions)
+            {
+                MessageBox.Show($@"{t}");
+                Debug.WriteLine(t.ToString());
+                Debug.WriteLine($@"!!! {t} !!!");
+            }
+            
+        }
+
 
         private string _selectedCity;
         public string SelectedCity
@@ -518,59 +560,65 @@ namespace GeoPunt.Dockpanes
                 QueuedTask.Run(() =>
                 {
                     ListStreets.Clear();
-                    var map = MapView.Active?.Map;
-                    var layerCities = "GRB - TBLADPADR - huisnummer van een administratief perceel";
-                    var searchLayerProvinces = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerCities, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                    if (searchLayerProvinces == null )
-                    {
-                        MessageBox.Show($@"NOT FOUND : {layerCities}");
-                        return;
-                    }
-
-                    QueryFilter queryFilter = new QueryFilter
-                    {
-                        //WhereClause = "POSTCODE = 9200"
-                        WhereClause = $@"GEMEENTE = '{_selectedCity}'"
-                        //WhereClause = "GEMEENTE = 'Meise'"
-                    };
-
-                    searchLayerProvinces.Select(queryFilter);
-
-                    //Getting the first selected feature layer of the map view
-                    var flyr = (FeatureLayer)MapView.Active.GetSelectedLayers()
-                                      .OfType<FeatureLayer>().FirstOrDefault();
-                    using (RowCursor rows = searchLayerProvinces.Search(queryFilter)) //execute
-                    {
-                        //Looping through to count
-                        while (rows.MoveNext())
-                        {
-                            using (Row row = rows.Current)
-                            {
-                                string streetName = Convert.ToString(row["STRAATNM"]);
-                                string houseNumber = Convert.ToString(row["HUISNR"]);
-                                //ListStreets.Add(streetName + " " + houseNumber);
-                                if (!ListStreets.Contains(streetName))
-                                {
-                                    ListStreets.Add(streetName);
-                                }
-
-                                //long oid = rows.Current.GetObjectID();
-
-                                //ArcGIS.Core.Data.Feature feature = rows.Current as ArcGIS.Core.Data.Feature;
-                                
-
-                                //MapPoint mapPoint = feature.GetShape() as MapPoint;
-
-                                //MessageBox.Show($@"{mapPoint.X}  //  {mapPoint.Y}  :: {mapPoint.SpatialReference}");
+                    updateSuggestions();
 
 
-                                
 
-                            }  
-                        }
-                    }
-                    
+
+                    //var map = MapView.Active?.Map;
+                    //var layerCities = "GRB - TBLADPADR - huisnummer van een administratief perceel";
+                    //var searchLayerProvinces = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerCities, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+                    //if (searchLayerProvinces == null )
+                    //{
+                    //    MessageBox.Show($@"NOT FOUND : {layerCities}");
+                    //    return;
+                    //}
+
+                    //QueryFilter queryFilter = new QueryFilter
+                    //{
+                    //    //WhereClause = "POSTCODE = 9200"
+                    //    WhereClause = $@"GEMEENTE = '{_selectedCity}'"
+                    //    //WhereClause = "GEMEENTE = 'Meise'"
+                    //};
+
+                    //searchLayerProvinces.Select(queryFilter);
+
+                    ////Getting the first selected feature layer of the map view
+                    //var flyr = (FeatureLayer)MapView.Active.GetSelectedLayers()
+                    //                  .OfType<FeatureLayer>().FirstOrDefault();
+                    //using (RowCursor rows = searchLayerProvinces.Search(queryFilter)) //execute
+                    //{
+                    //    //Looping through to count
+                    //    while (rows.MoveNext())
+                    //    {
+                    //        using (Row row = rows.Current)
+                    //        {
+                    //            string streetName = Convert.ToString(row["STRAATNM"]);
+                    //            string houseNumber = Convert.ToString(row["HUISNR"]);
+                    //            //ListStreets.Add(streetName + " " + houseNumber);
+                    //            if (!ListStreets.Contains(streetName))
+                    //            {
+                    //                ListStreets.Add(streetName);
+                    //            }
+
+                    //            //long oid = rows.Current.GetObjectID();
+
+                    //            //ArcGIS.Core.Data.Feature feature = rows.Current as ArcGIS.Core.Data.Feature;
+
+
+                    //            //MapPoint mapPoint = feature.GetShape() as MapPoint;
+
+                    //            //MessageBox.Show($@"{mapPoint.X}  //  {mapPoint.Y}  :: {mapPoint.SpatialReference}");
+
+
+
+
+                    //        }  
+                    //    }
+                    //}
+
                 });
             }
         }

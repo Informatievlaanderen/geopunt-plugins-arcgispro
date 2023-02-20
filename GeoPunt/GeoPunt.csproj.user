@@ -2,6 +2,11 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="Share\gpWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="Dockpanes\PointMapDockpane.xaml">
       <SubType>Designer</SubType>
     </Page>

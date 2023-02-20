@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "QuSPYbXYL6agtA6Z5Ymgdx7BLkNyw+H2AMdOxdMeoHC/f2qMLJutWiRvc969N/nwwxKMMxASosdR6LY9PA+ZTQ==",
+  "dgSpecHash": "eSioaAdM7qesnHFFDtHyRtjBkP/DTbZBBrEWXWo6e8VHddOD/ZqjQypFHWehYRx+7NbPm7EygO3NY4bJAnqHRA==",
   "success": true,
   "projectFilePath": "D:\\geopunt_plug_in_arcgis_pro\\GeoPunt\\GeoPunt.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\DSi\\.nuget\\packages\\newtonsoft.json\\12.0.1\\newtonsoft.json.12.0.1.nupkg.sha512",
+    "C:\\Users\\DSi\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512"
+  ],
   "logs": []
 }
