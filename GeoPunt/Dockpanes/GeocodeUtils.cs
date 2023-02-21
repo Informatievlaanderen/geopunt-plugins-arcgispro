@@ -93,14 +93,18 @@ namespace GeoPunt.Dockpanes
         /// <param name="point">The location of the graphic</param>
         /// <param name="mapView">The mapview to whose overlay the graphic will be added</param>
         /// <returns></returns>
-        public static async void AddToMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView)
+        public static async void AddToMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false)
         {
             ArcGIS.Core.CIM.CIMPointSymbol symbol = null;
 
             await QueuedTask.Run(() =>
             {
                 // Construct point symbol
-                symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.RedRGB, 10.0, SimpleMarkerStyle.Star);
+                symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreenRGB, 10.0, SimpleMarkerStyle.Diamond);
+                if(isFavourite)
+                {
+                    symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.RedRGB, 10.0, SimpleMarkerStyle.Star);
+                }
             });
 
             //Get symbol reference from the symbol 
@@ -120,21 +124,28 @@ namespace GeoPunt.Dockpanes
         /// <param name="point">The new location to be added to the map</param>
         /// <param name="mapView"></param>
         /// <returns></returns>
-        public static void UpdateMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView)
+        public static void UpdateMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false)
         {
 
-            if (_overlayObject != null)
-            {
-                _overlayObject.Dispose();
-                _overlayObject = null;
+            //if (_overlayObject != null)
+            //{
+            //    _overlayObject.Dispose();
+            //    _overlayObject = null;
 
-                AddToMapOverlay(point, mapView);
-            }
-            else
+            //    AddToMapOverlay(point, mapView);
+            //}
+            //else
+            //{
+            //    //first time
+            //    AddToMapOverlay(point, mapView);
+            //}
+            if (!isFavourite)
             {
-                //first time
                 AddToMapOverlay(point, mapView);
+                return;
             }
+            AddToMapOverlay(point, mapView, isFavourite);
+
         }
 
         /// <summary>

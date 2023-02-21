@@ -411,13 +411,23 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private List<string> _listStreetsFavourite = new List<string>();
-        public List<string> ListStreetsFavourite
+        private ObservableCollection<MapPoint> _listStreetsFavourite = new ObservableCollection<MapPoint>();
+        public ObservableCollection<MapPoint> ListStreetsFavourite
         {
             get { return _listStreetsFavourite; }
             set
             {
                 SetProperty(ref _listStreetsFavourite, value);
+            }
+        }
+
+        private ObservableCollection<string> _listStreetsFavouriteString = new ObservableCollection<string>();
+        public ObservableCollection<string> ListStreetsFavouriteString
+        {
+            get { return _listStreetsFavouriteString; }
+            set
+            {
+                SetProperty(ref _listStreetsFavouriteString, value);
             }
         }
 
@@ -511,11 +521,19 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        public void updateListBoxFavourite()
+        public void updateListBoxMarkeer()
         {
             foreach(MapPoint mapPoint in ListStreetsMarkeer)
             {
                 GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active);
+            }
+        }
+
+        public void updateListBoxFavourite()
+        {
+            foreach (MapPoint mapPoint in ListStreetsFavourite)
+            {
+                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, true);
             }
         }
 
@@ -525,15 +543,21 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    //MessageBox.Show($@"markeer {MapPointSelectedAddress.X} // {MapPointSelectedAddress.Y}");
-
                     ListStreetsMarkeer.Add(MapPointSelectedAddress);
-                    
+                    updateListBoxMarkeer();
+                });
+            }
+        }
 
+        public ICommand CmdSave
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    ListStreetsFavouriteString.Add(SelectedStreet);
+                    ListStreetsFavourite.Add(MapPointSelectedAddress);
                     updateListBoxFavourite();
-                    //GeocodeUtils.UpdateMapOverlay(MapPointSelectedAddress, MapView.Active);
-
-
                 });
             }
         }
