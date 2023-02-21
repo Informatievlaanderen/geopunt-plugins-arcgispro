@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -12,6 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork.Trace;
@@ -33,6 +36,7 @@ using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.DataHandler;
 using Newtonsoft.Json;
+
 
 
 namespace GeoPunt.Dockpanes
@@ -397,6 +401,26 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private List<MapPoint> _listStreetsMarkeer = new List<MapPoint>();
+        public List<MapPoint> ListStreetsMarkeer
+        {
+            get { return _listStreetsMarkeer; }
+            set
+            {
+                SetProperty(ref _listStreetsMarkeer, value);
+            }
+        }
+
+        private List<string> _listStreetsFavourite = new List<string>();
+        public List<string> ListStreetsFavourite
+        {
+            get { return _listStreetsFavourite; }
+            set
+            {
+                SetProperty(ref _listStreetsFavourite, value);
+            }
+        }
+
         private MapPoint _selectedMapPoint;
 
         private string _selectedStreet;
@@ -406,6 +430,7 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedStreet, value);
+                updateCurrentMapPoint(_selectedStreet, 1);
             }
         }
 
@@ -425,23 +450,29 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private void zoomToQuery(string query, int count, Double zoom)
+        MapPoint MapPointSelectedAddress = null;
+
+        public void updateCurrentMapPoint(string query, int count)
         {
             double x = 0;
             double y = 0;
 
             List<datacontract.locationResult> loc = adresLocation.getAdresLocation(query, count);
-            foreach(datacontract.locationResult item in loc)
+            foreach (datacontract.locationResult item in loc)
             {
                 x = item.Location.X_Lambert72;
                 y = item.Location.Y_Lambert72;
-            }            
-
+            }
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+        }
+        private void zoomToQuery()
+        {
             QueuedTask.Run(() =>
             {
                 var mapView = MapView.Active;
-                var pt = MapPointBuilderEx.CreateMapPoint(x, y);
-                var poly = GeometryEngine.Instance.Buffer(pt, zoom);
+                //var pt = MapPointBuilderEx.CreateMapPoint(x, y);
+                //MapPointSelectedAddress = pt;
+                var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 150);
                 mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 3));
             });
         }
@@ -475,8 +506,16 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(_selectedStreet, 1, 150);
+                    zoomToQuery();
                 });
+            }
+        }
+
+        public void updateListBoxFavourite()
+        {
+            foreach(MapPoint mapPoint in ListStreetsMarkeer)
+            {
+                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active);
             }
         }
 
@@ -486,14 +525,15 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    MessageBox.Show($@"222) {_selectedMapPoint.X}  //  {_selectedMapPoint.Y}  :: {_selectedMapPoint.SpatialReference}");
-                    MapPoint mapPoint = MapPointBuilderEx.CreateMapPoint(_selectedMapPoint.X, _selectedMapPoint.Y, _selectedMapPoint.SpatialReference);
+                    //MessageBox.Show($@"markeer {MapPointSelectedAddress.X} // {MapPointSelectedAddress.Y}");
 
-                    //await QueuedTask.Run(() =>
-                    //{
-                    //    var pointSymbol = SymbolFactory.Instance.DefaultPointSymbol;
-                    //    return pointSymbol;
-                    //});
+                    ListStreetsMarkeer.Add(MapPointSelectedAddress);
+                    
+
+                    updateListBoxFavourite();
+                    //GeocodeUtils.UpdateMapOverlay(MapPointSelectedAddress, MapView.Active);
+
+
                 });
             }
         }
