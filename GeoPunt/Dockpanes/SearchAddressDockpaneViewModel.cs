@@ -16,6 +16,7 @@ using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Core.Internal.CIM;
 using ArcGIS.Core.Internal.Geometry;
 using ArcGIS.Desktop.Catalog;
 using ArcGIS.Desktop.Core;
@@ -27,68 +28,21 @@ using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Mapping;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.DataHandler;
 using Newtonsoft.Json;
 
 
 namespace GeoPunt.Dockpanes
 {
-    public class AsyncObservableCollection<T> : ObservableCollection<T>
-    {
-        private readonly SynchronizationContext _synchronizationContext = SynchronizationContext.Current;
-
-        public AsyncObservableCollection()
-        {
-        }
-
-        public AsyncObservableCollection(IEnumerable<T> list)
-            : base(list)
-        {
-        }
-
-        private void ExecuteOnSyncContext(Action action)
-        {
-            if (SynchronizationContext.Current == _synchronizationContext)
-            {
-                action();
-            }
-            else
-            {
-                _synchronizationContext.Send(_ => action(), null);
-            }
-        }
-
-        protected override void InsertItem(int index, T item)
-        {
-            ExecuteOnSyncContext(() => base.InsertItem(index, item));
-        }
-
-        protected override void RemoveItem(int index)
-        {
-            ExecuteOnSyncContext(() => base.RemoveItem(index));
-        }
-
-        protected override void SetItem(int index, T item)
-        {
-            ExecuteOnSyncContext(() => base.SetItem(index, item));
-        }
-
-        protected override void MoveItem(int oldIndex, int newIndex)
-        {
-            ExecuteOnSyncContext(() => base.MoveItem(oldIndex, newIndex));
-        }
-
-        protected override void ClearItems()
-        {
-            ExecuteOnSyncContext(() => base.ClearItems());
-        }
-    }
     internal class SearchAddressDockpaneViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchAddressDockpane";
-        
 
+        DataHandler.adresSuggestion adresSuggestion;
+        DataHandler.adresLocation adresLocation;
 
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
              "",
@@ -429,24 +383,21 @@ namespace GeoPunt.Dockpanes
         {
             get { return _listCities; }
             set  {
-                SetProperty(ref _listCities, value);
-                
+               SetProperty(ref _listCities, value);
             }
         }
 
-        private ObservableCollection<string> _listStreets = new AsyncObservableCollection<string>();
-        public ObservableCollection<string> ListStreets
+        private List<string> _listStreets = new List<string>();
+        public List<string> ListStreets
         {
             get { return _listStreets; }
             set
             {
-                SetProperty(ref _listStreets, value);
-
+               SetProperty(ref _listStreets, value);
             }
         }
 
         private MapPoint _selectedMapPoint;
-
 
         private string _selectedStreet;
         public string SelectedStreet
@@ -455,70 +406,15 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedStreet, value);
-                QueuedTask.Run(() =>
-                {
-                    //ListStreets.Clear();
-                    var map = MapView.Active?.Map;
-                    var layerCities = "GRB - TBLADPADR - huisnummer van een administratief perceel";
-                    var searchLayerProvinces = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerCities, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-
-                    if (searchLayerProvinces == null)
-                    {
-                        MessageBox.Show($@"NOT FOUND : {layerCities}");
-                        return;
-                    }
-
-                    QueryFilter queryFilter = new QueryFilter
-                    {
-                        //WhereClause = "POSTCODE = 9200"
-                        WhereClause = $@"STRAATNM = '{_selectedStreet}'"
-                        //WhereClause = "GEMEENTE = 'Meise'"
-                    };
-
-                    searchLayerProvinces.Select(queryFilter);
-
-                    //Getting the first selected feature layer of the map view
-                    var flyr = (FeatureLayer)MapView.Active.GetSelectedLayers()
-                                      .OfType<FeatureLayer>().FirstOrDefault();
-                    using (RowCursor rows = searchLayerProvinces.Search(queryFilter)) //execute
-                    {
-                        //Looping through to count
-                        while (rows.MoveNext())
-                        {
-                            using (Row row = rows.Current)
-                            {
-                                
-
-                                //long oid = rows.Current.GetObjectID();
-
-                                //ArcGIS.Core.Data.Feature feature = rows.Current as ArcGIS.Core.Data.Feature;
-
-
-                                //_selectedMapPoint = feature.GetShape() as MapPoint;
-
-                                //MessageBox.Show($@"{_selectedMapPoint.X}  //  {_selectedMapPoint.Y}  :: {_selectedMapPoint.SpatialReference}");
-
-
-
-
-                            }
-                        }
-                    }
-                });
-
             }
         }
 
-        List<string> suggestions = new List<string>() { "koko" };
         private void sugCallback(object sender, DownloadStringCompletedEventArgs e)
         {
             if (!e.Cancelled && e.Error == null)
             {
                 datacontract.crabSuggestion sug = JsonConvert.DeserializeObject<datacontract.crabSuggestion>(e.Result);
-                suggestions = sug.SuggestionResult;
-                MessageBox.Show($@"callback!!");
-                //suggestionList.DataSource = suggestions;
-                //infoLabel.Text = "";
+                ListStreets = sug.SuggestionResult;
             }
             else
             {
@@ -529,25 +425,34 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        DataHandler.adresSuggestion adresSuggestion;
+        private void zoomToQuery(string query, int count, Double zoom)
+        {
+            double x = 0;
+            double y = 0;
+
+            List<datacontract.locationResult> loc = adresLocation.getAdresLocation(query, count);
+            foreach(datacontract.locationResult item in loc)
+            {
+                x = item.Location.X_Lambert72;
+                y = item.Location.Y_Lambert72;
+            }            
+
+            QueuedTask.Run(() =>
+            {
+                var mapView = MapView.Active;
+                var pt = MapPointBuilderEx.CreateMapPoint(x, y);
+                var poly = GeometryEngine.Instance.Buffer(pt, zoom);
+                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 3));
+            });
+        }
+
         private void updateSuggestions()
         {
             adresSuggestion = new DataHandler.adresSuggestion(sugCallback, 5000);
-            //if (adresSuggestion.client.IsBusy) { return; }
-
-            //string searchString = zoekText.Text + ", " + gemeenteBox.Text;
-            //adresSuggestion.getAdresSuggestionAsync(searchString, 25);
-            adresSuggestion.getAdresSuggestionAsync("wemmel", 80);
-            MessageBox.Show($@"end {suggestions.Count}");
-            foreach (var t in suggestions)
-            {
-                MessageBox.Show($@"{t}");
-                Debug.WriteLine(t.ToString());
-                Debug.WriteLine($@"!!! {t} !!!");
-            }
-            
+            adresLocation = new DataHandler.adresLocation(5000);
+            string searchString = SearchFilter + ", " + SelectedCity;
+            adresSuggestion.getAdresSuggestionAsync(searchString, 80);
         }
-
 
         private string _selectedCity;
         public string SelectedCity
@@ -555,70 +460,11 @@ namespace GeoPunt.Dockpanes
             get { return _selectedCity; }
             set
             {
-                SetProperty(ref _selectedCity, value);
-                
+                SetProperty(ref _selectedCity, value);            
                 QueuedTask.Run(() =>
                 {
                     ListStreets.Clear();
-
                     updateSuggestions();
-
-
-
-
-                    //var map = MapView.Active?.Map;
-                    //var layerCities = "GRB - TBLADPADR - huisnummer van een administratief perceel";
-                    //var searchLayerProvinces = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerCities, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-
-                    //if (searchLayerProvinces == null )
-                    //{
-                    //    MessageBox.Show($@"NOT FOUND : {layerCities}");
-                    //    return;
-                    //}
-
-                    //QueryFilter queryFilter = new QueryFilter
-                    //{
-                    //    //WhereClause = "POSTCODE = 9200"
-                    //    WhereClause = $@"GEMEENTE = '{_selectedCity}'"
-                    //    //WhereClause = "GEMEENTE = 'Meise'"
-                    //};
-
-                    //searchLayerProvinces.Select(queryFilter);
-
-                    ////Getting the first selected feature layer of the map view
-                    //var flyr = (FeatureLayer)MapView.Active.GetSelectedLayers()
-                    //                  .OfType<FeatureLayer>().FirstOrDefault();
-                    //using (RowCursor rows = searchLayerProvinces.Search(queryFilter)) //execute
-                    //{
-                    //    //Looping through to count
-                    //    while (rows.MoveNext())
-                    //    {
-                    //        using (Row row = rows.Current)
-                    //        {
-                    //            string streetName = Convert.ToString(row["STRAATNM"]);
-                    //            string houseNumber = Convert.ToString(row["HUISNR"]);
-                    //            //ListStreets.Add(streetName + " " + houseNumber);
-                    //            if (!ListStreets.Contains(streetName))
-                    //            {
-                    //                ListStreets.Add(streetName);
-                    //            }
-
-                    //            //long oid = rows.Current.GetObjectID();
-
-                    //            //ArcGIS.Core.Data.Feature feature = rows.Current as ArcGIS.Core.Data.Feature;
-
-
-                    //            //MapPoint mapPoint = feature.GetShape() as MapPoint;
-
-                    //            //MessageBox.Show($@"{mapPoint.X}  //  {mapPoint.Y}  :: {mapPoint.SpatialReference}");
-
-
-
-
-                    //        }  
-                    //    }
-                    //}
-
                 });
             }
         }
@@ -629,10 +475,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    await Geoprocessing.ExecuteToolAsync("SelectLayerByAttribute_management", new string[] {
-                    //"GRB - TBLADPADR - huisnummer van een administratief perceel", "NEW_SELECTION", $@"OID = 1" });
-                    "GRB - TBLADPADR - huisnummer van een administratief perceel", "NEW_SELECTION", $@"STRAATNM = '{_selectedStreet}'" + " AND " + $@"GEMEENTE = '{_selectedCity}'" });
-                    await MapView.Active.ZoomToSelectedAsync(new TimeSpan(0, 0, 2), false);
+                    zoomToQuery(_selectedStreet, 1, 150);
                 });
             }
         }
@@ -643,17 +486,14 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-
                     MessageBox.Show($@"222) {_selectedMapPoint.X}  //  {_selectedMapPoint.Y}  :: {_selectedMapPoint.SpatialReference}");
                     MapPoint mapPoint = MapPointBuilderEx.CreateMapPoint(_selectedMapPoint.X, _selectedMapPoint.Y, _selectedMapPoint.SpatialReference);
-
 
                     //await QueuedTask.Run(() =>
                     //{
                     //    var pointSymbol = SymbolFactory.Instance.DefaultPointSymbol;
                     //    return pointSymbol;
                     //});
-
                 });
             }
         }
@@ -662,28 +502,15 @@ namespace GeoPunt.Dockpanes
         {
             get
             {
-                return new RelayCommand(async () =>
+            return new RelayCommand(async () => 
                 {
-                    DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-                    FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
-                    pane.Hide();
+                DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+                FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
+                pane.Hide();
                 });
             }
         }
-        private string _textFilterStreet;
-        public string TextFilterStreet
-        {
-            get { return _textFilterStreet; }
-            set
-            {
-                SetProperty(ref _textFilterStreet, value);
-                //ListStreets = ListStreets.Where(s => s.Contains(value));
-                //MessageBox.Show($@"{ListStreets.Count}");
-            }
-        }
-
-        public CollectionViewSource CollViewSource { get; set; }
-
+    
         private string _searchFilter;
         public string SearchFilter
         {
@@ -691,71 +518,39 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _searchFilter, value);
-                if (!string.IsNullOrEmpty(_searchFilter))
-                    AddFilter();
-
-                CollViewSource.View.Refresh(); // important to refresh your View
+                updateSuggestions();
             }
         }
+        
 
-        protected SearchAddressDockpaneViewModel() {
-            CollViewSource = new CollectionViewSource();//onload of your VM class
-            CollViewSource.Source = ListStreets;//after ini YourCollection
-        }
 
-        private void AddFilter()
-        {
-            CollViewSource.Filter -= new FilterEventHandler(Filter);
-            CollViewSource.Filter += new FilterEventHandler(Filter);
-
-        }
-
-        private void Filter(object sender, FilterEventArgs e)
-        {
-            // see Notes on Filter Methods:
-            var src = e.Item as string;
-            if (src == null)
-                e.Accepted = false;
-            else if (src != null && !src.ToUpper().Contains(SearchFilter.ToUpper()))// here is FirstName a Property in my YourCollectionItem
-                e.Accepted = false;
-        }
-
-        /// <summary>
-        /// Show the DockPane.
-        /// </summary>
+        protected SearchAddressDockpaneViewModel() {}
         internal static void Show()
-      {        
-        DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-        if (pane == null)
-          return;
+        {        
+            DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+            if (pane == null)
+              return;
 
             FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
             pane.Activate();
-      }
-
-      /// <summary>
-      /// Text shown near the top of the DockPane.
-      /// </summary>
-		  private string _heading = "My DockPane";
-      public string Heading
-      {
-        get { return _heading; }
-        set
-        {
-          SetProperty(ref _heading, value, () => Heading);
         }
-      }
+
+	    private string _heading = "My DockPane";
+        public string Heading
+        {
+            get { return _heading; }
+            set
+            {
+                SetProperty(ref _heading, value, () => Heading);
+            }
+        }
     }
 
-  /// <summary>
-  /// Button implementation to show the DockPane.
-  /// </summary>
 	internal class SearchAddressDockpane_ShowButton : Button
 	{
 		protected async override void OnClick()
 		{
 			SearchAddressDockpaneViewModel.Show();
-
         }
-  }	
+    }	
 }

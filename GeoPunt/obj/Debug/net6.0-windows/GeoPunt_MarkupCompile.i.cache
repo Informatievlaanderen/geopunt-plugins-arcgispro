@@ -16,5 +16,5 @@ TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 2101805590117
 Dockpanes\PointMapDockpane.xaml;Dockpanes\SearchAddressDockpane.xaml;Dockpanes\StartDockpane.xaml;
 
-False
+True
 
