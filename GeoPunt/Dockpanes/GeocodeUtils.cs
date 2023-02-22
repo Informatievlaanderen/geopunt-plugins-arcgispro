@@ -1,4 +1,6 @@
 ﻿using ArcGIS.Core.CIM;
+using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using System;
@@ -93,7 +95,7 @@ namespace GeoPunt.Dockpanes
         /// <param name="point">The location of the graphic</param>
         /// <param name="mapView">The mapview to whose overlay the graphic will be added</param>
         /// <returns></returns>
-        public static async void AddToMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false)
+        public static async void AddToMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
         {
             ArcGIS.Core.CIM.CIMPointSymbol symbol = null;
 
@@ -112,7 +114,18 @@ namespace GeoPunt.Dockpanes
 
             await QueuedTask.Run(() =>
             {
-                _overlayObject = mapView.AddOverlay(point, symbolReference);
+
+               
+                if (!isRemove)
+                {
+                    MessageBox.Show("drawing");
+                    _overlayObject = mapView.AddOverlay(point, symbolReference);
+                    return;
+                }
+
+                MessageBox.Show("removing");
+                RemoveFromMapOverlay(mapView);
+
             });
 
         }
@@ -124,42 +137,23 @@ namespace GeoPunt.Dockpanes
         /// <param name="point">The new location to be added to the map</param>
         /// <param name="mapView"></param>
         /// <returns></returns>
-        public static void UpdateMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false)
+        public static void UpdateMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
         {
-
-            //if (_overlayObject != null)
-            //{
-            //    _overlayObject.Dispose();
-            //    _overlayObject = null;
-
-            //    AddToMapOverlay(point, mapView);
-            //}
-            //else
-            //{
-            //    //first time
-            //    AddToMapOverlay(point, mapView);
-            //}
-            if (!isFavourite)
-            {
-                AddToMapOverlay(point, mapView);
-                return;
-            }
-            AddToMapOverlay(point, mapView, isFavourite);
-
+            AddToMapOverlay(point, mapView, isFavourite, isRemove);
         }
 
         /// <summary>
         /// Remove the Point Graphic from the specified mapview
         /// </summary>
         /// <param name="mapView"></param>
-        //public static void RemoveFromMapOverlay(MapView mapView)
-        //{
-        //    if (_overlayObject != null)
-        //    {
-        //        _overlayObject.Dispose();
-        //        _overlayObject = null;
-        //    }
-        //}
+        public static void RemoveFromMapOverlay(MapView mapView)
+        {
+            if (_overlayObject != null)
+            {
+                _overlayObject.Dispose();
+                _overlayObject = null;
+            }
+        }
 
         #endregion Graphics Support
     }

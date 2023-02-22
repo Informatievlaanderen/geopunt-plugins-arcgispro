@@ -6,22 +6,27 @@
              xmlns:ui="clr-namespace:GeoPunt.Dockpanes"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="600" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.SearchAddressDockpaneViewModel}">
   <UserControl.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </UserControl.Resources>
-  <Grid>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+
+
+    <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
       <RowDefinition Height="30"/>
-      <RowDefinition Height="250"/>
-      <RowDefinition Height="30"/>
-      <RowDefinition Height="100"/>
+      <RowDefinition Height="320"/>
+      <RowDefinition Height="40"/>
+      <RowDefinition Height="40"/>
+      <RowDefinition Height="150"/>
     </Grid.RowDefinitions>
 
     
@@ -54,15 +59,17 @@
                 <ColumnDefinition Width="*" /> 
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Width="70" Height="20" Command="{Binding CmdSave}"  Margin="0,0,8,0" Content="Opslaan"/>
-            <Button Grid.Column="1" Width="70" Height="20" Command="{Binding CmdPoint}" Margin="0,0,8,0" Content="Markeer"/>
+            <Button Grid.Column="0" Width="70" Height="20" Command="{Binding CmdSave}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,0,8,0" Content="Opslaan"/>
+            <Button Grid.Column="1" Width="70" Height="20" Command="{Binding CmdPoint}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Markeer"/>
+            <Button Grid.Column="1" Width="70" Height="20" Command="{Binding CmdRemoveFavourite}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Remove"/>
             <Button Grid.Column="2" Width="70" Height="20" Command="{Binding CmdZoom}" Content="Zoom"/>
             <Button Grid.Column="3" Width="70" Height="20" Command="{Binding CmdClose}" Margin="8,0,0,0" Content="Sluiten"/>
 
             
         </Grid>
 
-        <ListBox ItemsSource="{Binding ListStreetsFavouriteString}" SelectedItem="{Binding SelectedStreet}" Grid.Row="4" Margin="5,10,5,0" />
+        <TextBlock Grid.Row="4" Text="Favorieten Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
+        <ListBox ItemsSource="{Binding ListStreetsFavouriteString}" SelectedItem="{Binding SelectedStreetFavourite}" Grid.Row="5" Margin="5,-5,5,0" />
 
 
     </Grid>

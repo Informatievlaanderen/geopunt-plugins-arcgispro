@@ -391,6 +391,28 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private bool _isInverseSelectedFavouriteList;
+        public bool IsInverseSelectedFavouriteList
+        {
+            get { return _isInverseSelectedFavouriteList; }
+            set
+            {
+                SetProperty(ref _isInverseSelectedFavouriteList, value);
+            }
+        }
+
+
+        private bool _isSelectedFavouriteList;
+        public bool IsSelectedFavouriteList
+        {
+            get { return _isSelectedFavouriteList; }
+            set
+            {
+                SetProperty(ref _isSelectedFavouriteList, value);
+                IsInverseSelectedFavouriteList = !_isSelectedFavouriteList;
+            }
+        }
+
         private List<string> _listStreets = new List<string>();
         public List<string> ListStreets
         {
@@ -427,7 +449,7 @@ namespace GeoPunt.Dockpanes
             get { return _listStreetsFavouriteString; }
             set
             {
-                SetProperty(ref _listStreetsFavouriteString, value);
+                SetProperty(ref _listStreetsFavouriteString, value); 
             }
         }
 
@@ -441,6 +463,19 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedStreet, value);
                 updateCurrentMapPoint(_selectedStreet, 1);
+                IsSelectedFavouriteList = true;
+            }
+        }
+
+        private string _selectedStreetFavourite;
+        public string SelectedStreetFavourite
+        {
+            get { return _selectedStreetFavourite; }
+            set
+            {
+                SetProperty(ref _selectedStreetFavourite, value);
+                updateCurrentMapPoint(_selectedStreetFavourite, 1);
+                IsSelectedFavouriteList = false;
             }
         }
 
@@ -521,11 +556,25 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        public ICommand CmdRemoveFavourite
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
+                    MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(MapPointSelectedAddress);
+                    ListStreetsFavourite.Remove(pointToDelete);
+                    GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                });
+            }
+        }
+
         public void updateListBoxMarkeer()
         {
             foreach(MapPoint mapPoint in ListStreetsMarkeer)
             {
-                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active);
+                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, false);
             }
         }
 
@@ -555,9 +604,12 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    ListStreetsFavouriteString.Add(SelectedStreet);
-                    ListStreetsFavourite.Add(MapPointSelectedAddress);
-                    updateListBoxFavourite();
+                    if (!ListStreetsFavouriteString.Contains(SelectedStreet))
+                    {
+                        ListStreetsFavouriteString.Add(SelectedStreet);
+                        ListStreetsFavourite.Add(MapPointSelectedAddress);
+                        updateListBoxFavourite();
+                    }  
                 });
             }
         }
@@ -588,7 +640,10 @@ namespace GeoPunt.Dockpanes
         
 
 
-        protected SearchAddressDockpaneViewModel() {}
+        protected SearchAddressDockpaneViewModel() 
+        {
+            IsSelectedFavouriteList = true;
+        }
         internal static void Show()
         {        
             DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
