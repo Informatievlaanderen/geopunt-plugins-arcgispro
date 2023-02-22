@@ -66,19 +66,13 @@ namespace GeoPunt.Buttons
             {
                 var layerProvinces = "RefarrG100";
                 var layerCities = "RefgemG100";
-                var layerHomeNumber = "GRB - TBLADPADR - huisnummer van een administratief perceel";
-                //var layerOther = "WMS GRB-basiskaart";
 
                 var searchLayerProvinces = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerProvinces, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
                 var searchLayerCities = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerCities, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                var searchLayerHomeNumber = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerHomeNumber, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-                //var searchLayerOther = map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(l => l.Name.Equals(layerOther, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-                if (searchLayerProvinces == null || searchLayerCities == null || searchLayerHomeNumber == null)
-                //if (searchLayerOther == null)
+                if (searchLayerProvinces == null || searchLayerCities == null )
                 {
-                    //MessageBox.Show($@"Cannot find this layer: {layerOther}");
-                    MessageBox.Show($@"Cannot find these layers: {layerProvinces}, {layerCities} or {layerHomeNumber}");
+                    MessageBox.Show($@"Cannot find these layers: {layerProvinces} or {layerCities}");
                     return;
                 }
                 else
@@ -88,14 +82,12 @@ namespace GeoPunt.Buttons
                         //active
                         searchLayerProvinces.SetVisibility(true);
                         searchLayerCities.SetVisibility(true);
-                        searchLayerHomeNumber.SetVisibility(false);
                     }
                     else
                     {
                         //desactive
                         searchLayerProvinces.SetVisibility(false);
                         searchLayerCities.SetVisibility(false);
-                        searchLayerHomeNumber.SetVisibility(false);
                     }
                 }
 

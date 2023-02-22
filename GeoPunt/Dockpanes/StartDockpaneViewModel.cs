@@ -48,16 +48,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private bool _isCheckedHomeNumber = false;
-        public bool IsCheckedHomeNumber
-        {
-            get { return _isCheckedHomeNumber; }
-            set
-            {
-                SetProperty(ref _isCheckedHomeNumber, value, () => _isCheckedHomeNumber);
-                QueuedTask.Run(() => RefreshLayerHomeNumber(IsCheckedHomeNumber));
-            }
-        }
+        //private bool _isCheckedHomeNumber = false;
+        //public bool IsCheckedHomeNumber
+        //{
+        //    get { return _isCheckedHomeNumber; }
+        //    set
+        //    {
+        //        SetProperty(ref _isCheckedHomeNumber, value, () => _isCheckedHomeNumber);
+        //        QueuedTask.Run(() => RefreshLayerHomeNumber(IsCheckedHomeNumber));
+        //    }
+        //}
 
         private bool _isCheckedOther = false;
         public bool IsCheckedOther

@@ -9,8 +9,10 @@ using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Mapping;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,35 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_PointMapDockpane";
 
+
+        private string _address = "koko";
+        public string Address
+        {
+            get { return _address; }
+            set
+            {
+                SetProperty(ref _address, value);
+                MessageBox.Show($@"vm a ::: {_address}");            
+            }
+        }
+
+        private string _differenceMeters = "88";
+        public string DifferenceMeters
+        {
+            get { return _differenceMeters; }
+            set
+            {
+                SetProperty(ref _differenceMeters, value);
+                MessageBox.Show($@"vm m ::: {_differenceMeters}");
+            }
+        }
+
+        public void refreshAddress(string address, double diff)
+        {
+            Address = address;
+            DifferenceMeters = diff.ToString("0.00");
+            MessageBox.Show($@"Adres: {Address},   Difference: {DifferenceMeters}");
+        }
         public ICommand CmdClose
         {
             get
@@ -37,7 +68,29 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        protected PointMapDockpaneViewModel() { }
+        public ICommand CmdPoint
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    Address = "momo";
+                });
+            }
+        }
+
+        public ICommand CmdSave
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    Address = "momo";
+                });
+            }
+        }
+
+        public PointMapDockpaneViewModel() { }
 
         /// <summary>
         /// Show the DockPane.
