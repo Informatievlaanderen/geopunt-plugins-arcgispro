@@ -57,7 +57,7 @@ namespace GeoPunt.Dockpanes
             Address = address;
             DifferenceMeters = diff.ToString("0.00");
             updateCurrentMapPoint(address, 1);
-            MessageBox.Show($@"Adres: {Address},   Difference: {DifferenceMeters}");
+            //MessageBox.Show($@"Adres: {Address},   Difference: {DifferenceMeters}");
         }
 
         private ObservableCollection<MapPoint> _listStreetsFavouritePoint = new ObservableCollection<MapPoint>();
@@ -157,7 +157,10 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        public PointMapDockpaneViewModel() { }
+        public PointMapDockpaneViewModel() 
+        {
+            Module1.vmSearchPlace = this;
+        }
 
         /// <summary>
         /// Show the DockPane.

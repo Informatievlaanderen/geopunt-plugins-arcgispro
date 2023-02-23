@@ -50,7 +50,7 @@ namespace GeoPunt
                 e.Handled = true;
         }
 
-        PointMapDockpaneViewModel vm = new PointMapDockpaneViewModel();
+        //PointMapDockpaneViewModel vm = new PointMapDockpaneViewModel();
         public double xClick = 0;
         public double yClick = 0;
         protected override Task HandleMouseDownAsync(MapViewMouseButtonEventArgs e)
@@ -88,7 +88,8 @@ namespace GeoPunt
 
                 diff = Math.Sqrt(Math.Pow(xAdres - xClick, 2) + Math.Pow(yAdres - yClick, 2));
 
-                vm.refreshAddress(adresString, diff);
+                Module1.vmSearchPlace.refreshAddress(adresString, diff);
+                //vm.refreshAddress(adresString, diff);
             }
             else
             {

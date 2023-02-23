@@ -95,7 +95,7 @@ namespace GeoPunt.Dockpanes
         {
             poiDH = new DataHandler.poi(5000);
             initGui();
-            LoadCollectionData();
+            //LoadCollectionData();
         }
 
         public void initGui()
@@ -254,47 +254,62 @@ namespace GeoPunt.Dockpanes
             foreach (datacontract.poiMaxModel poi in pois)
             {
 
+                //qry = (from datacontract.poivaluegroup n in poi.categories
+                //       where n.type == "thema"
+                //       select n.value).tolist();
+                //if (qry.count > 0) row.theme = qry[0];
 
-
-
-
-
-                DataRowSearchPlaats row = new DataRowSearchPlaats();
-                List<string> qry;
-                datacontract.poiAddress adres;
-
-                row.id = poi.id;
-                row.Omschrijving = poi.description.value;
-
-                qry = (from datacontract.poiValueGroup n in poi.categories
-                       where n.type == "Type"
-                       select n.value).ToList();
-                if (qry.Count > 0) row.Type = qry[0];
-
-                qry = (from datacontract.poiValueGroup n in poi.categories
-                       where n.type == "Categorie"
-                       select n.value).ToList();
-                if (qry.Count > 0) row.Category = qry[0];
-
-                qry = (from datacontract.poiValueGroup n in poi.categories
-                       where n.type == "Thema"
-                       select n.value).ToList();
-                if (qry.Count > 0) row.Theme = qry[0];
-
-                qry = (
-                    from datacontract.poiValueGroup n in poi.labels
-                    select n.value).ToList();
-                row.Label = string.Join(", ", qry.ToArray());
-
-                adres = poi.location.address;
-                if (adres != null)
+                InteressantePlaatsList.Add(new DataRowSearchPlaats()
                 {
-                    row.Straat = adres.street;
-                    row.Huisnummer = adres.streetnumber;
-                    row.Postcode = adres.postalcode;
-                    row.Gemeente = adres.municipality;
-                }
-                InteressantePlaatsList.Add(row);
+                    id = poi.id,
+                    Theme = "test999",
+                    Category = "test999",
+                    Type = "test",
+                    Label = "test",
+                    Omschrijving = poi.description.value,
+                    Straat = "test",
+                    Huisnummer = "test",
+                    busnr = "test",
+                    Gemeente = "test",
+                    Postcode = "test",
+                });
+
+                //DataRowSearchPlaats row = new DataRowSearchPlaats();
+                //List<string> qry;
+                //datacontract.poiAddress adres;
+
+                //row.id = poi.id;
+                //row.Omschrijving = poi.description.value;
+
+                //qry = (from datacontract.poiValueGroup n in poi.categories
+                //       where n.type == "Type"
+                //       select n.value).ToList();
+                //if (qry.Count > 0) row.Type = qry[0];
+
+                //qry = (from datacontract.poiValueGroup n in poi.categories
+                //       where n.type == "Categorie"
+                //       select n.value).ToList();
+                //if (qry.Count > 0) row.Category = qry[0];
+
+                //qry = (from datacontract.poiValueGroup n in poi.categories
+                //       where n.type == "Thema"
+                //       select n.value).ToList();
+                //if (qry.Count > 0) row.Theme = qry[0];
+
+                //qry = (
+                //    from datacontract.poiValueGroup n in poi.labels
+                //    select n.value).ToList();
+                //row.Label = string.Join(", ", qry.ToArray());
+
+                //adres = poi.location.address;
+                //if (adres != null)
+                //{
+                //    row.Straat = adres.street;
+                //    row.Huisnummer = adres.streetnumber;
+                //    row.Postcode = adres.postalcode;
+                //    row.Gemeente = adres.municipality;
+                //}
+                //InteressantePlaatsList.Add(row);
             }
         }
         public ICommand CmdZoek

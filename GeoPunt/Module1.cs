@@ -12,6 +12,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.Dockpanes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,19 +32,7 @@ namespace GeoPunt
         /// </summary>
         public static Module1 Current => _this ??= (Module1)FrameworkApplication.FindModule("GeoPunt_Module");
 
-        //public static async Task OnProjectClosingAsync(CancelEventArgs arg)
-        //{
-        //    var paneStart = FrameworkApplication.DockPaneManager.Find("GeoPunt_Dockpanes_StartDockpane");
-        //    var paneAddress = FrameworkApplication.DockPaneManager.Find("GeoPunt_Dockpanes_SearchAddressDockpane");
-        //    var panePointMap = FrameworkApplication.DockPaneManager.Find("GeoPunt_Dockpanes_PointMapDockpane");
-        //    paneStart.Hide();
-        //    paneAddress.Hide();
-        //    panePointMap.Hide();
-        //    MessageBox.Show($@"execute event close project");
-        //    //FrameworkApplication.Panes.ClosePane(MyPaneID);
-        //    await Project.Current.SaveAsync();
-
-        //}
+        public static PointMapDockpaneViewModel vmSearchPlace { get; set; }
         
 
 

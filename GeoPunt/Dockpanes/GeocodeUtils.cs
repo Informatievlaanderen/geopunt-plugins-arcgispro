@@ -120,6 +120,7 @@ namespace GeoPunt.Dockpanes
                 {
                     //MessageBox.Show("drawing");
                     _overlayObject = mapView.AddOverlay(point, symbolReference);
+                    
                     return;
                 }
 

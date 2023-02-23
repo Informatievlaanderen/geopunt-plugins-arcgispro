@@ -26,6 +26,7 @@ namespace GeoPunt.Dockpanes
             InitializeComponent();
             //SearchPlaceViewModel vm = new SearchPlaceViewModel();
             //DataGridPlace.ItemsSource = vm.LoadCollectionData();
+            
         }
     }
 }
