@@ -71,7 +71,7 @@
         </Grid>
 
         <Grid Grid.Row="2" >
-            <DataGrid x:Name="DataGridPlace" ItemsSource="{Binding InteressantePlaatsList}" SelectedItem="{Binding SelectedInteressantePlaatsList}" ></DataGrid>
+            <DataGrid x:Name="DataGridPlace" ItemsSource="{Binding InteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedInteressantePlaatsList}" ></DataGrid>
         </Grid>
 
         <Grid Grid.Row="3" >

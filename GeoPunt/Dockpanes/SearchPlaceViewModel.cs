@@ -31,13 +31,14 @@ namespace GeoPunt.Dockpanes
 
         //List<DataRowSearchPlaats> authors = new List<DataRowSearchPlaats>();
 
-        private List<DataRowSearchPlaats> _interessantePlaatsList = new List<DataRowSearchPlaats>();
-        public List<DataRowSearchPlaats> InteressantePlaatsList
+        private ObservableCollection<DataRowSearchPlaats> _interessantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
+        public ObservableCollection<DataRowSearchPlaats> InteressantePlaatsList
         {
             get { return _interessantePlaatsList; }
             set
             {
                 SetProperty(ref _interessantePlaatsList, value);
+                MessageBox.Show("add plaats");
             }
         }
 
@@ -253,33 +254,58 @@ namespace GeoPunt.Dockpanes
             //parse results
             foreach (datacontract.poiMaxModel poi in pois)
             {
+                DataRowSearchPlaats row = new DataRowSearchPlaats();
+                List<string> qry;
+                datacontract.poiAddress adres;
 
-                //qry = (from datacontract.poivaluegroup n in poi.categories
-                //       where n.type == "thema"
-                //       select n.value).tolist();
-                //if (qry.count > 0) row.theme = qry[0];
-
-                InteressantePlaatsList.Add(new DataRowSearchPlaats()
+                row.id = poi.id;
+                row.Omschrijving = "";
+                if (poi.description != null)
                 {
-                    id = poi.id,
-                    Theme = "test999",
-                    Category = "test999",
-                    Type = "test",
-                    Label = "test",
-                    Omschrijving = poi.description.value,
-                    Straat = "test",
-                    Huisnummer = "test",
-                    busnr = "test",
-                    Gemeente = "test",
-                    Postcode = "test",
-                });
+                    row.Omschrijving = poi.description.value;
+                }
 
-                //DataRowSearchPlaats row = new DataRowSearchPlaats();
+
+                qry = (from datacontract.poiValueGroup n in poi.categories
+                       where n.type == "Type"
+                       select n.value).ToList();
+                if (qry.Count > 0) row.Type = qry[0];
+
+                qry = (from datacontract.poiValueGroup n in poi.categories
+                       where n.type == "Categorie"
+                       select n.value).ToList();
+                if (qry.Count > 0) row.Category = qry[0];
+
+                qry = (from datacontract.poiValueGroup n in poi.categories
+                       where n.type == "Thema"
+                       select n.value).ToList();
+                if (qry.Count > 0) row.Theme = qry[0];
+
+                qry = (
+                    from datacontract.poiValueGroup n in poi.labels
+                    select n.value).ToList();
+                row.Label = string.Join(", ", qry.ToArray());
+
+                adres = poi.location.address;
+                if (adres != null)
+                {
+                    row.Straat = adres.street;
+                    row.Huisnummer = adres.streetnumber;
+                    row.Postcode = adres.postalcode;
+                    row.Gemeente = adres.municipality;
+                }
+
+
+                InteressantePlaatsList.Add(row);
+
+
+
+
+
+
                 //List<string> qry;
+                //DataRowSearchPlaats row = new DataRowSearchPlaats();
                 //datacontract.poiAddress adres;
-
-                //row.id = poi.id;
-                //row.Omschrijving = poi.description.value;
 
                 //qry = (from datacontract.poiValueGroup n in poi.categories
                 //       where n.type == "Type"
@@ -309,8 +335,43 @@ namespace GeoPunt.Dockpanes
                 //    row.Postcode = adres.postalcode;
                 //    row.Gemeente = adres.municipality;
                 //}
+
+                //InteressantePlaatsList.Add(new DataRowSearchPlaats()
+                //{
+                //    id = poi.id,
+                //    Theme = row.Theme,
+                //    Category = row.Category,
+                //    Type = row.Type,
+                //    Label = row.Label,
+                //    Omschrijving = poi.description.value,
+                //    Straat = row.Straat,
+                //    Huisnummer = row.Huisnummer,
+                //    busnr = null,
+                //    Gemeente = row.Gemeente,
+                //    Postcode = row.Postcode,
+                //});
+
                 //InteressantePlaatsList.Add(row);
             }
+            //QueuedTask.Run(() =>
+            //{
+            //    InteressantePlaatsList.Add(new DataRowSearchPlaats()
+            //    {
+            //        id = 1011,
+            //        Theme = "test",
+            //        Category = "test",
+            //        Type = "test",
+            //        Label = "test",
+            //        Omschrijving = "test",
+            //        Straat = "test",
+            //        Huisnummer = "test",
+            //        busnr = "test",
+            //        Gemeente = "test",
+            //        Postcode = "test",
+            //    });
+            //});
+
+           
         }
         public ICommand CmdZoek
         {
@@ -318,6 +379,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
+
                     datacontract.poiMaxResponse poiData = null;
 
                     //input
