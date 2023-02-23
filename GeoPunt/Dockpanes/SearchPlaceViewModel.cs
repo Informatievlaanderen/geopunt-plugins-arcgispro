@@ -1,5 +1,6 @@
 ﻿using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Catalog;
 using ArcGIS.Desktop.Core;
@@ -9,15 +10,18 @@ using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Mapping;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.datacontract;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace GeoPunt.Dockpanes
 {
@@ -25,11 +29,48 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPlace";
 
-        public List<DataRowSearchPlaats> LoadCollectionData()
+        //List<DataRowSearchPlaats> authors = new List<DataRowSearchPlaats>();
+
+        private List<DataRowSearchPlaats> _interessantePlaatsList = new List<DataRowSearchPlaats>();
+        public List<DataRowSearchPlaats> InteressantePlaatsList
         {
-            List<DataRowSearchPlaats> authors = new List<DataRowSearchPlaats>();
+            get { return _interessantePlaatsList; }
+            set
+            {
+                SetProperty(ref _interessantePlaatsList, value);
+            }
+        }
 
-            authors.Add(new DataRowSearchPlaats()
+        private DataRowSearchPlaats _selectedInteressantePlaatsList;
+        public DataRowSearchPlaats SelectedInteressantePlaatsList
+        {
+            get { return _selectedInteressantePlaatsList; }
+            set
+            {
+                SetProperty(ref _selectedInteressantePlaatsList, value);
+                MessageBox.Show($@"seleted ip: {_selectedInteressantePlaatsList.id}");
+            }
+        }
+        public void LoadCollectionData()
+        {
+            
+
+            InteressantePlaatsList.Add(new DataRowSearchPlaats()
+            {
+                id = 101,
+                Theme = "test999",
+                Category = "test999",
+                Type = "test",
+                Label = "test",
+                Omschrijving = "test",
+                Straat = "test",
+                Huisnummer = "test",
+                busnr = "test",
+                Gemeente = "test",
+                Postcode = "test",
+            });
+
+            InteressantePlaatsList.Add(new DataRowSearchPlaats()
             {
                 id = 101,
                 Theme = "test",
@@ -44,22 +85,7 @@ namespace GeoPunt.Dockpanes
                 Postcode = "test",
             });
 
-            authors.Add(new DataRowSearchPlaats()
-            {
-                id = 101,
-                Theme = "test",
-                Category = "test",
-                Type = "test",
-                Label = "test",
-                Omschrijving = "test",
-                Straat = "test",
-                Huisnummer = "test",
-                busnr = "test",
-                Gemeente = "test",
-                Postcode = "test",
-            });
-
-            return authors;
+            //MessageBox.Show($@"load collection: {InteressantePlaatsList.Count}");
         }
 
         DataHandler.poi poiDH;
@@ -69,6 +95,7 @@ namespace GeoPunt.Dockpanes
         {
             poiDH = new DataHandler.poi(5000);
             initGui();
+            LoadCollectionData();
         }
 
         public void initGui()
@@ -221,6 +248,141 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private void updateDataGrid(List<datacontract.poiMaxModel> pois)
+        {
+            //parse results
+            foreach (datacontract.poiMaxModel poi in pois)
+            {
+
+
+
+
+
+
+                DataRowSearchPlaats row = new DataRowSearchPlaats();
+                List<string> qry;
+                datacontract.poiAddress adres;
+
+                row.id = poi.id;
+                row.Omschrijving = poi.description.value;
+
+                qry = (from datacontract.poiValueGroup n in poi.categories
+                       where n.type == "Type"
+                       select n.value).ToList();
+                if (qry.Count > 0) row.Type = qry[0];
+
+                qry = (from datacontract.poiValueGroup n in poi.categories
+                       where n.type == "Categorie"
+                       select n.value).ToList();
+                if (qry.Count > 0) row.Category = qry[0];
+
+                qry = (from datacontract.poiValueGroup n in poi.categories
+                       where n.type == "Thema"
+                       select n.value).ToList();
+                if (qry.Count > 0) row.Theme = qry[0];
+
+                qry = (
+                    from datacontract.poiValueGroup n in poi.labels
+                    select n.value).ToList();
+                row.Label = string.Join(", ", qry.ToArray());
+
+                adres = poi.location.address;
+                if (adres != null)
+                {
+                    row.Straat = adres.street;
+                    row.Huisnummer = adres.streetnumber;
+                    row.Postcode = adres.postalcode;
+                    row.Gemeente = adres.municipality;
+                }
+                InteressantePlaatsList.Add(row);
+            }
+        }
+        public ICommand CmdZoek
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    datacontract.poiMaxResponse poiData = null;
+
+                    //input
+                    string themeCode = "test";
+                    string catCode = "test";
+                    string poiTypeCode = "test";
+                    string keyWord = "test";
+                    bool cluster = false;
+
+                    //boundingBox extent;
+                    //if (extentCkb.Checked)
+                    //{
+                    //    IEnvelope env = view.Extent;
+                    //    IEnvelope prjEnv = geopuntHelper.Transform((IGeometry)env, wgs).Envelope;
+                    //    extent = new boundingBox(prjEnv);
+                    //    nis = null;
+                    //}
+                    //else
+                    //{
+                    //    nis = municipality2nis(gemeenteCbx.Text);
+                    //    extent = null;
+                    //}
+                    int count = 32;
+
+                    poiData = poiDH.getMaxmodel(keyWord, count, cluster, themeCode, catCode, poiTypeCode,
+                    null, null, null, null);
+
+                    List<datacontract.poiMaxModel> pois = poiData.pois;
+
+                    MessageBox.Show($@"count pois: {pois.Count}");
+
+                    updateDataGrid(pois);
+                });
+            }
+        }
+        public ICommand CmdSave
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    
+                });
+            }
+        }
+
+        public ICommand CmdVoeg
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+
+                });
+            }
+        }
+
+        public ICommand CmdZoom
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+
+                });
+            }
+        }
+        public ICommand CmdClose
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+                    FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
+                    pane.Hide();
+                });
+            }
+        }
+
         /// <summary>
         /// Show the DockPane.
         /// </summary>
@@ -246,6 +408,7 @@ namespace GeoPunt.Dockpanes
             }
         }
     }
+
 
     /// <summary>
     /// Button implementation to show the DockPane.

@@ -66,12 +66,12 @@
                 <ColumnDefinition Width="250" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
-            <Button Grid.Column="1" Content="Zoek"/>
+
+            <Button Grid.Column="1" Command="{Binding CmdZoek}" Content="Zoek"/>
         </Grid>
 
         <Grid Grid.Row="2" >
-            <DataGrid x:Name="DataGridPlace" ></DataGrid>
+            <DataGrid x:Name="DataGridPlace" ItemsSource="{Binding InteressantePlaatsList}" SelectedItem="{Binding SelectedInteressantePlaatsList}" ></DataGrid>
         </Grid>
 
         <Grid Grid.Row="3" >
@@ -86,10 +86,10 @@
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" Content="Opslaan"/>
-            <Button Grid.Column="2" Content="Zoom"/>
-            <Button Grid.Row="1" Grid.Column="1" Content="Voeg"/>
-            <Button Grid.Row="1" Grid.Column="2" Content="Sluiten"/>
+            <Button Grid.Column="1" Content="Opslaan" Command="{Binding CmdSave}" />
+            <Button Grid.Column="2" Content="Zoom" Command="{Binding CmdZoom}" />
+            <Button Grid.Row="1" Grid.Column="1" Command="{Binding CmdVoeg}" Content="Voeg"/>
+            <Button Grid.Row="1" Grid.Column="2" Command="{Binding CmdClose}" Content="Sluiten"/>
             <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" >Resultaten geclusterd toevoegen</CheckBox>
 
         </Grid>

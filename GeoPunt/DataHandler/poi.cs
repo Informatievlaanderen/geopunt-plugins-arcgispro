@@ -162,9 +162,10 @@ namespace GeoPunt.DataHandler
         public enum CRS { Lambert72 = 31370, WGS84 = 4326, WEBMERCATOR = 3857, ETRS89 = 4258, WGS84UTM31N = 32631 }
 
         public datacontract.poiMaxResponse getMaxmodel(string q, int c, bool Clustering, string theme, string category,
-            string POItype, CRS srs, int? id, string niscode, string bbox)
+            string POItype, CRS? srs, int? id, string niscode, string bbox)
         {
-            setQueryValues(q, c, Clustering, true, theme, category, POItype, srs, id, niscode);
+            //setQueryValues(q, c, Clustering, true, theme, category, POItype, srs, id, niscode);
+            qryValues.Clear();
             client.QueryString = qryValues;
 
             string json = client.DownloadString(baseUrl);
@@ -187,7 +188,7 @@ namespace GeoPunt.DataHandler
         }
 
         private void setQueryValues(string q, int c, bool Clustering, bool maxModel,
-             string theme, string category, string POItype, CRS srs,
+             string theme, string category, string POItype, CRS? srs,
              //int? id, string niscode, boundingBox bbox)
              int? id, string niscode)
         {
