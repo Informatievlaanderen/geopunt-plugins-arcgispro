@@ -118,12 +118,12 @@ namespace GeoPunt.Dockpanes
                
                 if (!isRemove)
                 {
-                    MessageBox.Show("drawing");
+                    //MessageBox.Show("drawing");
                     _overlayObject = mapView.AddOverlay(point, symbolReference);
                     return;
                 }
 
-                MessageBox.Show("removing");
+                //MessageBox.Show("removing");
                 RemoveFromMapOverlay(mapView);
 
             });

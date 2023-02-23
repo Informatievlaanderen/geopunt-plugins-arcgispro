@@ -15,6 +15,7 @@ using ArcGIS.Desktop.Mapping;
 using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,8 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_PointMapDockpane";
 
+        DataHandler.adresSuggestion adresSuggestion;
+        DataHandler.adresLocation adresLocation;
 
         private string _address = "koko";
         public string Address
@@ -34,7 +37,7 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _address, value);
-                MessageBox.Show($@"vm a ::: {_address}");            
+                //MessageBox.Show($@"vm a ::: {_address}");            
             }
         }
 
@@ -45,7 +48,7 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _differenceMeters, value);
-                MessageBox.Show($@"vm m ::: {_differenceMeters}");
+                //MessageBox.Show($@"vm m ::: {_differenceMeters}");
             }
         }
 
@@ -53,7 +56,63 @@ namespace GeoPunt.Dockpanes
         {
             Address = address;
             DifferenceMeters = diff.ToString("0.00");
+            updateCurrentMapPoint(address, 1);
             MessageBox.Show($@"Adres: {Address},   Difference: {DifferenceMeters}");
+        }
+
+        private ObservableCollection<MapPoint> _listStreetsFavouritePoint = new ObservableCollection<MapPoint>();
+        public ObservableCollection<MapPoint> ListStreetsFavouritePoint
+        {
+            get { return _listStreetsFavouritePoint; }
+            set
+            {
+                SetProperty(ref _listStreetsFavouritePoint, value);
+            }
+        }
+
+        private ObservableCollection<string> _listStreetsFavouriteStringPoint = new ObservableCollection<string>();
+        public ObservableCollection<string> ListStreetsFavouriteStringPoint
+        {
+            get { return _listStreetsFavouriteStringPoint; }
+            set
+            {
+                SetProperty(ref _listStreetsFavouriteStringPoint, value);
+            }
+        }
+
+        private string _selectedStreetFavouritePoint;
+        public string SelectedStreetFavouritePoint
+        {
+            get { return _selectedStreetFavouritePoint; }
+            set
+            {
+                SetProperty(ref _selectedStreetFavouritePoint, value);
+                updateCurrentMapPoint(_selectedStreetFavouritePoint, 1);
+            }
+        }
+
+        MapPoint MapPointSelectedAddress = null;
+        public void updateCurrentMapPoint(string query, int count)
+        {
+            adresLocation = new DataHandler.adresLocation(5000);
+            double x = 0;
+            double y = 0;
+
+            List<datacontract.locationResult> loc = adresLocation.getAdresLocation(query, count);
+            foreach (datacontract.locationResult item in loc)
+            {
+                x = item.Location.X_Lambert72;
+                y = item.Location.Y_Lambert72;
+            }
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+        }
+
+        public void updateListBoxFavouritePoint()
+        {
+            foreach (MapPoint mapPoint in ListStreetsFavouritePoint)
+            {
+                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, true);
+            }
         }
         public ICommand CmdClose
         {
@@ -74,7 +133,12 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    Address = "momo";
+                    if (!ListStreetsFavouritePoint.Contains(MapPointSelectedAddress))
+                    {
+                        ListStreetsFavouritePoint.Add(MapPointSelectedAddress);
+                        MessageBox.Show($@"{MapPointSelectedAddress.Coordinate2D.X} || {MapPointSelectedAddress.Coordinate2D.Y}");
+                        updateListBoxFavouritePoint();
+                    }
                 });
             }
         }
@@ -85,7 +149,10 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    Address = "momo";
+                    if (!ListStreetsFavouriteStringPoint.Contains(Address))
+                    {
+                        ListStreetsFavouriteStringPoint.Add(Address);
+                    }
                 });
             }
         }
