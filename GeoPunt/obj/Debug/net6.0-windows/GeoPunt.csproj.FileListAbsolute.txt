@@ -22,3 +22,5 @@ D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\PointMa
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\bin\Debug\net6.0-windows\Newtonsoft.Json.dll
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\bin\Debug\net6.0-windows\Newtonsoft.Json.Bson.dll
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\GeoPunt.csproj.CopyComplete
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPlace.g.cs
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPlace.baml
