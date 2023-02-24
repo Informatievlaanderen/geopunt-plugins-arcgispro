@@ -383,10 +383,10 @@ namespace GeoPunt.Dockpanes
                     datacontract.poiMaxResponse poiData = null;
 
                     //input
-                    string themeCode = "test";
-                    string catCode = "test";
-                    string poiTypeCode = "test";
-                    string keyWord = "test";
+                    string themeCode = "";
+                    string catCode = SelectedCategoriesListString;
+                    string poiTypeCode = "";
+                    string keyWord = "";
                     bool cluster = false;
 
                     //boundingBox extent;
@@ -402,10 +402,10 @@ namespace GeoPunt.Dockpanes
                     //    nis = municipality2nis(gemeenteCbx.Text);
                     //    extent = null;
                     //}
-                    int count = 32;
+                    int count = 132;
 
                     poiData = poiDH.getMaxmodel(keyWord, count, cluster, themeCode, catCode, poiTypeCode,
-                    null, null, null, null);
+                    DataHandler.CRS.WGS84, null, null, null);
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
 

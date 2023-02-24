@@ -159,13 +159,14 @@ namespace GeoPunt.DataHandler
         {
             return getMinmodel(q, Clustering, theme, category, POItype, srs, id, "", null);
         }
-        public enum CRS { Lambert72 = 31370, WGS84 = 4326, WEBMERCATOR = 3857, ETRS89 = 4258, WGS84UTM31N = 32631 }
 
         public datacontract.poiMaxResponse getMaxmodel(string q, int c, bool Clustering, string theme, string category,
-            string POItype, CRS? srs, int? id, string niscode, string bbox)
+            string POItype, CRS srs, int? id, string niscode, string bbox)
         {
             //setQueryValues(q, c, Clustering, true, theme, category, POItype, srs, id, niscode);
             qryValues.Clear();
+            MessageBox.Show($@"cat:: {category}");
+            qryValues.Add("category", category);
             client.QueryString = qryValues;
 
             string json = client.DownloadString(baseUrl);
@@ -201,12 +202,14 @@ namespace GeoPunt.DataHandler
             //srs
             qryValues.Add("srsIn", Convert.ToString((int)srs));
             qryValues.Add("srsOut", Convert.ToString((int)srs));
+
             //string lists
             if (id != null) qryValues.Add("id", id.ToString());
             if (niscode != null || niscode != "") qryValues.Add("region", niscode);
             if (theme != null || theme != "") qryValues.Add("theme", theme);
             if (category != null || category != "") qryValues.Add("category", category);
             if (POItype != null || POItype != "") qryValues.Add("POItype", POItype);
+
             qryValues.Add("maxcount", c.ToString());
 
             if (maxModel)
@@ -217,7 +220,6 @@ namespace GeoPunt.DataHandler
             {
                 qryValues.Add("maxmodel", "false");
             }
-
             //if (bbox != null) qryValues.Add("bbox", bbox.ToBboxString("|", "|"));
         }
     }
