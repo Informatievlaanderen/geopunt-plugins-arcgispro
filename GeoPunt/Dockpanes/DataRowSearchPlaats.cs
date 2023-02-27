@@ -9,8 +9,8 @@ namespace GeoPunt.Dockpanes
     internal class DataRowSearchPlaats
     {
         public int id { get; set; }
-        public string Theme { get; set; }
-        public string Category { get; set; }
+        public string Thema { get; set; }
+        public string Categorie { get; set; }
         public string Type { get; set; }
         public string Label { get; set; }
         public string Omschrijving { get; set; }

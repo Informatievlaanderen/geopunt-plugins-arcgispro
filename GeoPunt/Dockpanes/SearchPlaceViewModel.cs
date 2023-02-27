@@ -14,6 +14,7 @@ using ArcGIS.Desktop.Internal.Mapping;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.datacontract;
+using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -49,42 +50,66 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedInteressantePlaatsList, value);
-                MessageBox.Show($@"seleted ip: {_selectedInteressantePlaatsList.id}");
+                //string var = _selectedInteressantePlaatsList.Straat;
+                string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
+                MessageBox.Show($@"selected ip: {var}");
+                updateCurrentMapPoint(var,1);
+                
             }
+        }
+
+        MapPoint MapPointSelectedAddress = null;
+        DataHandler.adresLocation adresLocation;
+        public void updateCurrentMapPoint(string query, int count)
+        {
+            double x = 0;
+            double y = 0;
+
+            adresLocation = new DataHandler.adresLocation(5000);
+
+            List<datacontract.locationResult> loc = adresLocation.getAdresLocation(query, count);
+            foreach (datacontract.locationResult item in loc)
+            {
+                x = item.Location.X_Lambert72;
+                y = item.Location.Y_Lambert72;
+
+            }
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
         }
         public void LoadCollectionData()
         {
             
 
-            InteressantePlaatsList.Add(new DataRowSearchPlaats()
-            {
-                id = 101,
-                Theme = "test999",
-                Category = "test999",
-                Type = "test",
-                Label = "test",
-                Omschrijving = "test",
-                Straat = "test",
-                Huisnummer = "test",
-                busnr = "test",
-                Gemeente = "test",
-                Postcode = "test",
-            });
+            //InteressantePlaatsList.Add(new DataRowSearchPlaats()
+            //{
+            //    id = 101,
+            //    Theme = "test999",
+            //    Category = "test999",
+            //    Type = "test",
+            //    Label = "test",
+            //    Omschrijving = "test",
+            //    Straat = "test",
+            //    Huisnummer = "test",
+            //    busnr = "test",
+            //    Gemeente = "test",
+            //    Postcode = "test",
+            //});
 
-            InteressantePlaatsList.Add(new DataRowSearchPlaats()
-            {
-                id = 101,
-                Theme = "test",
-                Category = "test",
-                Type = "test",
-                Label = "test",
-                Omschrijving = "test",
-                Straat = "test",
-                Huisnummer = "test",
-                busnr = "test",
-                Gemeente = "test",
-                Postcode = "test",
-            });
+            //InteressantePlaatsList.Add(new DataRowSearchPlaats()
+            //{
+            //    id = 101,
+            //    Theme = "test",
+            //    Category = "test",
+            //    Type = "test",
+            //    Label = "test",
+            //    Omschrijving = "test",
+            //    Straat = "test",
+            //    Huisnummer = "test",
+            //    busnr = "test",
+            //    Gemeente = "test",
+            //    Postcode = "test",
+            //});
 
             //MessageBox.Show($@"load collection: {InteressantePlaatsList.Count}");
         }
@@ -274,12 +299,13 @@ namespace GeoPunt.Dockpanes
                 qry = (from datacontract.poiValueGroup n in poi.categories
                        where n.type == "Categorie"
                        select n.value).ToList();
-                if (qry.Count > 0) row.Category = qry[0];
+                if (qry.Count > 0) row.Categorie = qry[0];
 
                 qry = (from datacontract.poiValueGroup n in poi.categories
                        where n.type == "Thema"
                        select n.value).ToList();
-                if (qry.Count > 0) row.Theme = qry[0];
+                if (qry.Count > 0) row.Thema = qry[0];
+                row.Thema = "testee";
 
                 qry = (
                     from datacontract.poiValueGroup n in poi.labels
@@ -373,6 +399,17 @@ namespace GeoPunt.Dockpanes
 
            
         }
+
+        private void zoomToQuery()
+        {
+            QueuedTask.Run(() =>
+            {
+                var mapView = MapView.Active;
+                var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 50);
+                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 3));
+            });
+        }
+
         public ICommand CmdZoek
         {
             get
@@ -443,7 +480,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-
+                    zoomToQuery();
                 });
             }
         }

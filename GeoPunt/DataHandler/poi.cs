@@ -63,6 +63,7 @@ namespace GeoPunt.DataHandler
 
         public datacontract.poiCategories listCategories(string themeid)
         {
+
             if(themeid == "Welzijn, gezondheid en gezin") { themeid = "WelzijnGezondheidEnGezin"; };
             if(themeid == "Cultuur, sport en toerisme") { themeid = "CultuurSportEnToerisme"; };
             if(themeid == "Natuur en milieu") { themeid = "NatuurEnMilieu"; };
@@ -129,10 +130,10 @@ namespace GeoPunt.DataHandler
         {
             return listPOItypes(null, categoryid);
         }
-        public datacontract.poiCategories listPOItypes()
-        {
-            return listPOItypes(null, "Cultuur");
-        }
+        //public datacontract.poiCategories listPOItypes()
+        //{
+        //    return listPOItypes(null, "Cultuur");
+        //}
 
         public datacontract.poiMinResponse getMinmodel(string q, bool Clustering, string theme, string category,
             string POItype, CRS srs, int? id, string niscode, string bbox)
