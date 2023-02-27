@@ -48,6 +48,8 @@ namespace GeoPunt.Dockpanes
         DataHandler.adresSuggestion adresSuggestion;
         DataHandler.adresLocation adresLocation;
 
+        public bool isRemoveMarkeer = false;
+
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
              "",
             "Aalst",
@@ -453,6 +455,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private ObservableCollection<string> _listStreetsMarkeerString = new ObservableCollection<string>();
+        public ObservableCollection<string> ListStreetsMarkeerString
+        {
+            get { return _listStreetsMarkeerString; }
+            set
+            {
+                SetProperty(ref _listStreetsMarkeerString, value);
+            }
+        }
+
         private MapPoint _selectedMapPoint;
 
         private string _selectedStreet;
@@ -463,6 +475,14 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedStreet, value);
                 updateCurrentMapPoint(_selectedStreet, 1);
+                isRemoveMarkeer = false;
+                //IsSelectedFavouriteList = true;
+
+                //SelectedStreetFavourite = null;
+
+
+                //SelectedStreetMarkeer = null;
+
                 IsSelectedFavouriteList = true;
             }
         }
@@ -475,6 +495,30 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedStreetFavourite, value);
                 updateCurrentMapPoint(_selectedStreetFavourite, 1);
+                isRemoveMarkeer = false;
+
+                //SelectedStreet = null;
+
+                //SelectedStreetMarkeer = null;
+
+                IsSelectedFavouriteList = false;
+            }
+        }
+
+        private string _selectedStreetMarkeer;
+        public string SelectedStreetMarkeer
+        {
+            get { return _selectedStreetMarkeer; }
+            set
+            {
+                SetProperty(ref _selectedStreetMarkeer, value);
+                updateCurrentMapPoint(_selectedStreetMarkeer, 1);
+                isRemoveMarkeer = true;
+
+                //SelectedStreet = null;
+
+                //SelectedStreetFavourite = null;
+
                 IsSelectedFavouriteList = false;
             }
         }
@@ -564,17 +608,20 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                    ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
-                    //MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(MapPointSelectedAddress);
-                    //MessageBox.Show($@"check :: point to delete : {MapPointSelectedAddress}  {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y} ");
-                    //MessageBox.Show($@"point to delete : {pointToDelete}  {pointToDelete.X} || {pointToDelete.Y} ");
-                    ListStreetsFavourite.Remove(pointToDelete);
-                    //foreach(MapPoint streets in ListStreetsFavourite)
-                    //{
-                    //    MessageBox.Show($@"remove : {streets.X} || {streets.Y} ");
-                    //}
-                    GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                    if (!isRemoveMarkeer)
+                    {
+                        MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                        ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
+                        ListStreetsFavourite.Remove(pointToDelete);
+                        GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                        
+                    }else
+                    {
+                        MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                        ListStreetsMarkeerString.Remove(SelectedStreetMarkeer);
+                        ListStreetsMarkeer.Remove(pointToDelete);
+                        GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete, MapView.Active, true, true);
+                    }
                     updateListBoxFavourite();
                     updateListBoxMarkeer();
                 });
@@ -603,8 +650,12 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    ListStreetsMarkeer.Add(MapPointSelectedAddress);
-                    updateListBoxMarkeer();
+                    if (!ListStreetsMarkeerString.Contains(SelectedStreet))
+                    {
+                        ListStreetsMarkeerString.Add(SelectedStreet);
+                        ListStreetsMarkeer.Add(MapPointSelectedAddress);
+                        updateListBoxMarkeer();
+                    }
                 });
             }
         }

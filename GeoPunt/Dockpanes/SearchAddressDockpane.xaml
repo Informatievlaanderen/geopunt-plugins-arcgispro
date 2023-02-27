@@ -23,10 +23,12 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="30"/>
       <RowDefinition Height="30"/>
-      <RowDefinition Height="320"/>
+      <RowDefinition Height="200"/>
       <RowDefinition Height="40"/>
       <RowDefinition Height="40"/>
-      <RowDefinition Height="150"/>
+      <RowDefinition Height="100"/>
+      <RowDefinition Height="40"/>
+      <RowDefinition Height="100"/>
     </Grid.RowDefinitions>
 
     
@@ -70,6 +72,9 @@
 
         <TextBlock Grid.Row="4" Text="Favorieten Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
         <ListBox ItemsSource="{Binding ListStreetsFavouriteString}" SelectedItem="{Binding SelectedStreetFavourite}" Grid.Row="5" Margin="5,-5,5,0" />
+
+        <TextBlock Grid.Row="6" Text="Markeer Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
+        <ListBox ItemsSource="{Binding ListStreetsMarkeerString}" SelectedItem="{Binding SelectedStreetMarkeer}" Grid.Row="7" Margin="5,-5,5,0" />
 
 
     </Grid>
