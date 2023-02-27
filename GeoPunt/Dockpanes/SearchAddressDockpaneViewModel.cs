@@ -563,7 +563,7 @@ namespace GeoPunt.Dockpanes
                 var mapView = MapView.Active;
                 //var pt = MapPointBuilderEx.CreateMapPoint(x, y);
                 //MapPointSelectedAddress = pt;
-                var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 150);
+                var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 50);
                 mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 3));
             });
         }

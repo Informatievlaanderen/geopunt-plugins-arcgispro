@@ -30,34 +30,54 @@ namespace GeoPunt.Dockpanes
         DataHandler.adresSuggestion adresSuggestion;
         DataHandler.adresLocation adresLocation;
 
-        private string _address = "koko";
+        private string _address;
         public string Address
         {
             get { return _address; }
             set
             {
                 SetProperty(ref _address, value);
-                //MessageBox.Show($@"vm a ::: {_address}");            
+                IsSelectedFavouriteList = false;        
             }
         }
 
-        private string _differenceMeters = "88";
+        private bool _isInverseSelectedFavouriteList;
+        public bool IsInverseSelectedFavouriteList
+        {
+            get { return _isInverseSelectedFavouriteList; }
+            set
+            {
+                SetProperty(ref _isInverseSelectedFavouriteList, value);
+            }
+        }
+
+
+        private bool _isSelectedFavouriteList;
+        public bool IsSelectedFavouriteList
+        {
+            get { return _isSelectedFavouriteList; }
+            set
+            {
+                SetProperty(ref _isSelectedFavouriteList, value);
+                IsInverseSelectedFavouriteList = !_isSelectedFavouriteList;
+            }
+        }
+
+        private string _differenceMeters;
         public string DifferenceMeters
         {
             get { return _differenceMeters; }
             set
             {
                 SetProperty(ref _differenceMeters, value);
-                //MessageBox.Show($@"vm m ::: {_differenceMeters}");
             }
         }
 
         public void refreshAddress(string address, double diff)
         {
             Address = address;
-            DifferenceMeters = diff.ToString("0.00");
+            DifferenceMeters = diff.ToString("0.00")+" meters";
             updateCurrentMapPoint(address, 1);
-            //MessageBox.Show($@"Adres: {Address},   Difference: {DifferenceMeters}");
         }
 
         private ObservableCollection<MapPoint> _listStreetsFavouritePoint = new ObservableCollection<MapPoint>();
@@ -88,6 +108,7 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedStreetFavouritePoint, value);
                 updateCurrentMapPoint(_selectedStreetFavouritePoint, 1);
+                IsSelectedFavouriteList = true;
             }
         }
 
@@ -111,7 +132,7 @@ namespace GeoPunt.Dockpanes
         {
             foreach (MapPoint mapPoint in ListStreetsFavouritePoint)
             {
-                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, true);
+                GeocodeUtils.UpdateMapOverlayMapPoint(mapPoint, MapView.Active, true);
             }
         }
         public ICommand CmdClose
@@ -127,16 +148,38 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        public ICommand CmdRemoveFavourite
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    MapPoint pointToDelete = ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    ListStreetsFavouriteStringPoint.Remove(SelectedStreetFavouritePoint);
+                    ListStreetsFavouritePoint.Remove(pointToDelete);
+                    GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
+
+                    updateListBoxFavouritePoint();
+                });
+            }
+        }
+
         public ICommand CmdPoint
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    if (!ListStreetsFavouritePoint.Contains(MapPointSelectedAddress))
+                    if (ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) == null)
                     {
                         ListStreetsFavouritePoint.Add(MapPointSelectedAddress);
-                        MessageBox.Show($@"{MapPointSelectedAddress.Coordinate2D.X} || {MapPointSelectedAddress.Coordinate2D.Y}");
+                        updateListBoxFavouritePoint();
+                    }
+                    else
+                    {
+                        MapPoint pointToDelete = ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                        ListStreetsFavouritePoint.Remove(pointToDelete);
+                        GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
                         updateListBoxFavouritePoint();
                     }
                 });

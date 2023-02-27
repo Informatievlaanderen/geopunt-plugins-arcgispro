@@ -90,6 +90,7 @@ namespace GeoPunt.Dockpanes
 
         private static ObservableCollection<System.IDisposable> _overlayObject = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectMarkeer = new ObservableCollection<System.IDisposable>();
+        private static ObservableCollection<System.IDisposable> _overlayObjectMapPoint = new ObservableCollection<System.IDisposable>();
 
         /// <summary>
         /// Add a point to the specified mapview
@@ -132,6 +133,8 @@ namespace GeoPunt.Dockpanes
 
         }
 
+
+
         public static async void AddToMapOverlayMarkeer(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
         {
             ArcGIS.Core.CIM.CIMPointSymbol symbol = null;
@@ -167,6 +170,41 @@ namespace GeoPunt.Dockpanes
 
         }
 
+        public static async void AddToMapOverlayMapPoint(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
+        {
+            ArcGIS.Core.CIM.CIMPointSymbol symbol = null;
+
+            await QueuedTask.Run(() =>
+            {
+                // Construct point symbol
+                symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.BlueRGB, 10.0, SimpleMarkerStyle.Circle);
+                //if (isFavourite)
+                //{
+                //    symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.RedRGB, 10.0, SimpleMarkerStyle.Star);
+                //}
+            });
+
+            //Get symbol reference from the symbol 
+            CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
+
+            await QueuedTask.Run(() =>
+            {
+
+
+                if (!isRemove)
+                {
+                    //MessageBox.Show("drawing");
+                    _overlayObjectMapPoint.Add(mapView.AddOverlay(point, symbolReference));
+                    return;
+                }
+
+                //MessageBox.Show("removing");
+                RemoveFromMapOverlayMapPoint(mapView);
+
+            });
+
+        }
+
         /// <summary>
         /// All-in-one. Update the graphic on the overlay if it was previously added
         /// otherwise, make it and add it
@@ -182,6 +220,11 @@ namespace GeoPunt.Dockpanes
         public static void UpdateMapOverlayMarkeer(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
         {
             AddToMapOverlay(point, mapView, isFavourite, isRemove);
+        }
+
+        public static void UpdateMapOverlayMapPoint(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
+        {
+            AddToMapOverlayMapPoint(point, mapView, isFavourite, isRemove);
         }
 
         /// <summary>
@@ -205,13 +248,28 @@ namespace GeoPunt.Dockpanes
 
         public static void RemoveFromMapOverlayMarkeer(MapView mapView)
         {
-            if (_overlayObject != null)
+            if (_overlayObjectMarkeer != null)
             {
                 foreach (var overlay in _overlayObjectMarkeer)
                 {
                     overlay.Dispose();
                 }
                 _overlayObjectMarkeer = new ObservableCollection<System.IDisposable>();
+                //MessageBox.Show($@"{_overlayObject.Count}");
+                //_overlayObject.Dispose();
+                //_overlayObject = null;
+            }
+        }
+
+        public static void RemoveFromMapOverlayMapPoint(MapView mapView)
+        {
+            if (_overlayObjectMapPoint != null)
+            {
+                foreach (var overlay in _overlayObjectMapPoint)
+                {
+                    overlay.Dispose();
+                }
+                _overlayObjectMapPoint = new ObservableCollection<System.IDisposable>();
                 //MessageBox.Show($@"{_overlayObject.Count}");
                 //_overlayObject.Dispose();
                 //_overlayObject = null;
