@@ -498,7 +498,7 @@ namespace GeoPunt.Dockpanes
         MapPoint MapPointSelectedAddress = null;
 
         public void updateCurrentMapPoint(string query, int count)
-        {
+        {            
             double x = 0;
             double y = 0;
 
@@ -507,8 +507,10 @@ namespace GeoPunt.Dockpanes
             {
                 x = item.Location.X_Lambert72;
                 y = item.Location.Y_Lambert72;
+                
             }
             MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
         }
         private void zoomToQuery()
         {
@@ -562,10 +564,19 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
+                    MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
                     ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
-                    MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(MapPointSelectedAddress);
+                    //MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(MapPointSelectedAddress);
+                    //MessageBox.Show($@"check :: point to delete : {MapPointSelectedAddress}  {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y} ");
+                    //MessageBox.Show($@"point to delete : {pointToDelete}  {pointToDelete.X} || {pointToDelete.Y} ");
                     ListStreetsFavourite.Remove(pointToDelete);
+                    //foreach(MapPoint streets in ListStreetsFavourite)
+                    //{
+                    //    MessageBox.Show($@"remove : {streets.X} || {streets.Y} ");
+                    //}
                     GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                    updateListBoxFavourite();
+                    updateListBoxMarkeer();
                 });
             }
         }
@@ -574,7 +585,7 @@ namespace GeoPunt.Dockpanes
         {
             foreach(MapPoint mapPoint in ListStreetsMarkeer)
             {
-                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, false);
+                GeocodeUtils.UpdateMapOverlayMarkeer(mapPoint, MapView.Active, false);
             }
         }
 

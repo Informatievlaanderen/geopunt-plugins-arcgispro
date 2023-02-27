@@ -5,6 +5,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -87,7 +88,8 @@ namespace GeoPunt.Dockpanes
 
         #region Graphics Support
 
-        private static System.IDisposable _overlayObject = null;
+        private static ObservableCollection<System.IDisposable> _overlayObject = new ObservableCollection<System.IDisposable>();
+        private static ObservableCollection<System.IDisposable> _overlayObjectMarkeer = new ObservableCollection<System.IDisposable>();
 
         /// <summary>
         /// Add a point to the specified mapview
@@ -119,13 +121,47 @@ namespace GeoPunt.Dockpanes
                 if (!isRemove)
                 {
                     //MessageBox.Show("drawing");
-                    _overlayObject = mapView.AddOverlay(point, symbolReference);
-                    
+                    _overlayObject.Add(mapView.AddOverlay(point, symbolReference));
                     return;
                 }
 
                 //MessageBox.Show("removing");
                 RemoveFromMapOverlay(mapView);
+
+            });
+
+        }
+
+        public static async void AddToMapOverlayMarkeer(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
+        {
+            ArcGIS.Core.CIM.CIMPointSymbol symbol = null;
+
+            await QueuedTask.Run(() =>
+            {
+                // Construct point symbol
+                symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreenRGB, 10.0, SimpleMarkerStyle.Diamond);
+                //if (isFavourite)
+                //{
+                //    symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.RedRGB, 10.0, SimpleMarkerStyle.Star);
+                //}
+            });
+
+            //Get symbol reference from the symbol 
+            CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
+
+            await QueuedTask.Run(() =>
+            {
+
+
+                if (!isRemove)
+                {
+                    //MessageBox.Show("drawing");
+                    _overlayObjectMarkeer.Add(mapView.AddOverlay(point, symbolReference));
+                    return;
+                }
+
+                //MessageBox.Show("removing");
+                RemoveFromMapOverlayMarkeer(mapView);
 
             });
 
@@ -143,6 +179,11 @@ namespace GeoPunt.Dockpanes
             AddToMapOverlay(point, mapView, isFavourite, isRemove);
         }
 
+        public static void UpdateMapOverlayMarkeer(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
+        {
+            AddToMapOverlay(point, mapView, isFavourite, isRemove);
+        }
+
         /// <summary>
         /// Remove the Point Graphic from the specified mapview
         /// </summary>
@@ -151,8 +192,29 @@ namespace GeoPunt.Dockpanes
         {
             if (_overlayObject != null)
             {
-                _overlayObject.Dispose();
-                _overlayObject = null;
+                foreach(var overlay in _overlayObject)
+                {
+                    overlay.Dispose();
+                }
+                _overlayObject = new ObservableCollection<System.IDisposable>();
+                //MessageBox.Show($@"{_overlayObject.Count}");
+                //_overlayObject.Dispose();
+                //_overlayObject = null;
+            }
+        }
+
+        public static void RemoveFromMapOverlayMarkeer(MapView mapView)
+        {
+            if (_overlayObject != null)
+            {
+                foreach (var overlay in _overlayObjectMarkeer)
+                {
+                    overlay.Dispose();
+                }
+                _overlayObjectMarkeer = new ObservableCollection<System.IDisposable>();
+                //MessageBox.Show($@"{_overlayObject.Count}");
+                //_overlayObject.Dispose();
+                //_overlayObject = null;
             }
         }
 
