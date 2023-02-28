@@ -24,3 +24,5 @@ D:\geopunt_plug_in_arcgis_pro\GeoPunt\bin\Debug\net6.0-windows\Newtonsoft.Json.B
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\GeoPunt.csproj.CopyComplete
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPlace.g.cs
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPlace.baml
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPerceel.g.cs
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPerceel.baml

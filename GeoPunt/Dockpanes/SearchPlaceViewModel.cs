@@ -77,42 +77,6 @@ namespace GeoPunt.Dockpanes
             MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
             //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
         }
-        public void LoadCollectionData()
-        {
-            
-
-            //InteressantePlaatsList.Add(new DataRowSearchPlaats()
-            //{
-            //    id = 101,
-            //    Theme = "test999",
-            //    Category = "test999",
-            //    Type = "test",
-            //    Label = "test",
-            //    Omschrijving = "test",
-            //    Straat = "test",
-            //    Huisnummer = "test",
-            //    busnr = "test",
-            //    Gemeente = "test",
-            //    Postcode = "test",
-            //});
-
-            //InteressantePlaatsList.Add(new DataRowSearchPlaats()
-            //{
-            //    id = 101,
-            //    Theme = "test",
-            //    Category = "test",
-            //    Type = "test",
-            //    Label = "test",
-            //    Omschrijving = "test",
-            //    Straat = "test",
-            //    Huisnummer = "test",
-            //    busnr = "test",
-            //    Gemeente = "test",
-            //    Postcode = "test",
-            //});
-
-            //MessageBox.Show($@"load collection: {InteressantePlaatsList.Count}");
-        }
 
         DataHandler.poi poiDH;
         datacontract.municipalityList municipalities;
@@ -290,7 +254,6 @@ namespace GeoPunt.Dockpanes
                     row.Omschrijving = poi.description.value;
                 }
 
-
                 qry = (from datacontract.poiValueGroup n in poi.categories
                        where n.type == "Type"
                        select n.value).ToList();
@@ -300,12 +263,13 @@ namespace GeoPunt.Dockpanes
                        where n.type == "Categorie"
                        select n.value).ToList();
                 if (qry.Count > 0) row.Categorie = qry[0];
+                //if (row.Categorie == null) row.Categorie = SelectedCategoriesListString;
+
 
                 qry = (from datacontract.poiValueGroup n in poi.categories
                        where n.type == "Thema"
                        select n.value).ToList();
                 if (qry.Count > 0) row.Thema = qry[0];
-                row.Thema = "testee";
 
                 qry = (
                     from datacontract.poiValueGroup n in poi.labels
@@ -324,78 +288,7 @@ namespace GeoPunt.Dockpanes
 
                 InteressantePlaatsList.Add(row);
 
-
-
-
-
-
-                //List<string> qry;
-                //DataRowSearchPlaats row = new DataRowSearchPlaats();
-                //datacontract.poiAddress adres;
-
-                //qry = (from datacontract.poiValueGroup n in poi.categories
-                //       where n.type == "Type"
-                //       select n.value).ToList();
-                //if (qry.Count > 0) row.Type = qry[0];
-
-                //qry = (from datacontract.poiValueGroup n in poi.categories
-                //       where n.type == "Categorie"
-                //       select n.value).ToList();
-                //if (qry.Count > 0) row.Category = qry[0];
-
-                //qry = (from datacontract.poiValueGroup n in poi.categories
-                //       where n.type == "Thema"
-                //       select n.value).ToList();
-                //if (qry.Count > 0) row.Theme = qry[0];
-
-                //qry = (
-                //    from datacontract.poiValueGroup n in poi.labels
-                //    select n.value).ToList();
-                //row.Label = string.Join(", ", qry.ToArray());
-
-                //adres = poi.location.address;
-                //if (adres != null)
-                //{
-                //    row.Straat = adres.street;
-                //    row.Huisnummer = adres.streetnumber;
-                //    row.Postcode = adres.postalcode;
-                //    row.Gemeente = adres.municipality;
-                //}
-
-                //InteressantePlaatsList.Add(new DataRowSearchPlaats()
-                //{
-                //    id = poi.id,
-                //    Theme = row.Theme,
-                //    Category = row.Category,
-                //    Type = row.Type,
-                //    Label = row.Label,
-                //    Omschrijving = poi.description.value,
-                //    Straat = row.Straat,
-                //    Huisnummer = row.Huisnummer,
-                //    busnr = null,
-                //    Gemeente = row.Gemeente,
-                //    Postcode = row.Postcode,
-                //});
-
-                //InteressantePlaatsList.Add(row);
             }
-            //QueuedTask.Run(() =>
-            //{
-            //    InteressantePlaatsList.Add(new DataRowSearchPlaats()
-            //    {
-            //        id = 1011,
-            //        Theme = "test",
-            //        Category = "test",
-            //        Type = "test",
-            //        Label = "test",
-            //        Omschrijving = "test",
-            //        Straat = "test",
-            //        Huisnummer = "test",
-            //        busnr = "test",
-            //        Gemeente = "test",
-            //        Postcode = "test",
-            //    });
-            //});
 
            
         }
@@ -420,7 +313,7 @@ namespace GeoPunt.Dockpanes
                     datacontract.poiMaxResponse poiData = null;
 
                     //input
-                    string themeCode = "";
+                    string themeCode = SelectedThemeListString;
                     string catCode = SelectedCategoriesListString;
                     string poiTypeCode = "";
                     string keyWord = "";

@@ -166,8 +166,9 @@ namespace GeoPunt.DataHandler
         {
             //setQueryValues(q, c, Clustering, true, theme, category, POItype, srs, id, niscode);
             qryValues.Clear();
-            MessageBox.Show($@"cat:: {category}");
+            MessageBox.Show($@"cat:: {category} || theme:: {theme}");
             qryValues.Add("category", category);
+            qryValues.Add("theme", theme);
             client.QueryString = qryValues;
 
             string json = client.DownloadString(baseUrl);
