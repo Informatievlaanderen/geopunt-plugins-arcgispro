@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -161,6 +162,16 @@ namespace GeoPunt.Dockpanes
                 GeocodeUtils.UpdateMapOverlayMapPoint(mapPoint, MapView.Active, true);
             }
         }
+
+        private CIMPointSymbol CreatePoinSymbol(System.Drawing.Color color, double size)
+        {
+            var pointSymbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.CreateColor(color), size, SimpleMarkerStyle.Square);
+            pointSymbol.UseRealWorldSymbolSizes = true;
+            var marker = pointSymbol.SymbolLayers[0] as CIMVectorMarker;
+            var polygonSymbol = marker.MarkerGraphics[0].Symbol as CIMPolygonSymbol;
+            polygonSymbol.SymbolLayers[0] = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlackRGB, 0, SimpleLineStyle.Null);
+            return pointSymbol;
+        }
         private void createGrapicAndZoomTo(string capakeyResponse, datacontract.geojson Geom)
         {
             //IRgbColor inClr = new RgbColorClass() { Red = 0, Blue = 100, Green = 0 }; ;
@@ -211,6 +222,8 @@ namespace GeoPunt.Dockpanes
                         //MessageBox.Show($@"x ::: {b[0]} || y ::: {b[1]}");
 
                         MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
+                        //MapPolygoneFromPolygone = PolygonBuilderEx.CreatePolygon()
+                        
                         LisPointsFromPolygones.Add(MapPointFromPolygone);
 
                         //foreach (var c in b)
@@ -220,7 +233,78 @@ namespace GeoPunt.Dockpanes
                     }
                 }
 
-                updateListPointFromPolygone();
+                //List<MapPoint> list = new List<MapPoint>();
+                //var pointSymbol = CreatePoinSymbol(Color.FromArgb(255, 0, 255, 255), 10.0);
+                //MapPoint point = MapPointBuilder.CreateMapPoint(centerPoint.X + dx, centerPoint.Y + dy, sr);
+                //for (int Row = 0; Row < quadrant; ++Row)
+                //{
+                //    for (int Col = 0; Col < quadrant; ++Col)
+                //    {
+                //        list.Add(point);
+                //        //Graphics.Add(mapView.AddOverlay(point, pointSymbol.MakeSymbolReference()));
+                //        point = MapPointBuilder.CreateMapPoint(point.X + dx, point.Y, sr);
+                //        list.Add(point);
+                //    }
+
+                //    point = MapPointBuilder.CreateMapPoint(centerPoint.X + dx, point.Y + dy, sr);
+                //}
+
+                //ArcGIS.Core.CIM.CIMSymbolReference symbol = null;
+                //symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.BlueRGB, 10.0, SimpleMarkerStyle.Circle);
+
+                //other
+
+
+
+                QueuedTask.Run(() =>
+                {
+                    //Build geometry
+                    //List<Coordinate2D> plyCoords = new List<Coordinate2D>();
+                    //plyCoords.Add(new Coordinate2D(1, 7));
+                    //plyCoords.Add(new Coordinate2D(2, 7));
+                    //plyCoords.Add(new Coordinate2D(2, 6.7));
+                    //plyCoords.Add(new Coordinate2D(3, 6.7));
+                    //plyCoords.Add(new Coordinate2D(3, 6.1));
+                    //plyCoords.Add(new Coordinate2D(1, 6.1));
+                    ////At 2.x - Polygon poly = PolygonBuilder.CreatePolygon(plyCoords);
+                    //ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(plyCoords);
+
+                    ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygones);
+                    
+
+                    //Set symbolology, create and add element to layout
+                    CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
+                    CIMPolygonSymbol polySym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
+                    //At 2.x - GraphicElement polyElm = LayoutElementFactory.Instance.CreatePolygonGraphicElement(layout, poly, polySym);
+                    //         polyElm.SetName("New Polygon"); 
+
+                    MapView.Active.AddOverlay(poly,polySym.MakeSymbolReference());
+                    MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+
+
+                    //GraphicElement polyElm = ElementFactory.Instance.CreateGraphicElement(layout, poly, polySym, "New Polygon");
+                });
+
+
+
+
+
+                //QueuedTask.Run(() => {
+
+                //    var pointSymbol = CreatePoinSymbol(System.Drawing.Color.FromArgb(255, 0, 255, 255), 10.0);
+
+                //    ArcGIS.Core.Geometry.Multipoint multiPoint = MultipointBuilder.CreateMultipoint(LisPointsFromPolygones);
+                //    MapView.Active.AddOverlay(multiPoint, pointSymbol.MakeSymbolReference());
+
+                //});
+
+
+                //updateListPointFromPolygone();
+
+
+
+
+
 
                 //var polygonFeatureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(
                 //        lyr => lyr.ShapeType == ArcGIS.Core.CIM.esriGeometryType.esriGeometryPolygon).FirstOrDefault();
