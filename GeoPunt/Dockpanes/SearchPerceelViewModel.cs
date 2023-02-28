@@ -3,6 +3,7 @@ using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Core.Internal.CIM;
+using ArcGIS.Core.Internal.Geometry;
 using ArcGIS.Desktop.Catalog;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Editing;
@@ -19,6 +20,7 @@ using GeoPunt.DataHandler;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -26,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
+
 
 namespace GeoPunt.Dockpanes
 {
@@ -149,49 +152,109 @@ namespace GeoPunt.Dockpanes
 
             return niscodes.First<string>();
         }
+        private ObservableCollection<MapPoint> LisPointsFromPolygones = new ObservableCollection<MapPoint>();
 
+        public void updateListPointFromPolygone()
+        {
+            foreach (MapPoint mapPoint in LisPointsFromPolygones)
+            {
+                GeocodeUtils.UpdateMapOverlayMapPoint(mapPoint, MapView.Active, true);
+            }
+        }
         private void createGrapicAndZoomTo(string capakeyResponse, datacontract.geojson Geom)
         {
             //IRgbColor inClr = new RgbColorClass() { Red = 0, Blue = 100, Green = 0 }; ;
             //IRgbColor outLine = new RgbColorClass() { Red = 0, Blue = 200, Green = 0, Transparency = 240 };
 
-            //if (Geom.type == "MultiPolygon")
-            //{
-            //    datacontract.geojsonMultiPolygon muniPolygons =
-            //                      JsonConvert.DeserializeObject<datacontract.geojsonMultiPolygon>(capakeyResponse);
+            if (Geom.type == "MultiPolygon")
+            {
+         
+                datacontract.geojsonMultiPolygon muniPolygons =
+                                  JsonConvert.DeserializeObject<datacontract.geojsonMultiPolygon>(capakeyResponse);
 
-            //    IGeometryCollection multiPoly = new GeometryBagClass();
+                //IGeometryCollection multiPoly = new GeometryBagClass();
 
-            //    clearGraphics();
-            //    foreach (datacontract.geojsonPolygon poly in muniPolygons.toPolygonList())
-            //    {
-            //        IPolygon lbPoly = geopuntHelper.geojson2esriPolygon(poly, (int)dataHandler.CRS.Lambert72);
-            //        lbPoly.SimplifyPreserveFromTo();
-            //        IGeometry prjGeom = geopuntHelper.Transform((IGeometry)lbPoly, map.SpatialReference);
+                //clearGraphics();
 
-            //        IElement muniGrapic = geopuntHelper.AddGraphicToMap(map, prjGeom, inClr, outLine, 2, true);
-            //        graphics.Add(muniGrapic);
+                foreach (datacontract.geojsonPolygon poly in muniPolygons.toPolygonList())
+                {
+                    MessageBox.Show($@"Multipolygones :: {poly}");
 
-            //        object Missing = Type.Missing;
-            //        multiPoly.AddGeometry(prjGeom, ref Missing, ref Missing);
-            //    }
-            //    view.Extent = ((IGeometryBag)multiPoly).Envelope;
-            //    view.Refresh();
-            //}
-            //else if (Geom.type == "Polygon")
-            //{
-            //    datacontract.geojsonPolygon municipalityPolygon =
-            //                JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(capakeyResponse);
-            //    IPolygon lbPoly = geopuntHelper.geojson2esriPolygon(municipalityPolygon, (int)dataHandler.CRS.Lambert72);
-            //    lbPoly.SimplifyPreserveFromTo();
-            //    IPolygon prjPoly = (IPolygon)geopuntHelper.Transform((IGeometry)lbPoly, map.SpatialReference);
-            //    view.Extent = prjPoly.Envelope;
+                    //IPolygon lbPoly = geopuntHelper.geojson2esriPolygon(poly, (int)dataHandler.CRS.Lambert72);
+                    //lbPoly.SimplifyPreserveFromTo();
+                    //IGeometry prjGeom = geopuntHelper.Transform((IGeometry)lbPoly, map.SpatialReference);
 
-            //    clearGraphics();
-            //    IElement muniGrapic = geopuntHelper.AddGraphicToMap(map, (IGeometry)prjPoly, inClr, outLine, 3, true);
-            //    graphics.Add(muniGrapic);
-            //    view.Refresh();
-            //}
+                    //IElement muniGrapic = geopuntHelper.AddGraphicToMap(map, prjGeom, inClr, outLine, 2, true);
+                    //graphics.Add(muniGrapic);
+
+                    //object Missing = Type.Missing;
+                    //multiPoly.AddGeometry(prjGeom, ref Missing, ref Missing);
+                }
+                //view.Extent = ((IGeometryBag)multiPoly).Envelope;
+                //view.Refresh();
+            }
+            else if (Geom.type == "Polygon")
+            {
+                datacontract.geojsonPolygon municipalityPolygon =
+                            JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(capakeyResponse);
+                MapPoint MapPointFromPolygone = null;
+                // NB POLYGONES
+                //MessageBox.Show($@"Polygon: nb coordinates:: {municipalityPolygon.coordinates.Count}");
+
+                foreach (var a in municipalityPolygon.coordinates)
+                {
+                    // NB POINTS MAP
+                    //MessageBox.Show($@"aa: nb points:: {a.Count}");
+                    foreach (var b in a)
+                    {
+                        // X & Y
+                        //MessageBox.Show($@"x ::: {b[0]} || y ::: {b[1]}");
+
+                        MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
+                        LisPointsFromPolygones.Add(MapPointFromPolygone);
+
+                        //foreach (var c in b)
+                        //{
+                        //    MessageBox.Show($@"cc ::: {c} || {c.ToString()} || {c.GetType}");
+                        //}
+                    }
+                }
+
+                updateListPointFromPolygone();
+
+                //var polygonFeatureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(
+                //        lyr => lyr.ShapeType == ArcGIS.Core.CIM.esriGeometryType.esriGeometryPolygon).FirstOrDefault();
+
+                //var createOperation = new EditOperation()
+                //{
+                //    Name = "Create polygons",
+                //    SelectNewFeatures = false
+                //};
+
+                //var newPolygon = GeometryEngine.Instance.ConvexHull(polylineBuilder.ToGeometry()) as Polygon;
+
+                //createOperation.Create(polygonFeatureLayer, newPolygon);
+                //createOperation.ExecuteAsync();
+
+
+
+
+
+
+
+
+
+
+                //IPolygon lbPoly = geopuntHelper.geojson2esriPolygon(municipalityPolygon, (int)dataHandler.CRS.Lambert72);
+                //lbPoly.SimplifyPreserveFromTo();
+                //IPolygon prjPoly = (IPolygon)geopuntHelper.Transform((IGeometry)lbPoly, map.SpatialReference);
+                //view.Extent = prjPoly.Envelope;
+
+                //clearGraphics();
+                //IElement muniGrapic = geopuntHelper.AddGraphicToMap(map, (IGeometry)prjPoly, inClr, outLine, 3, true);
+                //graphics.Add(muniGrapic);
+                //view.Refresh();
+            }
         }
 
         public ICommand CmdZoomGemeente
