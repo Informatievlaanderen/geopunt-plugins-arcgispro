@@ -1,11 +1,16 @@
-﻿using ArcGIS.Desktop.Framework.Dialogs;
+﻿using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Framework.Dialogs;
+using ArcGIS.Desktop.Internal.Framework.Controls;
+using ArcGIS.Desktop.Internal.Mapping.TOC;
 using GeoPunt.Share;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +20,7 @@ namespace GeoPunt.DataHandler
     {
         public WebClient client;
         NameValueCollection qryValues;
-        string baseUrl = "http://poi.api.geopunt.be/v1/core";
+        string baseUrl = "https://poi.api.geopunt.be/v1/core";
 
         public poi(string proxyUrl, int port, int timeout)
         {
@@ -164,12 +169,36 @@ namespace GeoPunt.DataHandler
         public datacontract.poiMaxResponse getMaxmodel(string q, int c, bool Clustering, string theme, string category,
             string POItype, CRS srs, int? id, string niscode, string bbox)
         {
-            //setQueryValues(q, c, Clustering, true, theme, category, POItype, srs, id, niscode);
-            qryValues.Clear();
             MessageBox.Show($@"cat:: {category} || theme:: {theme}");
-            qryValues.Add("category", category);
-            qryValues.Add("theme", theme);
-            client.QueryString = qryValues;
+
+            if (theme == "Welzijn, gezondheid en gezin") { theme = "WelzijnGezondheidEnGezin"; };
+            if (theme == "Cultuur, sport en toerisme") { theme = "CultuurSportEnToerisme"; };
+            if (theme == "Natuur en milieu") { theme = "NatuurEnMilieu"; };
+            if (theme == "Bouwen en wonen") { theme = "BouwenEnWonen"; };
+
+            if (category == "Transport over land") { category = "TransportLand"; };
+            if (category == "Zorg en gezondheid") { category = "ZorgEnGezondheid"; };
+            if (category == "Kind en gezin") { category = "KindEnGezin"; };
+            if (category == "GPBV-installaties industrie") { category = "GPBVInstallatiesIndustrie"; };
+            if (category == "GPBV-installaties veeteelt") { category = "GPBVInstallatiesVeeteelt"; };
+            if (category == "Lager onderwijs") { category = "LagerOnderwijs"; };
+            if (category == "Secundair onderwijs") { category = "SecundairOnderwijs"; };
+            if (category == "Hoger onderwijs") { category = "HogerOnderwijs"; };
+            if (category == "Deeltijds kunstonderwijs") { category = "DeeltijdsKunstonderwijs"; };
+
+            client.QueryString.Clear();
+            client.QueryString.Add("theme", theme);
+            client.QueryString.Add("maxcount", "1000");
+            client.QueryString.Add("clustering", "false");
+            client.QueryString.Add("region", niscode);
+            client.QueryString.Add("category", category);
+
+            Debug.WriteLine("MY PARAMETERS: ");
+            foreach (var item in client.QueryString)
+            {
+                Debug.WriteLine(item.ToString());
+            }
+            
 
             string json = client.DownloadString(baseUrl);
 

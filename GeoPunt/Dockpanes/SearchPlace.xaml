@@ -19,7 +19,7 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
-      <RowDefinition Height="150px"/>
+      <RowDefinition Height="250px"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
@@ -44,7 +44,7 @@
             <CheckBox Grid.Row="0" Grid.ColumnSpan="2" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
 
             <TextBlock Grid.Row="1" Text="Gemeente:"/>
-            <ComboBox ItemsSource="{Binding GemeenteList}" Grid.Row="1" Grid.Column="1" />
+            <ComboBox ItemsSource="{Binding GemeenteList}" SelectedItem="{Binding SelectedGemeenteList}" Grid.Row="1" Grid.Column="1" />
 
             <TextBlock Grid.Row="2" Text="Thema:"/>
             <ComboBox ItemsSource="{Binding ThemeListString}" SelectedItem="{Binding SelectedThemeListString}" Grid.Row="2" Grid.Column="1" />
@@ -53,7 +53,7 @@
             <ComboBox ItemsSource="{Binding CategoriesListString}" SelectedItem="{Binding SelectedCategoriesListString}" Grid.Row="3" Grid.Column="1" />
 
             <TextBlock Grid.Row="4" Text="Type:"/>
-            <ComboBox ItemsSource="{Binding TypesListString}" SelectedItem="{Binding SelectedTypesListString}" Grid.Row="4" Grid.Column="1" />
+            <ComboBox ItemsSource="{Binding TypesListString}" SelectedItem="{Binding SelectedTypesListString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" />
 
             <TextBlock Grid.Row="5" Text="Zoekterm:"/>
             <TextBox Grid.Row="5" Grid.Column="1" />

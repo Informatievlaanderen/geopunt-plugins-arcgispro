@@ -58,6 +58,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private string _selectedGemeenteList;
+        public string SelectedGemeenteList
+        {
+            get { return _selectedGemeenteList; }
+            set
+            {
+                SetProperty(ref _selectedGemeenteList, value);
+            }
+        }
+
         MapPoint MapPointSelectedAddress = null;
         DataHandler.adresLocation adresLocation;
         public void updateCurrentMapPoint(string query, int count)
@@ -181,10 +191,30 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedCategoriesListString, value);
-                TypesList = poiDH.listPOItypes(_selectedCategoriesListString).categories;
+                TypesList = poiDH.listPOItypes(SelectedThemeListString, _selectedCategoriesListString).categories;
                 TypesListString = (from n in TypesList orderby n.value select n.value).ToList<string>();
                 TypesListString.Insert(0, "");
+                if(_selectedCategoriesListString == "")
+                {
+                    TypesListString = new List<string>();
+                }
+                MessageBox.Show($@"count list types:: {TypesListString.Count}");
+                SelectedTypesListString = "testt";
+                if (TypesListString.Count == 1)
+                {
+                    SelectedTypesListString = "No types for this category";
+                }
                 //MessageBox.Show($@"Selected: {_selectedThemeListString} || count: {CategoriesList.Count}");
+            }
+        }
+
+        private String _selectedTypesListString;
+        public String SelectedTypesListString
+        {
+            get { return _selectedTypesListString; }
+            set
+            {
+                SetProperty(ref _selectedTypesListString, value);                
             }
         }
 
@@ -293,6 +323,20 @@ namespace GeoPunt.Dockpanes
            
         }
 
+        private string municipality2nis(string muniName)
+        {
+            if (muniName == null || muniName == "") return "";
+
+            var niscodes = (
+                from n in municipalities.municipalities
+                where n.municipalityName == muniName
+                select n.municipalityCode);
+
+            if (niscodes.Count() == 0) return "";
+
+            return niscodes.First<string>();
+        }
+
         private void zoomToQuery()
         {
             QueuedTask.Run(() =>
@@ -318,6 +362,7 @@ namespace GeoPunt.Dockpanes
                     string poiTypeCode = "";
                     string keyWord = "";
                     bool cluster = false;
+                    string nis;
 
                     //boundingBox extent;
                     //if (extentCkb.Checked)
@@ -332,10 +377,11 @@ namespace GeoPunt.Dockpanes
                     //    nis = municipality2nis(gemeenteCbx.Text);
                     //    extent = null;
                     //}
-                    int count = 132;
+                    int count = 1000;
+                    nis = municipality2nis(SelectedGemeenteList);
 
                     poiData = poiDH.getMaxmodel(keyWord, count, cluster, themeCode, catCode, poiTypeCode,
-                    DataHandler.CRS.WGS84, null, null, null);
+                    DataHandler.CRS.WGS84, null, nis, null);
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
 
