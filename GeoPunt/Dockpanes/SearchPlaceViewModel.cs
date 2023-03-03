@@ -52,7 +52,7 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedInteressantePlaatsList, value);
                 //string var = _selectedInteressantePlaatsList.Straat;
                 string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
-                MessageBox.Show($@"selected ip: {var}");
+                //MessageBox.Show($@"selected ip: {var}");
                 updateCurrentMapPoint(var,1);
                 
             }
@@ -198,7 +198,7 @@ namespace GeoPunt.Dockpanes
                 {
                     TypesListString = new List<string>();
                 }
-                MessageBox.Show($@"count list types:: {TypesListString.Count}");
+                //MessageBox.Show($@"count list types:: {TypesListString.Count}");
                 SelectedTypesListString = "testt";
                 if (TypesListString.Count == 1)
                 {
@@ -343,7 +343,7 @@ namespace GeoPunt.Dockpanes
             {
                 var mapView = MapView.Active;
                 var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 3));
+                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
             });
         }
 
@@ -385,7 +385,7 @@ namespace GeoPunt.Dockpanes
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
 
-                    MessageBox.Show($@"count pois: {pois.Count}");
+                    MessageBox.Show($@"{pois.Count} interesting places found in {SelectedGemeenteList}");
 
                     updateDataGrid(pois);
                 });

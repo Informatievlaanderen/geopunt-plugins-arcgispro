@@ -476,12 +476,6 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedStreet, value);
                 updateCurrentMapPoint(_selectedStreet, 1);
                 isRemoveMarkeer = false;
-                //IsSelectedFavouriteList = true;
-
-                //SelectedStreetFavourite = null;
-
-
-                //SelectedStreetMarkeer = null;
 
                 IsSelectedFavouriteList = true;
             }
@@ -496,11 +490,6 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedStreetFavourite, value);
                 updateCurrentMapPoint(_selectedStreetFavourite, 1);
                 isRemoveMarkeer = false;
-
-                //SelectedStreet = null;
-
-                //SelectedStreetMarkeer = null;
-
                 IsSelectedFavouriteList = false;
             }
         }
@@ -514,11 +503,6 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedStreetMarkeer, value);
                 updateCurrentMapPoint(_selectedStreetMarkeer, 1);
                 isRemoveMarkeer = true;
-
-                //SelectedStreet = null;
-
-                //SelectedStreetFavourite = null;
-
                 IsSelectedFavouriteList = false;
             }
         }
@@ -554,17 +538,14 @@ namespace GeoPunt.Dockpanes
                 
             }
             MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
-            //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
         }
         private void zoomToQuery()
         {
             QueuedTask.Run(() =>
             {
                 var mapView = MapView.Active;
-                //var pt = MapPointBuilderEx.CreateMapPoint(x, y);
-                //MapPointSelectedAddress = pt;
                 var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 3));
+                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
             });
         }
 

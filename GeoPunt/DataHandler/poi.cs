@@ -169,7 +169,7 @@ namespace GeoPunt.DataHandler
         public datacontract.poiMaxResponse getMaxmodel(string q, int c, bool Clustering, string theme, string category,
             string POItype, CRS srs, int? id, string niscode, string bbox)
         {
-            MessageBox.Show($@"cat:: {category} || theme:: {theme}");
+            //MessageBox.Show($@"cat:: {category} || theme:: {theme}");
 
             if (theme == "Welzijn, gezondheid en gezin") { theme = "WelzijnGezondheidEnGezin"; };
             if (theme == "Cultuur, sport en toerisme") { theme = "CultuurSportEnToerisme"; };

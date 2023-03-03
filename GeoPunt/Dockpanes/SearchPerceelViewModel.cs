@@ -95,7 +95,7 @@ namespace GeoPunt.Dockpanes
         
         private void gemeenteSelectionChange()
         {
-            MessageBox.Show($@"gemeente Selection change");
+            //MessageBox.Show($@"gemeente Selection change");
             string gemeente = SelectedListGemeente;
             string niscode = municipality2nis(gemeente);
 
@@ -137,7 +137,7 @@ namespace GeoPunt.Dockpanes
 
         public void departmentSelectionChange()
         {
-            MessageBox.Show($@"department Selection change");
+            //MessageBox.Show($@"department Selection change");
         }
 
         private string municipality2nis(string muniName)

@@ -48,17 +48,6 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        //private bool _isCheckedHomeNumber = false;
-        //public bool IsCheckedHomeNumber
-        //{
-        //    get { return _isCheckedHomeNumber; }
-        //    set
-        //    {
-        //        SetProperty(ref _isCheckedHomeNumber, value, () => _isCheckedHomeNumber);
-        //        QueuedTask.Run(() => RefreshLayerHomeNumber(IsCheckedHomeNumber));
-        //    }
-        //}
-
         private bool _isCheckedOther = false;
         public bool IsCheckedOther
         {
@@ -94,13 +83,6 @@ namespace GeoPunt.Dockpanes
             var searchLayerOther = map.GetLayersAsFlattenedList().OfType<WMSLayer>().Where(l => l.Name.Equals(layerOther, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
             var list = map.GetLayersAsFlattenedList().ToList();
-            foreach(var layer in list)
-            {
-                //MessageBox.Show($@"{layer.Name}");
-                //MessageBox.Show($@"!!!!!!!!!!!!!!!!!  {layer.Name} - {layer.GetType()} - {layer.MapLayerType} - {layer} !!!!!!!!!!!!!!!!!");               
-                Debug.WriteLine($@"!!!!!!!!!!!!!!!!!  {layer.Name} - {layer.GetType()} - {layer.MapLayerType} - {layer} !!!!!!!!!!!!!!!!!");               
-            }
-
 
             if (searchLayerOther == null)
             {
