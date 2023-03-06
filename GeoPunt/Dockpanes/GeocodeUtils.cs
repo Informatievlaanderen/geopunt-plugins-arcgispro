@@ -91,6 +91,7 @@ namespace GeoPunt.Dockpanes
         private static ObservableCollection<System.IDisposable> _overlayObject = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectMarkeer = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectMapPoint = new ObservableCollection<System.IDisposable>();
+        private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
 
         /// <summary>
         /// Add a point to the specified mapview
@@ -205,6 +206,45 @@ namespace GeoPunt.Dockpanes
 
         }
 
+        public static async void AddToMapOverlayMapPerceel(ArcGIS.Core.Geometry.Polygon polygon, CIMPolygonSymbol polygonSym)
+        {
+            //ArcGIS.Core.CIM.CIMPointSymbol symbol = null;
+
+            //await QueuedTask.Run(() =>
+            //{
+            //    // Construct point symbol
+            //    symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.BlueRGB, 10.0, SimpleMarkerStyle.Circle);
+            //    //if (isFavourite)
+            //    //{
+            //    //    symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.RedRGB, 10.0, SimpleMarkerStyle.Star);
+            //    //}
+            //});
+
+            //Get symbol reference from the symbol 
+            //CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
+
+            await QueuedTask.Run(() =>
+            {
+
+
+                //if (!isRemove)
+                //{
+                //    //MessageBox.Show("drawing");
+                //    _overlayObjectPerceel.Add(mapView.AddOverlay(polygon, symbolReference));
+                //    return;
+                //}
+
+                ////MessageBox.Show("removing");
+                //RemoveFromMapOverlayPerceel(mapView);
+
+                
+                _overlayObjectPerceel.Add(MapView.Active.AddOverlay(polygon, polygonSym.MakeSymbolReference()));
+
+
+            });
+
+        }
+
         /// <summary>
         /// All-in-one. Update the graphic on the overlay if it was previously added
         /// otherwise, make it and add it
@@ -226,6 +266,11 @@ namespace GeoPunt.Dockpanes
         {
             AddToMapOverlayMapPoint(point, mapView, isFavourite, isRemove);
         }
+
+        //public static void UpdateMapOverlayPerceel(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
+        //{
+        //    AddToMapOverlayMapPerceel(point, mapView, isFavourite, isRemove);
+        //}
 
         /// <summary>
         /// Remove the Point Graphic from the specified mapview
@@ -270,6 +315,21 @@ namespace GeoPunt.Dockpanes
                     overlay.Dispose();
                 }
                 _overlayObjectMapPoint = new ObservableCollection<System.IDisposable>();
+                //MessageBox.Show($@"{_overlayObject.Count}");
+                //_overlayObject.Dispose();
+                //_overlayObject = null;
+            }
+        }
+
+        public static void RemoveFromMapOverlayPerceel()
+        {
+            if (_overlayObjectPerceel != null)
+            {
+                foreach (var overlay in _overlayObjectPerceel)
+                {
+                    overlay.Dispose();
+                }
+                _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
                 //MessageBox.Show($@"{_overlayObject.Count}");
                 //_overlayObject.Dispose();
                 //_overlayObject = null;

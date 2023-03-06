@@ -135,6 +135,16 @@ namespace GeoPunt.Dockpanes
                 GeocodeUtils.UpdateMapOverlayMapPoint(mapPoint, MapView.Active, true);
             }
         }
+
+        private void zoomToQuery()
+        {
+            QueuedTask.Run(() =>
+            {
+                var mapView = MapView.Active;
+                var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 50);
+                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+            });
+        }
         public ICommand CmdClose
         {
             get
@@ -160,6 +170,17 @@ namespace GeoPunt.Dockpanes
                     GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
 
                     updateListBoxFavouritePoint();
+                });
+            }
+        }
+
+        public ICommand CmdZoom
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    zoomToQuery();
                 });
             }
         }

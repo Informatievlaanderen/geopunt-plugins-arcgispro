@@ -25,6 +25,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -153,6 +154,21 @@ namespace GeoPunt.Dockpanes
 
             return niscodes.First<string>();
         }
+
+        private string department2code(string depName)
+        {
+            if (depName == null || depName == "") return "";
+
+            var depcodes = (
+                from n in departments
+                where n.departmentName == depName
+                select n.departmentCode);
+
+            if (depcodes.Count() == 0) return "";
+
+            return depcodes.First<string>();
+        }
+
         private ObservableCollection<MapPoint> LisPointsFromPolygones = new ObservableCollection<MapPoint>();
 
         public void updateListPointFromPolygone()
@@ -172,10 +188,25 @@ namespace GeoPunt.Dockpanes
             polygonSymbol.SymbolLayers[0] = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlackRGB, 0, SimpleLineStyle.Null);
             return pointSymbol;
         }
+
+        public static void RemoveFromMapOverlayPerceel()
+        {
+            if (_overlayObjectPerceel != null)
+            {
+                foreach (var overlay in _overlayObjectPerceel)
+                {
+                    overlay.Dispose();
+                }
+                _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
+            }
+        }
+
+        private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
+
+        ArcGIS.Core.Geometry.Polygon lastPoly;
         private void createGrapicAndZoomTo(string capakeyResponse, datacontract.geojson Geom)
         {
-            //IRgbColor inClr = new RgbColorClass() { Red = 0, Blue = 100, Green = 0 }; ;
-            //IRgbColor outLine = new RgbColorClass() { Red = 0, Blue = 200, Green = 0, Transparency = 240 };
+            
 
             if (Geom.type == "MultiPolygon")
             {
@@ -254,10 +285,24 @@ namespace GeoPunt.Dockpanes
 
                 //other
 
-
+                
 
                 QueuedTask.Run(() =>
                 {
+                    if (_overlayObjectPerceel.Count > 0)
+                    {
+                        
+                        foreach (var overlay in _overlayObjectPerceel)
+                        {
+                            overlay.Dispose();
+                        }
+                        _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
+                        
+                    }
+
+                    ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygones);
+                    //lastPoly = poly;
+
                     //Build geometry
                     //List<Coordinate2D> plyCoords = new List<Coordinate2D>();
                     //plyCoords.Add(new Coordinate2D(1, 7));
@@ -269,8 +314,7 @@ namespace GeoPunt.Dockpanes
                     ////At 2.x - Polygon poly = PolygonBuilder.CreatePolygon(plyCoords);
                     //ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(plyCoords);
 
-                    ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygones);
-                    
+
 
                     //Set symbolology, create and add element to layout
                     CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
@@ -278,9 +322,17 @@ namespace GeoPunt.Dockpanes
                     //At 2.x - GraphicElement polyElm = LayoutElementFactory.Instance.CreatePolygonGraphicElement(layout, poly, polySym);
                     //         polyElm.SetName("New Polygon"); 
 
-                    MapView.Active.AddOverlay(poly,polySym.MakeSymbolReference());
+                    //if(_overlayObjectPerceel == null)
+                    //{
+                    //    _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
+                    //}
+
+                    
+
+                    _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly,polySym.MakeSymbolReference()));
                     MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
 
+                    MessageBox.Show($@"count:: {_overlayObjectPerceel.Count}");
 
                     //GraphicElement polyElm = ElementFactory.Instance.CreateGraphicElement(layout, poly, polySym, "New Polygon");
                 });
@@ -347,7 +399,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    MessageBox.Show($@"Button CmdZoomGemeente click");
+                    //MessageBox.Show($@"Button CmdZoomGemeente click");
 
                     string gemeente = SelectedListGemeente;
                     string niscode = municipality2nis(gemeente);
@@ -391,6 +443,27 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
                     MessageBox.Show($@"Button CmdZoomDepartment click");
+                    string gemeente = SelectedListGemeente;
+                    string niscode = municipality2nis(gemeente);
+
+                    string department = SelectedListDepartments;
+                    string depCode = department2code(department);
+
+                    if (niscode == "" || niscode == null) return;
+
+
+                    //datacontract.municipality municipality = capakey.getMunicipalitiy(int.Parse(niscode),
+                    //                                        DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                    //datacontract.geojson municipalityGeom = JsonConvert.DeserializeObject<datacontract.geojson>(municipality.geometry.shape);
+
+                    //createGrapicAndZoomTo(municipality.geometry.shape, municipalityGeom);
+
+
+                    datacontract.department dep = capakey.getDepartment(int.Parse(niscode), int.Parse(depCode),
+                                                        DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                    datacontract.geojson depGeom = JsonConvert.DeserializeObject<datacontract.geojson>(dep.geometry.shape);
+
+                    createGrapicAndZoomTo(dep.geometry.shape, depGeom);
                 });
             }
         }
