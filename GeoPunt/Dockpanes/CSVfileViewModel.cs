@@ -24,7 +24,7 @@ namespace GeoPunt.Dockpanes
     internal class CSVfileViewModel : DockPane
     {
 
-        private string _textFilePlacement;
+        private string _textFilePlacement = "< input CSV-file >";
         public string TextFilePlacement
         {
             get { return _textFilePlacement; }
@@ -34,38 +34,45 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        //private ObservableCollection<string> ListFormats = new ObservableCollection<string>(new List<string>() {
-        //    "Aalst",
-        //    "Kruisem"
-        //});
-        //public ObservableCollection<string> ListCities
-        //{
-        //    get { return _listCities; }
-        //    set
-        //    {
-        //        SetProperty(ref _listCities, value);
-        //    }
-        //}
+        private ObservableCollection<string> _listFormats = new ObservableCollection<string>(new List<string>() {
+            "UTF-8",
+            "ANSI"
+        });
+        public ObservableCollection<string> ListFormats
+        {
+            get { return _listFormats; }
+            set
+            {
+                SetProperty(ref _listFormats, value);
+            }
+        }
 
-        //private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
-        //    "Aalst",
-        //    "Kruisem"
-        //});
-        //public ObservableCollection<string> ListCities
-        //{
-        //    get { return _listCities; }
-        //    set
-        //    {
-        //        SetProperty(ref _listCities, value);
-        //    }
-        //}
+        private ObservableCollection<string> _listSeparators = new ObservableCollection<string>(new List<string>() {
+            "Puntcomma",
+            "Comma",
+            "Spatie",
+            "Tab",
+            "Ander teken"
+        });
+        public ObservableCollection<string> ListSeparators
+        {
+            get { return _listSeparators; }
+            set
+            {
+                SetProperty(ref _listSeparators, value);
+            }
+        }
 
 
 
 
         private const string _dockPaneID = "GeoPunt_Dockpanes_CSVfile";
 
-        protected CSVfileViewModel() { }
+        protected CSVfileViewModel() 
+        {
+            //DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+           
+        }
 
         /// <summary>
         /// Show the DockPane.

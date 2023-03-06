@@ -267,8 +267,6 @@ namespace GeoPunt.Dockpanes
                     _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly,polySym.MakeSymbolReference()));
                     MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
 
-                    Debug.WriteLine($@"{LisPointsFromPolygones.Count}");
-                    MessageBox.Show($@"count:: {_overlayObjectPerceel.Count}");
                 });
             }
         }
