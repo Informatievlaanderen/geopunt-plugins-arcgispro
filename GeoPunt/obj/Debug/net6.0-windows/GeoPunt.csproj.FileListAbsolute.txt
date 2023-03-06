@@ -26,3 +26,5 @@ D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchP
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPlace.baml
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPerceel.g.cs
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPerceel.baml
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\CSVfile.g.cs
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\CSVfile.baml

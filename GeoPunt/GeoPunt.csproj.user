@@ -7,6 +7,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Dockpanes\CSVfile.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Dockpanes\PointMapDockpane.xaml">
       <SubType>Designer</SubType>
     </Page>

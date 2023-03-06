@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -204,7 +205,7 @@ namespace GeoPunt.Dockpanes
         private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
 
         ArcGIS.Core.Geometry.Polygon lastPoly;
-        private void createGrapicAndZoomTo(string capakeyResponse, datacontract.geojson Geom)
+        private async void createGrapicAndZoomTo(string capakeyResponse, datacontract.geojson Geom)
         {
             
 
@@ -214,84 +215,38 @@ namespace GeoPunt.Dockpanes
                 datacontract.geojsonMultiPolygon muniPolygons =
                                   JsonConvert.DeserializeObject<datacontract.geojsonMultiPolygon>(capakeyResponse);
 
-                //IGeometryCollection multiPoly = new GeometryBagClass();
-
-                //clearGraphics();
-
                 foreach (datacontract.geojsonPolygon poly in muniPolygons.toPolygonList())
                 {
                     MessageBox.Show($@"Multipolygones :: {poly}");
 
-                    //IPolygon lbPoly = geopuntHelper.geojson2esriPolygon(poly, (int)dataHandler.CRS.Lambert72);
-                    //lbPoly.SimplifyPreserveFromTo();
-                    //IGeometry prjGeom = geopuntHelper.Transform((IGeometry)lbPoly, map.SpatialReference);
-
-                    //IElement muniGrapic = geopuntHelper.AddGraphicToMap(map, prjGeom, inClr, outLine, 2, true);
-                    //graphics.Add(muniGrapic);
-
-                    //object Missing = Type.Missing;
-                    //multiPoly.AddGeometry(prjGeom, ref Missing, ref Missing);
                 }
-                //view.Extent = ((IGeometryBag)multiPoly).Envelope;
-                //view.Refresh();
             }
             else if (Geom.type == "Polygon")
             {
                 datacontract.geojsonPolygon municipalityPolygon =
                             JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(capakeyResponse);
                 MapPoint MapPointFromPolygone = null;
-                // NB POLYGONES
-                //MessageBox.Show($@"Polygon: nb coordinates:: {municipalityPolygon.coordinates.Count}");
+                LisPointsFromPolygones.Clear();
+
 
                 foreach (var a in municipalityPolygon.coordinates)
                 {
-                    // NB POINTS MAP
-                    //MessageBox.Show($@"aa: nb points:: {a.Count}");
                     foreach (var b in a)
                     {
-                        // X & Y
-                        //MessageBox.Show($@"x ::: {b[0]} || y ::: {b[1]}");
 
                         MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
-                        //MapPolygoneFromPolygone = PolygonBuilderEx.CreatePolygon()
                         
                         LisPointsFromPolygones.Add(MapPointFromPolygone);
 
-                        //foreach (var c in b)
-                        //{
-                        //    MessageBox.Show($@"cc ::: {c} || {c.ToString()} || {c.GetType}");
-                        //}
                     }
                 }
 
-                //List<MapPoint> list = new List<MapPoint>();
-                //var pointSymbol = CreatePoinSymbol(Color.FromArgb(255, 0, 255, 255), 10.0);
-                //MapPoint point = MapPointBuilder.CreateMapPoint(centerPoint.X + dx, centerPoint.Y + dy, sr);
-                //for (int Row = 0; Row < quadrant; ++Row)
-                //{
-                //    for (int Col = 0; Col < quadrant; ++Col)
-                //    {
-                //        list.Add(point);
-                //        //Graphics.Add(mapView.AddOverlay(point, pointSymbol.MakeSymbolReference()));
-                //        point = MapPointBuilder.CreateMapPoint(point.X + dx, point.Y, sr);
-                //        list.Add(point);
-                //    }
-
-                //    point = MapPointBuilder.CreateMapPoint(centerPoint.X + dx, point.Y + dy, sr);
-                //}
-
-                //ArcGIS.Core.CIM.CIMSymbolReference symbol = null;
-                //symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.BlueRGB, 10.0, SimpleMarkerStyle.Circle);
-
-                //other
-
-                
-
-                QueuedTask.Run(() =>
+                await QueuedTask.Run(() =>
                 {
                     if (_overlayObjectPerceel.Count > 0)
                     {
-                        
+   
+
                         foreach (var overlay in _overlayObjectPerceel)
                         {
                             overlay.Dispose();
@@ -300,96 +255,21 @@ namespace GeoPunt.Dockpanes
                         
                     }
 
+                    
+
                     ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygones);
-                    //lastPoly = poly;
-
-                    //Build geometry
-                    //List<Coordinate2D> plyCoords = new List<Coordinate2D>();
-                    //plyCoords.Add(new Coordinate2D(1, 7));
-                    //plyCoords.Add(new Coordinate2D(2, 7));
-                    //plyCoords.Add(new Coordinate2D(2, 6.7));
-                    //plyCoords.Add(new Coordinate2D(3, 6.7));
-                    //plyCoords.Add(new Coordinate2D(3, 6.1));
-                    //plyCoords.Add(new Coordinate2D(1, 6.1));
-                    ////At 2.x - Polygon poly = PolygonBuilder.CreatePolygon(plyCoords);
-                    //ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(plyCoords);
-
-
 
                     //Set symbolology, create and add element to layout
                     CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
                     CIMPolygonSymbol polySym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
-                    //At 2.x - GraphicElement polyElm = LayoutElementFactory.Instance.CreatePolygonGraphicElement(layout, poly, polySym);
-                    //         polyElm.SetName("New Polygon"); 
-
-                    //if(_overlayObjectPerceel == null)
-                    //{
-                    //    _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
-                    //}
-
                     
 
                     _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly,polySym.MakeSymbolReference()));
                     MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
 
+                    Debug.WriteLine($@"{LisPointsFromPolygones.Count}");
                     MessageBox.Show($@"count:: {_overlayObjectPerceel.Count}");
-
-                    //GraphicElement polyElm = ElementFactory.Instance.CreateGraphicElement(layout, poly, polySym, "New Polygon");
                 });
-
-
-
-
-
-                //QueuedTask.Run(() => {
-
-                //    var pointSymbol = CreatePoinSymbol(System.Drawing.Color.FromArgb(255, 0, 255, 255), 10.0);
-
-                //    ArcGIS.Core.Geometry.Multipoint multiPoint = MultipointBuilder.CreateMultipoint(LisPointsFromPolygones);
-                //    MapView.Active.AddOverlay(multiPoint, pointSymbol.MakeSymbolReference());
-
-                //});
-
-
-                //updateListPointFromPolygone();
-
-
-
-
-
-
-                //var polygonFeatureLayer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Where(
-                //        lyr => lyr.ShapeType == ArcGIS.Core.CIM.esriGeometryType.esriGeometryPolygon).FirstOrDefault();
-
-                //var createOperation = new EditOperation()
-                //{
-                //    Name = "Create polygons",
-                //    SelectNewFeatures = false
-                //};
-
-                //var newPolygon = GeometryEngine.Instance.ConvexHull(polylineBuilder.ToGeometry()) as Polygon;
-
-                //createOperation.Create(polygonFeatureLayer, newPolygon);
-                //createOperation.ExecuteAsync();
-
-
-
-
-
-
-
-
-
-
-                //IPolygon lbPoly = geopuntHelper.geojson2esriPolygon(municipalityPolygon, (int)dataHandler.CRS.Lambert72);
-                //lbPoly.SimplifyPreserveFromTo();
-                //IPolygon prjPoly = (IPolygon)geopuntHelper.Transform((IGeometry)lbPoly, map.SpatialReference);
-                //view.Extent = prjPoly.Envelope;
-
-                //clearGraphics();
-                //IElement muniGrapic = geopuntHelper.AddGraphicToMap(map, (IGeometry)prjPoly, inClr, outLine, 3, true);
-                //graphics.Add(muniGrapic);
-                //view.Refresh();
             }
         }
 
@@ -399,8 +279,6 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    //MessageBox.Show($@"Button CmdZoomGemeente click");
-
                     string gemeente = SelectedListGemeente;
                     string niscode = municipality2nis(gemeente);
 
@@ -450,14 +328,6 @@ namespace GeoPunt.Dockpanes
                     string depCode = department2code(department);
 
                     if (niscode == "" || niscode == null) return;
-
-
-                    //datacontract.municipality municipality = capakey.getMunicipalitiy(int.Parse(niscode),
-                    //                                        DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
-                    //datacontract.geojson municipalityGeom = JsonConvert.DeserializeObject<datacontract.geojson>(municipality.geometry.shape);
-
-                    //createGrapicAndZoomTo(municipality.geometry.shape, municipalityGeom);
-
 
                     datacontract.department dep = capakey.getDepartment(int.Parse(niscode), int.Parse(depCode),
                                                         DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
