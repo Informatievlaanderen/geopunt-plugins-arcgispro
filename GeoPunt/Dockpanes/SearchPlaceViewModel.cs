@@ -18,6 +18,7 @@ using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -346,6 +347,17 @@ namespace GeoPunt.Dockpanes
                 mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
             });
         }
+        private string theme2code(string theme)
+        {
+            if (theme == null || theme == "") return "";
+
+            var themeCodes = (from n in ThemeList
+                              where n.value == theme
+                              select n.term);
+            if (themeCodes.Count() == 0) return "";
+
+            return themeCodes.First<string>();
+        }
 
         public ICommand CmdZoek
         {
@@ -357,28 +369,23 @@ namespace GeoPunt.Dockpanes
                     datacontract.poiMaxResponse poiData = null;
 
                     //input
-                    string themeCode = SelectedThemeListString;
+                    string themeCode = theme2code(SelectedThemeListString);
                     string catCode = SelectedCategoriesListString;
                     string poiTypeCode = "";
                     string keyWord = "";
                     bool cluster = false;
                     string nis;
 
-                    //boundingBox extent;
-                    //if (extentCkb.Checked)
-                    //{
-                    //    IEnvelope env = view.Extent;
-                    //    IEnvelope prjEnv = geopuntHelper.Transform((IGeometry)env, wgs).Envelope;
-                    //    extent = new boundingBox(prjEnv);
-                    //    nis = null;
-                    //}
-                    //else
-                    //{
-                    //    nis = municipality2nis(gemeenteCbx.Text);
-                    //    extent = null;
-                    //}
                     int count = 1000;
                     nis = municipality2nis(SelectedGemeenteList);
+
+                    Debug.WriteLine($@"!!!!!!!!!!!!!!!!");
+                    Debug.WriteLine($@"themeCode: {themeCode}");
+                    Debug.WriteLine($@"SelectedThemeListString: {SelectedThemeListString}");
+                    Debug.WriteLine($@"catCode: {catCode}");
+                    Debug.WriteLine($@"!!!!!!!!!!!!!!!!");
+
+
 
                     poiData = poiDH.getMaxmodel(keyWord, count, cluster, themeCode, catCode, poiTypeCode,
                     DataHandler.CRS.WGS84, null, nis, null);
