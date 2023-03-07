@@ -32,7 +32,47 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPlace";
 
-        //List<DataRowSearchPlaats> authors = new List<DataRowSearchPlaats>();
+        private bool _activeRemoveButton;
+        public bool ActiveRemoveButton
+        {
+            get { return _activeRemoveButton; }
+            set
+            {
+                SetProperty(ref _activeRemoveButton, value);
+            }
+        }
+
+        private bool _activeSaveButton = true;
+        public bool ActiveSaveButton
+        {
+            get { return _activeSaveButton; }
+            set
+            {
+                SetProperty(ref _activeSaveButton, value);
+            }
+        }
+
+        private ObservableCollection<DataRowSearchPlaats> _favouriteInteressantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
+        public ObservableCollection<DataRowSearchPlaats> FavouriteInteressantePlaatsList
+        {
+            get { return _favouriteInteressantePlaatsList; }
+            set
+            {
+                SetProperty(ref _favouriteInteressantePlaatsList, value);
+            }
+        }
+
+        private DataRowSearchPlaats _selectedFavouriteInteressantePlaatsList;
+        public DataRowSearchPlaats SelectedFavouriteInteressantePlaatsList
+        {
+            get { return _selectedFavouriteInteressantePlaatsList; }
+            set
+            {
+                SetProperty(ref _selectedFavouriteInteressantePlaatsList, value);
+                ActiveRemoveButton = true;
+                ActiveSaveButton = false;
+            }
+        }
 
         private ObservableCollection<DataRowSearchPlaats> _interessantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
         public ObservableCollection<DataRowSearchPlaats> InteressantePlaatsList
@@ -52,10 +92,14 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedInteressantePlaatsList, value);
                 //string var = _selectedInteressantePlaatsList.Straat;
-                string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
-                //MessageBox.Show($@"selected ip: {var}");
-                updateCurrentMapPoint(var,1);
-                
+                if(_selectedInteressantePlaatsList != null)
+                {
+                    string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
+                    updateCurrentMapPoint(var, 1);
+                }
+
+                ActiveRemoveButton = false;
+                ActiveSaveButton = true;
             }
         }
 
@@ -106,6 +150,7 @@ namespace GeoPunt.Dockpanes
         {
             poiDH = new DataHandler.poi(5000);
             initGui();
+            ActiveRemoveButton = false;
             //LoadCollectionData();
         }
 
@@ -139,14 +184,12 @@ namespace GeoPunt.Dockpanes
 
             if(CategoriesList.Count > 0)
             {
-                MessageBox.Show("categories > 0");
                 CategoriesListString = (from n in CategoriesList orderby n.value select n.value).ToList<string>();
                 CategoriesListString.Insert(0, "");
             }
 
             if(TypesList.Count > 0) 
             {
-                MessageBox.Show("types > 0");
                 TypesListString = (from n in TypesList orderby n select n).ToList<string>();
                 TypesListString.Insert(0, "");
             }
@@ -191,7 +234,6 @@ namespace GeoPunt.Dockpanes
                 CategoriesListString = (from n in CategoriesList orderby n.value select n.value).ToList<string>();
                 CategoriesListString.Insert(0, "");
                 TypesListString = new List<string>();
-                //MessageBox.Show($@"Selected: {_selectedThemeListString} || count: {CategoriesList.Count}");
             }
         }
 
@@ -211,23 +253,6 @@ namespace GeoPunt.Dockpanes
 
                 TypesListString = new List<string>();
                 TypesListString = poiTypeList.ToList();
-
-                MessageBox.Show($@"count types: {TypesList.Count}");
-
-                //TypesList = poiDH.listPOItypes(SelectedThemeListString, _selectedCategoriesListString).categories;
-                //TypesListString = (from n in TypesList orderby n.value select n.value).ToList<string>();
-                //TypesListString.Insert(0, "");
-                //if(_selectedCategoriesListString == "")
-                //{
-                //    TypesListString = new List<string>();
-                //}
-                ////MessageBox.Show($@"count list types:: {TypesListString.Count}");
-                //SelectedTypesListString = "testt";
-                //if (TypesListString.Count == 1)
-                //{
-                //    SelectedTypesListString = "No types for this category";
-                //}
-                //MessageBox.Show($@"Selected: {_selectedThemeListString} || count: {CategoriesList.Count}");
             }
         }
 
@@ -431,7 +456,7 @@ namespace GeoPunt.Dockpanes
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
 
-                    MessageBox.Show($@"{pois.Count} interesting places found in {SelectedGemeenteList}");
+                    //MessageBox.Show($@"{pois.Count} interesting places found in {SelectedGemeenteList}");
 
                     updateDataGrid(pois);
                 });
@@ -443,7 +468,36 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    
+                    DataRowSearchPlaats row = new DataRowSearchPlaats();
+
+                    row.id = SelectedInteressantePlaatsList.id;
+                    row.Thema = SelectedInteressantePlaatsList.Thema;
+                    row.Categorie = SelectedInteressantePlaatsList.Categorie;
+                    row.Type = SelectedInteressantePlaatsList.Type;
+                    row.Label = SelectedInteressantePlaatsList.Label;
+                    row.Omschrijving = SelectedInteressantePlaatsList.Omschrijving;
+                    row.Straat = SelectedInteressantePlaatsList.Straat;
+                    row.busnr = SelectedInteressantePlaatsList.busnr;
+                    row.Gemeente = SelectedInteressantePlaatsList.Gemeente;
+                    row.Postcode = SelectedInteressantePlaatsList.Postcode;
+                    row.Huisnummer = SelectedInteressantePlaatsList.Huisnummer;
+
+                    FavouriteInteressantePlaatsList.Add(row);
+                });
+            }
+        }
+
+        public ICommand CmdRemove
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    DataRowSearchPlaats plaatsToDelete = FavouriteInteressantePlaatsList.FirstOrDefault(m => m.id == SelectedFavouriteInteressantePlaatsList.id);
+                    if (plaatsToDelete != null)
+                    {
+                        FavouriteInteressantePlaatsList.Remove(plaatsToDelete);
+                    }
                 });
             }
         }

@@ -6,13 +6,14 @@
              xmlns:ui="clr-namespace:GeoPunt.Dockpanes"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="600" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.SearchPlaceViewModel}">
   <UserControl.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
       </ResourceDictionary.MergedDictionaries>
+      <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </ResourceDictionary>
   </UserControl.Resources>
   <Grid>
@@ -71,7 +72,7 @@
         </Grid>
 
         <Grid Grid.Row="2" >
-            <DataGrid x:Name="DataGridPlace" ItemsSource="{Binding InteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedInteressantePlaatsList}" ></DataGrid>
+            <DataGrid x:Name="DataGridPlace" IsReadOnly="true" ItemsSource="{Binding InteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedInteressantePlaatsList}" ></DataGrid>
         </Grid>
 
         <Grid Grid.Row="3" >
@@ -86,18 +87,29 @@
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" Content="Opslaan" Command="{Binding CmdSave}" />
+            <Button Grid.Column="1" Content="Opslaan" Visibility="{Binding ActiveSaveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdSave}" />
+            <Button Grid.Column="1" Content="Remove" Visibility="{Binding ActiveRemoveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdRemove}" />
             <Button Grid.Column="2" Content="Zoom" Command="{Binding CmdZoom}" />
             <Button Grid.Row="1" Grid.Column="1" Command="{Binding CmdVoeg}" Content="Voeg"/>
             <Button Grid.Row="1" Grid.Column="2" Command="{Binding CmdClose}" Content="Sluiten"/>
             <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" >Resultaten geclusterd toevoegen</CheckBox>
 
         </Grid>
-      
-      
-      
-      
-    <!--<DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
+
+        <Grid Grid.Row="4" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="Favourite list" />
+            <DataGrid Grid.Row="1" IsReadOnly="true"  ItemsSource="{Binding FavouriteInteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedFavouriteInteressantePlaatsList}" ></DataGrid>
+        </Grid>
+
+
+
+
+        <!--<DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
       <TextBlock Grid.Column="1" Text="{Binding Heading}" Style="{DynamicResource Esri_TextBlockDockPaneHeader}">
         <TextBlock.ToolTip>
           <WrapPanel Orientation="Vertical" MaxWidth="300">
