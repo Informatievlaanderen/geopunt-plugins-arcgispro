@@ -70,6 +70,48 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private string _selectedListSecties;
+        public string SelectedListSecties
+        {
+            get { return _selectedListSecties; }
+            set
+            {
+                SetProperty(ref _selectedListSecties, value);
+                sectieSelectionChange();
+            }
+        }
+
+        private List<string> _listSecties = new List<string>();
+        public List<string> ListSecties
+        {
+            get { return _listSecties; }
+            set
+            {
+                SetProperty(ref _listSecties, value);
+            }
+        }
+
+        private string _selectedListParcels;
+        public string SelectedListParcels
+        {
+            get { return _selectedListParcels; }
+            set
+            {
+                SetProperty(ref _selectedListParcels, value);
+                parcelSelectionChange();
+            }
+        }
+
+        private List<string> _listParcels = new List<string>();
+        public List<string> ListParcels
+        {
+            get { return _listParcels; }
+            set
+            {
+                SetProperty(ref _listParcels, value);
+            }
+        }
+
         private string _selectedListDepartments;
         public string SelectedListDepartments
         {
@@ -90,6 +132,7 @@ namespace GeoPunt.Dockpanes
         public SearchPerceelViewModel() 
         {
             capakey = new DataHandler.capakey(5000);
+            perceel = null;
             municipalities = capakey.getMunicipalities().municipalities;
             ListGemeente = (from n in municipalities select n.municipalityName).ToList();
         }
@@ -140,6 +183,46 @@ namespace GeoPunt.Dockpanes
         public void departmentSelectionChange()
         {
             //MessageBox.Show($@"department Selection change");
+            string gemeente = SelectedListGemeente;
+            string niscode = municipality2nis(gemeente);
+
+            string department = SelectedListDepartments;
+            string depCode = department2code(department);
+
+            List<datacontract.section> secties = capakey.getSecties(int.Parse(niscode), int.Parse(depCode)).sections;
+            ListSecties = (from n in secties select n.sectionCode).ToList();
+        }
+
+        public void sectieSelectionChange()
+        {
+            //MessageBox.Show($@"department Selection change");
+            string gemeente = SelectedListGemeente;
+            string niscode = municipality2nis(gemeente);
+
+            string department = SelectedListDepartments;
+            string depCode = department2code(department);
+
+            string sectie = SelectedListSecties;
+
+            parcels = capakey.getParcels(int.Parse(niscode), int.Parse(depCode), sectie).parcels;
+            ListParcels = (from n in parcels select n.perceelnummer).ToList();
+            MessageBox.Show($@"count parcels : {ListParcels.Count}");
+        }
+
+        public void parcelSelectionChange()
+        {
+            string gemeente = SelectedListGemeente;
+            string niscode = municipality2nis(gemeente);
+
+            string department = SelectedListDepartments;
+            string depCode = department2code(department);
+
+            string sectie = SelectedListSecties;
+            string parcelNr = SelectedListParcels;
+
+            perceel = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
+                                                   DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+
         }
 
         private string municipality2nis(string muniName)
@@ -318,7 +401,6 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    MessageBox.Show($@"Button CmdZoomDepartment click");
                     string gemeente = SelectedListGemeente;
                     string niscode = municipality2nis(gemeente);
 
@@ -326,12 +408,80 @@ namespace GeoPunt.Dockpanes
                     string depCode = department2code(department);
 
                     if (niscode == "" || niscode == null) return;
+                    if (depCode == "" || depCode == null) return;
 
                     datacontract.department dep = capakey.getDepartment(int.Parse(niscode), int.Parse(depCode),
                                                         DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
                     datacontract.geojson depGeom = JsonConvert.DeserializeObject<datacontract.geojson>(dep.geometry.shape);
 
                     createGrapicAndZoomTo(dep.geometry.shape, depGeom);
+                });
+            }
+        }
+
+        public ICommand CmdZoomSectie
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    string gemeente = SelectedListGemeente;
+                    string niscode = municipality2nis(gemeente);
+
+                    string department = SelectedListDepartments;
+                    string depCode = department2code(department);
+
+                    string sectie = SelectedListSecties;
+
+                    if (niscode == "" || niscode == null) return;
+                    if (depCode == "" || depCode == null) return;
+                    if (sectie == "" || sectie == null) return;
+
+                    datacontract.section sec = capakey.getSectie(int.Parse(niscode), int.Parse(depCode), sectie,
+                                                        DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                    datacontract.geojson secGeom = JsonConvert.DeserializeObject<datacontract.geojson>(sec.geometry.shape);
+
+                    createGrapicAndZoomTo(sec.geometry.shape, secGeom);
+
+
+
+                    //datacontract.department dep = capakey.getDepartment(int.Parse(niscode), int.Parse(depCode),
+                    //                                    DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                    //datacontract.geojson depGeom = JsonConvert.DeserializeObject<datacontract.geojson>(dep.geometry.shape);
+
+                    //createGrapicAndZoomTo(dep.geometry.shape, depGeom);
+                });
+            }
+        }
+
+        public ICommand CmdZoomParcel
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    string gemeente = SelectedListGemeente;
+                    string niscode = municipality2nis(gemeente);
+
+                    string department = SelectedListDepartments;
+                    string depCode = department2code(department);
+
+                    string sectie = SelectedListSecties;
+
+                    if (niscode == "" || niscode == null) return;
+                    if (depCode == "" || depCode == null) return;
+                    if (sectie == "" || sectie == null) return;
+
+                    datacontract.geojson secGeom = JsonConvert.DeserializeObject<datacontract.geojson>(perceel.geometry.shape);
+                    createGrapicAndZoomTo(perceel.geometry.shape, secGeom);
+
+
+
+                    //datacontract.department dep = capakey.getDepartment(int.Parse(niscode), int.Parse(depCode),
+                    //                                    DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                    //datacontract.geojson depGeom = JsonConvert.DeserializeObject<datacontract.geojson>(dep.geometry.shape);
+
+                    //createGrapicAndZoomTo(dep.geometry.shape, depGeom);
                 });
             }
         }

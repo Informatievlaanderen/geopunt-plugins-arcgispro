@@ -121,7 +121,7 @@
         <dockPane id="GeoPunt_Dockpanes_StartDockpane" caption="Welcome in Geopunt plug-in" className="GeoPunt.Dockpanes.StartDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.StartDockpaneView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_SearchAddressDockpane" width="300" caption="Zoek een adres via Geopunt" className="GeoPunt.Dockpanes.SearchAddressDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
+        <dockPane id="GeoPunt_Dockpanes_SearchAddressDockpane" caption="Zoek een adres via Geopunt" className="GeoPunt.Dockpanes.SearchAddressDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.SearchAddressDockpaneView" />
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_PointMapDockpane" caption="Select a point on the map" className="GeoPunt.Dockpanes.PointMapDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
