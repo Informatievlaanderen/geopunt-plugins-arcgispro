@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 
 namespace GeoPunt.Dockpanes
@@ -38,6 +39,16 @@ namespace GeoPunt.Dockpanes
     internal class SearchPerceelViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPerceel";
+
+        private string _textMarkeer;
+        public string TextMarkeer
+        {
+            get { return _textMarkeer; }
+            set
+            {
+                SetProperty(ref _textMarkeer, value);
+            }
+        }
 
         private ObservableCollection<DataRowParcel> _listSaveParceels = new ObservableCollection<DataRowParcel>();
         public ObservableCollection<DataRowParcel> ListSaveParceels
@@ -57,6 +68,7 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedSaveParceel, value);
                 ActiveButtonMarkeer = true;
+                updatePercelFromSelectedPerceelToSave(_selectedSaveParceel);
             }
         }
 
@@ -168,6 +180,7 @@ namespace GeoPunt.Dockpanes
         List<datacontract.department> departments;
         List<datacontract.parcel> parcels;
         datacontract.parcel perceel;
+        datacontract.parcel perceelToSave;
 
         DataHandler.capakey capakey;
         public SearchPerceelViewModel() 
@@ -178,6 +191,7 @@ namespace GeoPunt.Dockpanes
             ListGemeente = (from n in municipalities select n.municipalityName).ToList();
             ActiveButtonSave = false;
             ActiveButtonMarkeer = false;
+            TextMarkeer = "Markeer";
         }
         private void gemeenteSelectionChange()
         {
@@ -238,6 +252,41 @@ namespace GeoPunt.Dockpanes
             ListParcels = (from n in parcels select n.perceelnummer).ToList();
         }
 
+        public void updatePercelFromSelectedPerceelToSave(DataRowParcel dataRowParcel)
+        {
+            ActiveButtonSave = false;
+            ActiveButtonMarkeer = false;
+            string gemeente = SelectedListGemeente;
+            string niscode = municipality2nis(dataRowParcel.Gemeente);
+
+            string department = SelectedListDepartments;
+            string depCode = department2code(dataRowParcel.Department);
+
+            string sectie = dataRowParcel.Sectie;
+            string parcelNr = dataRowParcel.Perceel;
+
+            if (niscode == "" || niscode == null) return;
+            if (depCode == "" || depCode == null) return;
+            if (sectie == "" || sectie == null) return;
+            if (parcelNr == "" || parcelNr == null) return;
+
+            ActiveButtonMarkeer = true;
+
+            
+
+            if (ListStringPercel.Contains(parcelNr)){
+                TextMarkeer = "unMarkeer";
+            }
+            else
+            {
+                TextMarkeer = "Markeer";
+            }
+            
+
+            perceelToSave = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
+                                                   DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+        }
+
         public void parcelSelectionChange()
         {
             ActiveButtonSave = false;
@@ -291,7 +340,9 @@ namespace GeoPunt.Dockpanes
         }
 
         private ObservableCollection<MapPoint> LisPointsFromPolygones = new ObservableCollection<MapPoint>();
-        private ObservableCollection<MapPoint> LisPointsFromPolygonesToMarkeer = new ObservableCollection<MapPoint>();
+        private ObservableCollection<MapPoint> ListPointsFromPolygonesToMarkeer = new ObservableCollection<MapPoint>();
+        private ObservableCollection<ObservableCollection<MapPoint>> ListPolygonesToMarkeer = new ObservableCollection<ObservableCollection<MapPoint>>();
+        private ObservableCollection<string> ListStringPercel = new ObservableCollection<string>();
 
         public void updateListPointFromPolygone()
         {
@@ -541,53 +592,134 @@ namespace GeoPunt.Dockpanes
 
         public ICommand CmdMarkeer
         {
-            get
+            get 
             {
                 return new RelayCommand(async () =>
                 {
-                    datacontract.geojsonPolygon municipalityPolygon =
-                            JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(perceel.geometry.shape);
-                    MapPoint MapPointFromPolygone = null;
+                if (perceelToSave == null) return;
+
+                
+                        datacontract.geojsonPolygon municipalityPolygon =
+                        JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(perceelToSave.geometry.shape);
+                MapPoint MapPointFromPolygone = null;
 
 
 
-                    foreach (var a in municipalityPolygon.coordinates)
+                foreach (var a in municipalityPolygon.coordinates)
+                {
+                    ListPointsFromPolygonesToMarkeer = new ObservableCollection<MapPoint>();
+                    foreach (var b in a)
                     {
-                        foreach (var b in a)
+
+                        MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
+
+                        ListPointsFromPolygonesToMarkeer.Add(MapPointFromPolygone);
+
+
+                    }
+
+                    
+                        double aX = ListPointsFromPolygonesToMarkeer[0].X;
+                        double aY = ListPointsFromPolygonesToMarkeer[0].Y;
+                        bool isExist = false;
+
+                        foreach (var polygones in ListPolygonesToMarkeer)
                         {
+                            foreach (var mp in polygones)
+                            {
+                                if(mp.X == aX && mp.Y == aY)
+                                {
+                                    isExist = true;
+                                }
+                            }
+                        }
 
-                            MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
+                        //if (ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == aX && mp.Y == aY) == null) == null)
+                        if (!isExist)
+                        {
+                            ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
+                            ListStringPercel.Add(SelectedSaveParceel.Perceel);
+                            MessageBox.Show("ajoute");
+                        }
+                        else
+                        {
+                            MessageBox.Show("supprime");
+                            MessageBox.Show($@"before: {ListStringPercel.Count}");
+                            //MapPoint pointToDelete = ListPolygonesToMarkeer.FirstOrDefault(m => m.X == MapPointFromPolygone.X && m.Y == MapPointFromPolygone.Y);
+                            //ObservableCollection<MapPoint> pointToDelete = ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == aX && mp.Y == aY) == null);
+                            ObservableCollection<MapPoint> pointToDelete = null;
+                            //ObservableCollection<MapPoint> pointToDeleted = ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == 1) == null);
 
-                            LisPointsFromPolygonesToMarkeer.Add(MapPointFromPolygone);
+                            foreach (var polygones in ListPolygonesToMarkeer)
+                            {
+                                if(polygones.FirstOrDefault(m => m.X == aX && m.Y == aY)!= null)
+                                {
+                                    MessageBox.Show("trouvé");
+                                    pointToDelete = polygones;
+                                }
+                            }
 
+
+                            ListStringPercel.Remove(SelectedSaveParceel.Perceel);
+
+                            if (pointToDelete != null)
+                            {
+                                ListPolygonesToMarkeer.Remove(pointToDelete);
+                            }
+                            
+
+                            MessageBox.Show($@"after: {ListStringPercel.Count}");
+
+                            //GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
+
+                            if (_overlayObjectPerceelToMarkeer != null)
+                            {
+                                foreach (var overlay in _overlayObjectPerceelToMarkeer)
+                                {
+                                    overlay.Dispose();
+                                }
+                                _overlayObjectPerceelToMarkeer = new ObservableCollection<System.IDisposable>();
+                            }
                         }
                     }
 
                     await QueuedTask.Run(() =>
                     {
-                        if (_overlayObjectPerceelToMarkeer.Count > 0)
-                        {
-
-
-                            foreach (var overlay in _overlayObjectPerceelToMarkeer)
+                        //if(ListPolygonesToMarkeer.Count > 1)
+                        //{
+                        ArcGIS.Core.Geometry.Polygon lastPolyMulti = null;
+                            MessageBox.Show($@"polygon.count > 1 :: {ListPolygonesToMarkeer.Count}");
+                            foreach (var polygon in ListPolygonesToMarkeer)
                             {
-                                overlay.Dispose();
+                                ArcGIS.Core.Geometry.Polygon polyMulti = PolygonBuilderEx.CreatePolygon(polygon);
+                                lastPolyMulti = polyMulti;
+                                //Set symbolology, create and add element to layout
+                                CIMStroke outlineMulti = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.GreenRGB, 2.0, SimpleLineStyle.Solid);
+                                CIMPolygonSymbol polySymMulti = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.GreenRGB, SimpleFillStyle.ForwardDiagonal, outlineMulti);
+
+
+                                _overlayObjectPerceelToMarkeer.Add(MapView.Active.AddOverlay(polyMulti, polySymMulti.MakeSymbolReference()));
+                                
                             }
-                            _overlayObjectPerceelToMarkeer = new ObservableCollection<System.IDisposable>();
-
-                        }
-
-
-
-                        ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygonesToMarkeer);
-
-                        //Set symbolology, create and add element to layout
-                        CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.GreenRGB, 2.0, SimpleLineStyle.Solid);
-                        CIMPolygonSymbol polySym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
+                            if(lastPolyMulti != null)
+                            {
+                                MapView.Active.ZoomTo(lastPolyMulti, new TimeSpan(0, 0, 0, 1));
+                            }
+                            
+                        //    return;
+                        //}
 
 
-                        _overlayObjectPerceelToMarkeer.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
-                        MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+
+                        //ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(ListPolygonesToMarkeer);
+
+                        ////Set symbolology, create and add element to layout
+                        //CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.GreenRGB, 2.0, SimpleLineStyle.Solid);
+                        //CIMPolygonSymbol polySym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.GreenRGB, SimpleFillStyle.ForwardDiagonal, outline);
+
+
+                        //_overlayObjectPerceelToMarkeer.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
+                        //MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
                     });
 
                 });

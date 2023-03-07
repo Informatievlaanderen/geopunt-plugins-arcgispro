@@ -90,7 +90,7 @@
 
             <Button Grid.Column="1"  Content="Opslaan" Command="{Binding CmdSave}" Visibility="{Binding ActiveButtonSave, Converter={StaticResource BoolToVisibilityConverter}}" />
             <Button Grid.Column="2" Content="Sluiten" Command="{Binding CmdClose}" Margin="5,0,5,0"  />
-            <Button Grid.Column="3" Content="Markeer" Command="{Binding CmdMarkeer}" Visibility="{Binding ActiveButtonMarkeer, Converter={StaticResource BoolToVisibilityConverter}}"   />
+            <Button Grid.Column="3" Content="{Binding TextMarkeer}" Command="{Binding CmdMarkeer}" Visibility="{Binding ActiveButtonMarkeer, Converter={StaticResource BoolToVisibilityConverter}}"   />
 
         </Grid>
 
