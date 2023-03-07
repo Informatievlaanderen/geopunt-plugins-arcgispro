@@ -56,7 +56,7 @@
             <ComboBox ItemsSource="{Binding TypesListString}" SelectedItem="{Binding SelectedTypesListString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" />
 
             <TextBlock Grid.Row="5" Text="Zoekterm:"/>
-            <TextBox Grid.Row="5" Grid.Column="1" />
+            <TextBox Grid.Row="5" Text="{Binding KeyWordString}" Grid.Column="1" />
 
         </Grid>
 

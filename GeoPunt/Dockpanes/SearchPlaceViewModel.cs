@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Xml.Linq;
 
@@ -40,7 +41,6 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _interessantePlaatsList, value);
-                MessageBox.Show("add plaats");
             }
         }
 
@@ -56,6 +56,16 @@ namespace GeoPunt.Dockpanes
                 //MessageBox.Show($@"selected ip: {var}");
                 updateCurrentMapPoint(var,1);
                 
+            }
+        }
+
+        private string _keyWordString;
+        public string KeyWordString
+        {
+            get { return _keyWordString; }
+            set
+            {
+                SetProperty(ref _keyWordString, value);
             }
         }
 
@@ -137,7 +147,7 @@ namespace GeoPunt.Dockpanes
             if(TypesList.Count > 0) 
             {
                 MessageBox.Show("types > 0");
-                TypesListString = (from n in TypesList orderby n.value select n.value).ToList<string>();
+                TypesListString = (from n in TypesList orderby n select n).ToList<string>();
                 TypesListString.Insert(0, "");
             }
 
@@ -192,19 +202,31 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedCategoriesListString, value);
-                TypesList = poiDH.listPOItypes(SelectedThemeListString, _selectedCategoriesListString).categories;
-                TypesListString = (from n in TypesList orderby n.value select n.value).ToList<string>();
-                TypesListString.Insert(0, "");
-                if(_selectedCategoriesListString == "")
-                {
-                    TypesListString = new List<string>();
-                }
-                //MessageBox.Show($@"count list types:: {TypesListString.Count}");
-                SelectedTypesListString = "testt";
-                if (TypesListString.Count == 1)
-                {
-                    SelectedTypesListString = "No types for this category";
-                }
+                string themeCode = theme2code(SelectedThemeListString);
+                string catCode = cat2code(SelectedCategoriesListString);
+
+                datacontract.poiCategories qry = poiDH.listPOItypes(themeCode, catCode);
+                List<string> poiTypeList = (from n in qry.categories orderby n.value select n.value).ToList<string>();
+                poiTypeList.Insert(0, "");
+
+                TypesListString = new List<string>();
+                TypesListString = poiTypeList.ToList();
+
+                MessageBox.Show($@"count types: {TypesList.Count}");
+
+                //TypesList = poiDH.listPOItypes(SelectedThemeListString, _selectedCategoriesListString).categories;
+                //TypesListString = (from n in TypesList orderby n.value select n.value).ToList<string>();
+                //TypesListString.Insert(0, "");
+                //if(_selectedCategoriesListString == "")
+                //{
+                //    TypesListString = new List<string>();
+                //}
+                ////MessageBox.Show($@"count list types:: {TypesListString.Count}");
+                //SelectedTypesListString = "testt";
+                //if (TypesListString.Count == 1)
+                //{
+                //    SelectedTypesListString = "No types for this category";
+                //}
                 //MessageBox.Show($@"Selected: {_selectedThemeListString} || count: {CategoriesList.Count}");
             }
         }
@@ -259,8 +281,8 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private List<datacontract.poiValueGroup> _typesList = new List<datacontract.poiValueGroup>();
-        public List<datacontract.poiValueGroup> TypesList
+        private List<string> _typesList = new List<string>();
+        public List<string> TypesList
         {
             get { return _typesList; }
             set
@@ -271,6 +293,7 @@ namespace GeoPunt.Dockpanes
 
         private void updateDataGrid(List<datacontract.poiMaxModel> pois)
         {
+            InteressantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
             //parse results
             foreach (datacontract.poiMaxModel poi in pois)
             {
@@ -359,6 +382,30 @@ namespace GeoPunt.Dockpanes
             return themeCodes.First<string>();
         }
 
+        private string cat2code(string cat)
+        {
+            if (cat == null || cat == "") return "";
+
+            var catCodes = (from n in poiDH.listCategories().categories
+                            where n.value == cat
+                            select n.term);
+            if (catCodes.Count() == 0) return "";
+
+            return catCodes.First<string>();
+        }
+
+        private string poitype2code(string poiType)
+        {
+            if (poiType == null || poiType == "") return "";
+
+            var typeCodes = (from n in poiDH.listPOItypes().categories
+                             where n.value == poiType
+                             select n.term);
+            if (typeCodes.Count() == 0) return "";
+
+            return typeCodes.First<string>();
+        }
+
         public ICommand CmdZoek
         {
             get
@@ -370,22 +417,14 @@ namespace GeoPunt.Dockpanes
 
                     //input
                     string themeCode = theme2code(SelectedThemeListString);
-                    string catCode = SelectedCategoriesListString;
-                    string poiTypeCode = "";
-                    string keyWord = "";
+                    string catCode = cat2code(SelectedCategoriesListString);
+                    string poiTypeCode = poitype2code(SelectedTypesListString);
+                    string keyWord = KeyWordString;
                     bool cluster = false;
                     string nis;
 
                     int count = 1000;
                     nis = municipality2nis(SelectedGemeenteList);
-
-                    Debug.WriteLine($@"!!!!!!!!!!!!!!!!");
-                    Debug.WriteLine($@"themeCode: {themeCode}");
-                    Debug.WriteLine($@"SelectedThemeListString: {SelectedThemeListString}");
-                    Debug.WriteLine($@"catCode: {catCode}");
-                    Debug.WriteLine($@"!!!!!!!!!!!!!!!!");
-
-
 
                     poiData = poiDH.getMaxmodel(keyWord, count, cluster, themeCode, catCode, poiTypeCode,
                     DataHandler.CRS.WGS84, null, nis, null);
