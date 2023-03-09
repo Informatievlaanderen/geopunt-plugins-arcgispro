@@ -90,9 +90,9 @@
             <Button Grid.Column="1" Content="Opslaan" Visibility="{Binding ActiveSaveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdSave}" />
             <Button Grid.Column="1" Content="Remove" Visibility="{Binding ActiveRemoveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdRemove}" />
             <Button Grid.Column="2" Content="Zoom" Command="{Binding CmdZoom}" />
-            <Button Grid.Row="1" Grid.Column="1" Command="{Binding CmdVoeg}" Content="Voeg"/>
+            <Button Grid.Row="1" Grid.Column="1" Command="{Binding CmdVoeg}" Content="Voeg alle"/>
             <Button Grid.Row="1" Grid.Column="2" Command="{Binding CmdClose}" Content="Sluiten"/>
-            <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" >Resultaten geclusterd toevoegen</CheckBox>
+            <!--<CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" >Resultaten geclusterd toevoegen</CheckBox>-->
 
         </Grid>
 

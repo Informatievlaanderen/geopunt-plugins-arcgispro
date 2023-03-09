@@ -40,7 +40,7 @@
           <button refID="GeoPunt_Dockpanes_SearchPerceel_ShowButton" size="large" />
           <button refID="GeoPunt_GipodButton" size="large" />
           <button refID="GeoPunt_HeightButton" size="large" />
-          <button refID="GeoPunt_ParcelButton" size="large" />
+          <!--<button refID="GeoPunt_ParcelButton" size="large" />-->
           <button refID="GeoPunt_CatalogueButton" size="large" />
         </group>
         <group id="GeoPunt_Group_Others" caption="Others" appearsOnAddInTab="false">
