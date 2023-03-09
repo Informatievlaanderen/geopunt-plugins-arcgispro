@@ -639,12 +639,12 @@ namespace GeoPunt.Dockpanes
                         {
                             ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
                             ListStringPercel.Add(SelectedSaveParceel.Perceel);
-                            MessageBox.Show("ajoute");
+                            //MessageBox.Show("ajoute");
                         }
                         else
                         {
-                            MessageBox.Show("supprime");
-                            MessageBox.Show($@"before: {ListStringPercel.Count}");
+                            //MessageBox.Show("supprime");
+                            //MessageBox.Show($@"before: {ListStringPercel.Count}");
                             //MapPoint pointToDelete = ListPolygonesToMarkeer.FirstOrDefault(m => m.X == MapPointFromPolygone.X && m.Y == MapPointFromPolygone.Y);
                             //ObservableCollection<MapPoint> pointToDelete = ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == aX && mp.Y == aY) == null);
                             ObservableCollection<MapPoint> pointToDelete = null;
@@ -654,7 +654,7 @@ namespace GeoPunt.Dockpanes
                             {
                                 if(polygones.FirstOrDefault(m => m.X == aX && m.Y == aY)!= null)
                                 {
-                                    MessageBox.Show("trouvé");
+                                    //MessageBox.Show("trouvé");
                                     pointToDelete = polygones;
                                 }
                             }
@@ -753,6 +753,7 @@ namespace GeoPunt.Dockpanes
             if (pane == null)
                 return;
 
+            FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
             pane.Activate();
         }
 

@@ -545,6 +545,7 @@ namespace GeoPunt.Dockpanes
             if (pane == null)
                 return;
 
+            FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
             pane.Activate();
         }
 
