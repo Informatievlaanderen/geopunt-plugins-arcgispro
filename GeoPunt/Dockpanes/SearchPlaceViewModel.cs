@@ -32,6 +32,16 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPlace";
 
+        private string _textVoegAlle = "Voeg Alle";
+        public string TextVoegAlle
+        {
+            get { return _textVoegAlle; }
+            set
+            {
+                SetProperty(ref _textVoegAlle, value);
+            }
+        }
+
         private bool _activeRemoveButton;
         public bool ActiveRemoveButton
         {
@@ -316,6 +326,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        List<datacontract.poiMaxModel> listPois = new List<datacontract.poiMaxModel>();
         private void updateDataGrid(List<datacontract.poiMaxModel> pois)
         {
             InteressantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
@@ -456,8 +467,11 @@ namespace GeoPunt.Dockpanes
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
 
+                    TextVoegAlle = $@"Voeg alle ({pois.Count})";
+
                     //MessageBox.Show($@"{pois.Count} interesting places found in {SelectedGemeenteList}");
 
+                    listPois = pois;
                     updateDataGrid(pois);
                 });
             }
@@ -508,7 +522,53 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
+                    foreach (datacontract.poiMaxModel poi in listPois)
+                    {
+                        DataRowSearchPlaats row = new DataRowSearchPlaats();
+                        List<string> qry;
+                        datacontract.poiAddress adres;
 
+                        row.id = poi.id;
+                        row.Omschrijving = "";
+                        if (poi.description != null)
+                        {
+                            row.Omschrijving = poi.description.value;
+                        }
+
+                        qry = (from datacontract.poiValueGroup n in poi.categories
+                               where n.type == "Type"
+                               select n.value).ToList();
+                        if (qry.Count > 0) row.Type = qry[0];
+
+                        qry = (from datacontract.poiValueGroup n in poi.categories
+                               where n.type == "Categorie"
+                               select n.value).ToList();
+                        if (qry.Count > 0) row.Categorie = qry[0];
+                        //if (row.Categorie == null) row.Categorie = SelectedCategoriesListString;
+
+
+                        qry = (from datacontract.poiValueGroup n in poi.categories
+                               where n.type == "Thema"
+                               select n.value).ToList();
+                        if (qry.Count > 0) row.Thema = qry[0];
+
+                        qry = (
+                            from datacontract.poiValueGroup n in poi.labels
+                            select n.value).ToList();
+                        row.Label = string.Join(", ", qry.ToArray());
+
+                        adres = poi.location.address;
+                        if (adres != null)
+                        {
+                            row.Straat = adres.street;
+                            row.Huisnummer = adres.streetnumber;
+                            row.Postcode = adres.postalcode;
+                            row.Gemeente = adres.municipality;
+                        }
+
+
+                        FavouriteInteressantePlaatsList.Add(row);
+                    }
                 });
             }
         }
