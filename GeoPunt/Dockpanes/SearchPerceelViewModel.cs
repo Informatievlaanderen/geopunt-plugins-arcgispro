@@ -280,7 +280,7 @@ namespace GeoPunt.Dockpanes
             
 
             if (ListStringPercel.Contains(parcelNr)){
-                TextMarkeer = "unMarkeer";
+                TextMarkeer = "Verwijder markering";
             }
             else
             {
@@ -669,7 +669,7 @@ namespace GeoPunt.Dockpanes
                         {
                             ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
                             ListStringPercel.Add(SelectedSaveParceel.Perceel);
-                            TextMarkeer = "unMarkeer";
+                            TextMarkeer = "Verwijder markering";
                             //MessageBox.Show("ajoute");
                         }
                         else

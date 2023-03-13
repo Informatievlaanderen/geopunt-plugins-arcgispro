@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
@@ -39,6 +40,35 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _textVoegAlle, value);
+            }
+        }
+
+        private bool _isEnabledGemeente = true;
+        public bool IsEnabledGemeente
+        {
+            get { return _isEnabledGemeente; }
+            set
+            {
+                SetProperty(ref _isEnabledGemeente, value);
+            }
+        }
+
+        private bool _isBeperk;
+        public bool IsBeperk
+        {
+            get { return _isBeperk; }
+            set
+            {
+                SetProperty(ref _isBeperk, value);
+                IsEnabledGemeente = !value;
+                //if (_isBeperk)
+                //{
+                //    IsEnabledGemeente = !value;
+                //}
+                //else
+                //{
+
+                //}
             }
         }
 
@@ -458,16 +488,30 @@ namespace GeoPunt.Dockpanes
                     string keyWord = KeyWordString;
                     bool cluster = false;
                     string nis;
+                    string extent;
 
+                    if (IsBeperk)
+                    {
+                        Envelope env4326 = MapView.Active.Extent;
+                        env4326 = GeometryEngine.Instance.Project(env4326, SpatialReferenceBuilder.CreateSpatialReference(4326)) as Envelope;
+                        string extentBeforeTransform = env4326.XMin+"|"+env4326.YMin+"|"+env4326.XMax+"|"+env4326.YMax;
+                        extent = extentBeforeTransform.Replace(',', '.');
+                        nis = null;
+                    }
+                    else
+                    {
+                        extent = null;
+                        nis = municipality2nis(SelectedGemeenteList);
+                        
+                    }
                     int count = 1000;
-                    nis = municipality2nis(SelectedGemeenteList);
 
                     poiData = poiDH.getMaxmodel(keyWord, count, cluster, themeCode, catCode, poiTypeCode,
-                    DataHandler.CRS.WGS84, null, nis, null);
+                    DataHandler.CRS.WGS84, null, nis, extent);
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
 
-                    TextVoegAlle = $@"Voeg alle ({pois.Count})";
+                    TextVoegAlle = $@"Voeg alle toe ({pois.Count})";
 
                     //MessageBox.Show($@"{pois.Count} interesting places found in {SelectedGemeenteList}");
 

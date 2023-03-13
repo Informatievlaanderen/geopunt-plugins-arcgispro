@@ -42,10 +42,10 @@
             </Grid.ColumnDefinitions>
 
 
-            <CheckBox Grid.Row="0" Grid.ColumnSpan="2" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
+            <CheckBox Grid.Row="0" Grid.ColumnSpan="2" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
 
             <TextBlock Grid.Row="1" Text="Gemeente:"/>
-            <ComboBox ItemsSource="{Binding GemeenteList}" SelectedItem="{Binding SelectedGemeenteList}" Grid.Row="1" Grid.Column="1" />
+            <ComboBox ItemsSource="{Binding GemeenteList}" SelectedItem="{Binding SelectedGemeenteList}" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEnabledGemeente}" />
 
             <TextBlock Grid.Row="2" Text="Thema:"/>
             <ComboBox ItemsSource="{Binding ThemeListString}" SelectedItem="{Binding SelectedThemeListString}" Grid.Row="2" Grid.Column="1" />
@@ -88,7 +88,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="1" Content="Opslaan" Visibility="{Binding ActiveSaveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdSave}" />
-            <Button Grid.Column="1" Content="Remove" Visibility="{Binding ActiveRemoveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdRemove}" />
+            <Button Grid.Column="1" Content="Verwijderen" Visibility="{Binding ActiveRemoveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdRemove}" />
             <Button Grid.Column="2" Content="Zoom" Command="{Binding CmdZoom}" />
             <Button Grid.Row="1" Grid.Column="1" Command="{Binding CmdVoeg}" Content="{Binding TextVoegAlle}"/>
             <Button Grid.Row="1" Grid.Column="2" Command="{Binding CmdClose}" Content="Sluiten"/>
@@ -102,7 +102,7 @@
                 <RowDefinition Height="140"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Text="Favourite list" />
+            <TextBlock Grid.Row="0" Text="Favorieten lijst" />
             <DataGrid Grid.Row="1" IsReadOnly="true"  ItemsSource="{Binding FavouriteInteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedFavouriteInteressantePlaatsList}" ></DataGrid>
         </Grid>
 

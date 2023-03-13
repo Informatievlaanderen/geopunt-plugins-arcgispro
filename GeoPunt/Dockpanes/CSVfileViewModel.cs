@@ -31,7 +31,10 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _isCheckedMeerdere, value);
-                //IsCheckedOne = !value;
+                if (_isCheckedMeerdere)
+                {
+                    IsCheckedOne = !value;
+                }
             }
         }
 
@@ -42,7 +45,10 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _isCheckedOne, value);
-                //IsCheckedMeerdere = !value;
+                if (_isCheckedOne)
+                {
+                    IsCheckedMeerdere = !value;
+                }
             }
         }
 
@@ -85,6 +91,25 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private ObservableCollection<DataRowCSV> _dataCsvList = new ObservableCollection<DataRowCSV>();
+        public ObservableCollection<DataRowCSV> DataCsvList
+        {
+            get { return _dataCsvList; }
+            set
+            {
+                SetProperty(ref _dataCsvList, value);
+            }
+        }
+
+        private DataRowCSV _selectedDataCsvList;
+        public DataRowCSV SelectedDataCsvList
+        {
+            get { return _selectedDataCsvList; }
+            set
+            {
+                SetProperty(ref _selectedDataCsvList, value);
+            }
+        }
 
 
 

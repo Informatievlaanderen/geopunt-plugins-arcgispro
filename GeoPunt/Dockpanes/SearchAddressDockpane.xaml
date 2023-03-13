@@ -63,7 +63,7 @@
 
             <Button Grid.Column="0" Width="70" Height="20" Command="{Binding CmdSave}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,0,8,0" Content="Opslaan"/>
             <Button Grid.Column="1" Width="70" Height="20" Command="{Binding CmdPoint}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Markeer"/>
-            <Button Grid.Column="1" Width="70" Height="20" Command="{Binding CmdRemoveFavourite}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Remove"/>
+            <Button Grid.Column="1" Width="70" Height="20" Command="{Binding CmdRemoveFavourite}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Verwijderen"/>
             <Button Grid.Column="2" Width="70" Height="20" Command="{Binding CmdZoom}" Content="Zoom"/>
             <Button Grid.Column="3" Width="70" Height="20" Command="{Binding CmdClose}" Margin="8,0,0,0" Content="Sluiten"/>
 

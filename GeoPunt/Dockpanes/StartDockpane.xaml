@@ -29,9 +29,9 @@
         </TextBlock.ToolTip>
       </TextBlock>
     </DockPanel>-->
-        <TextBlock Grid.Row="1" Text="Choose layers" FontSize="16" HorizontalAlignment="Center" Margin="0,5,0,-5" FontWeight="SemiBold" />
-        <CheckBox Content="Provinces Layer" FontSize="13" HorizontalAlignment="Left" Margin="10,31,0,0" Grid.Row="1" IsChecked="{Binding IsCheckedProvinces}" VerticalAlignment="Top"/>
-        <CheckBox Content="Cities Layer" FontSize="13" HorizontalAlignment="Left" Height="26" Margin="10,50,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="{Binding IsCheckedCities}"/>
-        <CheckBox Content="Other Layer" FontSize="13" HorizontalAlignment="Left" Height="26" Margin="10,70,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="{Binding IsCheckedOther}"/>
+        <TextBlock Grid.Row="1" Text="Kies lagen" FontSize="16" HorizontalAlignment="Center" Margin="0,5,0,-5" FontWeight="SemiBold" />
+        <CheckBox Content="Regio's laag" FontSize="13" HorizontalAlignment="Left" Margin="10,31,0,0" Grid.Row="1" IsChecked="{Binding IsCheckedProvinces}" VerticalAlignment="Top"/>
+        <CheckBox Content="Gemeenten laag" FontSize="13" HorizontalAlignment="Left" Height="26" Margin="10,50,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="{Binding IsCheckedCities}"/>
+        <CheckBox Content="GRB infolaag" FontSize="13" HorizontalAlignment="Left" Height="26" Margin="10,70,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="{Binding IsCheckedOther}"/>
     </Grid>
 </UserControl>

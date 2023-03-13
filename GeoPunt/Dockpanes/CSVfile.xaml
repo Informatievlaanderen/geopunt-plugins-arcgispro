@@ -119,6 +119,14 @@
                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
         </Grid>
 
+        <Grid Grid.Row="2" >
+            <DataGrid Grid.Row="1" IsReadOnly="true"  
+                      ItemsSource="{Binding DataCsvList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      SelectedItem="{Binding SelectedDataCsvList}" >
+            </DataGrid>
+
+        </Grid>
+
 
 
 
