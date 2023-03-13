@@ -61,14 +61,6 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _isBeperk, value);
                 IsEnabledGemeente = !value;
-                //if (_isBeperk)
-                //{
-                //    IsEnabledGemeente = !value;
-                //}
-                //else
-                //{
-
-                //}
             }
         }
 

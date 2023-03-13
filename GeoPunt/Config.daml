@@ -1,4 +1,5 @@
-﻿<ArcGIS defaultAssembly="GeoPunt.dll" defaultNamespace="GeoPunt" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArcGIS defaultAssembly="GeoPunt.dll" defaultNamespace="GeoPunt" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{745d0755-336e-47db-b65a-83656f8478bf}" version="1.0" desktopVersion="3.0.36057">
     <Name>GeoPunt</Name>
     <Description>GeoPunt description</Description>
@@ -34,7 +35,7 @@
           <!--<button refID="GeoPunt_SearchAddressButton" size="large" />-->
           <!--<button refID="GeoPunt_PointMapButton" size="large" />-->
           <!--<button refID="GeoPunt_CsvFileButton" size="large" />-->
-		  <button refID="GeoPunt_Dockpanes_CSVfile_ShowButton" size="large" />
+          <button refID="GeoPunt_Dockpanes_CSVfile_ShowButton" size="large" />
           <!--<button refID="GeoPunt_InterestingPlaceButton" size="large" />-->
           <button refID="GeoPunt_Dockpanes_SearchPlace_ShowButton" size="large" />
           <button refID="GeoPunt_Dockpanes_SearchPerceel_ShowButton" size="large" />

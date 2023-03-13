@@ -28,3 +28,5 @@ D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchP
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\SearchPerceel.baml
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\CSVfile.g.cs
 D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Dockpanes\CSVfile.baml
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\GeoPunt.csproj.ResolveComReference.cache
+D:\geopunt_plug_in_arcgis_pro\GeoPunt\obj\Debug\net6.0-windows\Interop.Microsoft.Vbe.Interop.Forms.dll

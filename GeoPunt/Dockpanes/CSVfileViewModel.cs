@@ -11,6 +11,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +19,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace GeoPunt.Dockpanes
@@ -128,7 +131,30 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    Process.Start("explorer.exe", @"C:\Users");
+                    // if you have problem with System.Windows.Forms
+                    // 1) double click on project name
+                    // 2) add " <UseWindowsForms>true</UseWindowsForms> " to PropertyGroup
+
+                    System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+                    
+                    // openFileDialog1.InitialDirectory = @"C:\";
+
+                    openFileDialog1.RestoreDirectory = true;
+                    openFileDialog1.Title = "Fichiers raw";
+                    openFileDialog1.DefaultExt = "raw";
+                    //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                    openFileDialog1.Filter = "fichiers raw (*.raw)|*.raw";
+                    openFileDialog1.Multiselect = true;
+                    
+                    if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                    {
+                        foreach (String file in openFileDialog1.FileNames)
+                        {
+                            ListBoxItem listBoxItem = new ListBoxItem();
+                            listBoxItem.Content = file;
+                            //RawListBox.Add(listBoxItem);
+                        }
+                    }
                 });
             }
         }
@@ -182,7 +208,7 @@ namespace GeoPunt.Dockpanes
     /// <summary>
     /// Button implementation to show the DockPane.
     /// </summary>
-    internal class CSVfile_ShowButton : Button
+    internal class CSVfile_ShowButton : System.Windows.Controls.Button
     {
         protected override void OnClick()
         {
