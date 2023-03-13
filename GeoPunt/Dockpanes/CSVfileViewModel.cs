@@ -14,15 +14,37 @@ using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
 
 namespace GeoPunt.Dockpanes
 {
     internal class CSVfileViewModel : DockPane
     {
+        private bool _isCheckedMeerdere = true;
+        public bool IsCheckedMeerdere
+        {
+            get { return _isCheckedMeerdere; }
+            set
+            {
+                SetProperty(ref _isCheckedMeerdere, value);
+                //IsCheckedOne = !value;
+            }
+        }
+
+        private bool _isCheckedOne;
+        public bool IsCheckedOne
+        {
+            get { return _isCheckedOne; }
+            set
+            {
+                SetProperty(ref _isCheckedOne, value);
+                //IsCheckedMeerdere = !value;
+            }
+        }
 
         private string _textFilePlacement = "< input CSV-file >";
         public string TextFilePlacement
@@ -73,6 +95,37 @@ namespace GeoPunt.Dockpanes
             //DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
            
         }
+
+
+        public ICommand CmdOpen
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    Process.Start("explorer.exe", @"C:\Users");
+                });
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Show the DockPane.

@@ -413,7 +413,7 @@ namespace GeoPunt.Dockpanes
                     {
 
                         MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
-                        
+                                                
                         LisPointsFromPolygones.Add(MapPointFromPolygone);
 
                     }

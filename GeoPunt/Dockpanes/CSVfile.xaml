@@ -13,17 +13,19 @@
       <ResourceDictionary.MergedDictionaries>
         <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
       </ResourceDictionary.MergedDictionaries>
+      <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </ResourceDictionary>
   </UserControl.Resources>
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="100"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
         <Grid>
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -32,7 +34,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="0" Grid.Column="0" >
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" Text="CSV instellingen" />
+
+
+            <Grid Grid.Row="1" Grid.Column="0" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="30"/>
@@ -47,7 +52,7 @@
                 <ComboBox Grid.Row="1" Grid.Column="1" Height="20" Width="85" ItemsSource="{Binding ListSeparators}" SelectedIndex="0" />
             </Grid>
 
-            <Grid Grid.Row="0" Grid.Column="1" >
+            <Grid Grid.Row="1" Grid.Column="1" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -59,26 +64,68 @@
                 <Button Width="70" Height="20" Content="Open" Command="{Binding CmdOpen}" />
 
             </Grid>
-
-
-
         </Grid>
-      
-      
-      
-      
-      
-      
-      
-      
-    <!--<DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
-      <TextBlock Grid.Column="1" Text="{Binding Heading}" Style="{DynamicResource Esri_TextBlockDockPaneHeader}">
-        <TextBlock.ToolTip>
-          <WrapPanel Orientation="Vertical" MaxWidth="300">
-            <TextBlock Text="{Binding Heading}" TextWrapping="Wrap"/>
-          </WrapPanel>
-        </TextBlock.ToolTip>
-      </TextBlock>
-    </DockPanel>-->
-  </Grid>
+
+        <Grid Grid.Row="1" >
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="160"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" 
+                       FontSize="16" FontWeight="SemiBold" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Text="Adres Instellingen" />
+            <CheckBox Grid.Row="1" Grid.ColumnSpan="2" 
+                      Margin="5" Content="Adres in meerdere kolommen" 
+                      IsChecked="{Binding IsCheckedMeerdere}" />
+            <CheckBox Grid.Row="2" Grid.ColumnSpan="2" 
+                      Margin="5" Content="Volledig adres in 1 kolom" 
+                      IsChecked="{Binding IsCheckedOne}" />
+
+            <TextBlock Grid.Row="3" Text="Adres:" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding IsCheckedOne, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <ComboBox Grid.Row="3" Grid.Column="1" Height="20" 
+                      Visibility="{Binding IsCheckedOne, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            
+            <TextBlock Grid.Row="3" Text="Straat:" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <ComboBox Grid.Row="3" Grid.Column="1" Height="20" 
+                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <TextBlock Grid.Row="4" Text="Huisnummer (optioneel):" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <ComboBox Grid.Row="4" Grid.Column="1" Height="20" 
+                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <TextBlock Grid.Row="5" Text="Gemeente of postcode:" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <ComboBox Grid.Row="5" Grid.Column="1" Height="20" 
+                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+        </Grid>
+
+
+
+
+
+
+
+
+
+    </Grid>
 </UserControl>
