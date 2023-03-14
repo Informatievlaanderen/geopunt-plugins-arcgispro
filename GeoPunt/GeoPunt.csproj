@@ -24,6 +24,11 @@
     <Page Remove="NewFolder\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Images\AddInProRadarPlotExportIcon.png" />
+    <None Remove="Images\AddInProRadarPlotTraceIcon.png" />
+    <None Remove="Images\start.png" />
+  </ItemGroup>
+  <ItemGroup>
     <COMReference Include="Microsoft.Vbe.Interop.Forms">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -46,6 +51,15 @@
     <Content Include="Images\AddInDesktop32.png" />
     <Content Include="DarkImages\AddInDesktop16.png" />
     <Content Include="DarkImages\AddInDesktop32.png" />
+    <Resource Include="Images\AddInProRadarPlotExportIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\AddInProRadarPlotTraceIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\start.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
