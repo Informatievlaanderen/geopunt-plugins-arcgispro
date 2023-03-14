@@ -182,6 +182,8 @@ namespace GeoPunt.Dockpanes
             System.Text.Encoding textEncoding = System.Text.Encoding.Default;
             if (codex != null) textEncoding = codex;
 
+            textEncoding = Encoding.GetEncoding("iso-8859-1");
+
             if (!csv.Exists)
                 throw new Exception("Deze csv-file bestaat niet: " + csv.Name);
             if (separator == "" || separator == null)
@@ -325,7 +327,7 @@ namespace GeoPunt.Dockpanes
 
             foreach (DataRow row in csvDataTbl.Rows)
             {
-                //csvDataGrid.Rows.Add(row.ItemArray);
+                DataTableCSV.Rows.Add(row.ItemArray);
             }
             });
         }
