@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace GeoPunt.Dockpanes
 {
@@ -373,6 +374,40 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        public ICommand CmdValideerAlles
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    //if (csvDataGrid.RowCount == 0) return;
+
+                    //if (adresColCbx.Text == "")
+                    //{
+                    //    MessageBox.Show(this, "Stel eerst de adres kolommen in.", "Waarschuwing");
+                    //    return;
+                    //}
+                    //if (validationWorker.IsBusy != true)
+                    //{
+                    //    toggleInteraction(false);
+
+                    //    rows2validate = new DataGridViewRow[csvDataGrid.Rows.Count];
+                    //    csvDataGrid.Rows.CopyTo(rows2validate, 0);
+                    //    progressBar.Maximum = csvDataGrid.Rows.Count;
+
+                    //    validationWorker.RunWorkerAsync(rows2validate);
+                    //}
+
+                    //toggleInteraction(false);
+
+                    //rows2validate = new DataGridViewRow[csvDataGrid.Rows.Count];
+                    //csvDataGrid.Rows.CopyTo(rows2validate, 0);
+                    //progressBar.Maximum = csvDataGrid.Rows.Count;
+
+                    //validationWorker.RunWorkerAsync(rows2validate);
+                });
+            }
+        }
 
 
 

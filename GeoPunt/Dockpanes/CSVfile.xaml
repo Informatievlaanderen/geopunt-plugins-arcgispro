@@ -132,7 +132,8 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="Valideer alles" Margin="3" />
+            <Button Grid.Column="0" Content="Valideer alles" Margin="3" 
+                    Command="{Binding CmdValideerAlles}" />
             <Button Grid.Column="1" Content="Valideer selectie" Margin="3" />
             <Button Grid.Column="2" Content="Annuleer" Margin="3" />
 
