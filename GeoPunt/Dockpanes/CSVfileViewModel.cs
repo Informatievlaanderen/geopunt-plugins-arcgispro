@@ -422,7 +422,7 @@ namespace GeoPunt.Dockpanes
     /// <summary>
     /// Button implementation to show the DockPane.
     /// </summary>
-    internal class CSVfile_ShowButton : System.Windows.Controls.Button
+    internal class CSVfile_ShowButton : ArcGIS.Desktop.Framework.Contracts.Button
     {
         protected override void OnClick()
         {

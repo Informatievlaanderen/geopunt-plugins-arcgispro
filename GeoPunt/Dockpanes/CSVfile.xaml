@@ -19,7 +19,8 @@
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="100"/>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="200"/>
+      <RowDefinition Height="60"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
@@ -120,6 +121,35 @@
         </Grid>
 
         <Grid Grid.Row="2" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Content="Valideer alles" Margin="3" />
+            <Button Grid.Column="1" Content="Valideer selectie" Margin="3" />
+            <Button Grid.Column="2" Content="Annuleer" Margin="3" />
+
+            <Grid Grid.Row="1" Grid.ColumnSpan="3" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="Markeer" Margin="5" />
+                <Button Grid.Column="1" Content="Zoom" Margin="5" />
+            </Grid>
+            
+            
+        </Grid>
+
+        <Grid Grid.Row="3" >
             <DataGrid x:Name="csvDataGridColumn" Grid.Row="1" IsReadOnly="true"
                 ItemsSource="{Binding DataTableCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                       SelectedItem="{Binding SelectedDataCsvList}"> 

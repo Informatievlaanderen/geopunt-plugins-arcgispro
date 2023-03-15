@@ -16,16 +16,15 @@
 	<!--
 	How to change the image of the button?
 	1) <insertModule autoLoad = true />
-	2) In Visual Studio, on the image properties, set its "Build Action" to Resource
+	2) In Visual Studio, on the image properties: 
+	    set its "Build Action" to Resource
+		set its "Copy to Output Directory" to Copy Always
 	3) Change the pack Uri as follows
 	   largeImage="pack://application:,,,/GeoPunt;component/Images/AddInProRadarPlotTraceIcon.png"
 	source: https://community.esri.com/t5/arcgis-pro-sdk-questions/how-to-correctly-load-an-icon-for-a-button/td-p/787716
 	-->
 		
 			
-				
-					
-					
   <modules>
     <insertModule id="GeoPunt_Module" className="Module1" autoLoad="true" caption="Module1">
       <!-- uncomment to have the control hosted on a separate tab-->
@@ -36,12 +35,13 @@
           <group refID="GeoPunt_Group_Others" />
         </tab>
       </tabs>
+		
       <groups>
-        <!-- comment this out if you have no controls on the Addin tab to avoid
-              an empty group-->
+        <!--Active Group-->
         <group id="GeoPunt_Group_Active" caption="Active" appearsOnAddInTab="false">
           <button refID="GeoPunt_Buttons_StartButton" size="large" />
         </group>
+		<!--Actions Group-->
         <group id="GeoPunt_Group_Actions" caption="Actions" appearsOnAddInTab="false">
           <button refID="GeoPunt_Dockpanes_SearchAddressDockpane_ShowButton" size="large" />
           <tool refID="GeoPunt_PointMap" size="large" />
@@ -52,85 +52,61 @@
           <button refID="GeoPunt_HeightButton" size="large" />
           <button refID="GeoPunt_CatalogueButton" size="large" />
         </group>
+		<!--Others Group-->
         <group id="GeoPunt_Group_Others" caption="Others" appearsOnAddInTab="false">
           <button refID="GeoPunt_SettingsButton" size="large" />
           <button refID="GeoPunt_InformationButton" size="large" />
         </group>
       </groups>
+		
       <controls>
-        <!-- add your controls here -->
-        <button id="GeoPunt_Button1" caption="Start" className="StartButton" loadOnClick="true" smallImage="Images/AddInProRadarPlotExportIcon.png" largeImage="Images/AddInProRadarPlotExportIcon.png">
+		<button id="GeoPunt_Buttons_StartButton" caption="Start" className="GeoPunt.Buttons.StartButton"  
+			    largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
-        <!--<button id="GeoPunt_Dockpane1_ShowButton" caption="Show Dockpane 1" className="Dockpane1_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
-        </button>-->
-        <button id="GeoPunt_SearchAddressButton" caption="Adres" className="SearchAddressButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_PointMapButton" caption="Point Map" className="PointMapButton" loadOnClick="true"  smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_CsvFileButton" caption="CSV File" className="CsvFileButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_InterestingPlaceButton" caption="Interesting Places" className="InterestingPlaceButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_GipodButton" caption="Gipod" className="GipodButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_HeightButton" caption="Height" className="HeightButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_ParcelButton" caption="Parcel" className="ParcelButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_CatalogueButton" caption="Catalogue" className="CatalogueButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_SettingsButton" caption="Settings" className="SettingsButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_InformationButton" caption="Informations" className="InformationButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_Buttons_StartButton" caption="Start" className="GeoPunt.Buttons.StartButton"  smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_Dockpanes_StartDockpane_ShowButton" caption="Show StartDockpane" className="GeoPunt.Dockpanes.StartDockpane_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
+	    <button id="GeoPunt_Dockpanes_SearchAddressDockpane_ShowButton"  className="GeoPunt.Dockpanes.SearchAddressDockpane_ShowButton" loadOnClick="true"  
+				largeImage="pack://application:,,,/GeoPunt;component/Images/Adres.png">
           <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_SearchAddressDockpane" caption="SearchAddressDockpane" className="GeoPunt.Dockpanes.SearchAddressDockpane" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_Dockpanes_SearchAddressDockpane_ShowButton" caption="Address" className="GeoPunt.Dockpanes.SearchAddressDockpane_ShowButton" loadOnClick="true"  
-				
-				largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png"
-			>
-			<!--largeImage="pack://application:,,,/GeoPunt;component/Images/AddInProRadarPlotTraceIcon.png"-->
-			
-          <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
-        </button>
-        <tool id="GeoPunt_PointMap" caption="PointMap" className="PointMap" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonRed16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonRed32.png" condition="esri_mapping_mapPane">
+		<tool id="GeoPunt_PointMap" caption="PointMap" className="PointMap" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </tool>
-        <button id="GeoPunt_Dockpanes_PointMapDockpane_ShowButton" caption="Show PointMapDockpane" className="GeoPunt.Dockpanes.PointMapDockpane_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="Interessante Plaats" className="GeoPunt.Dockpanes.SearchPlace_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_Dockpanes_SearchPerceel_Button" caption="SearchPerceelButton" className="GeoPunt.Dockpanes.SearchPerceelButton" loadOnClick="true">
-          <tooltip heading="BackstageTab Button Heading">BackstageTab button tool tip text.<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
-          <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
-        </button>
-        <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="CSV" className="GeoPunt.Dockpanes.CSVfile_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
+		<button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="CSV" className="GeoPunt.Dockpanes.CSVfile_ShowButton" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
           <tooltip heading="Load CSV file">Show Dockpane<disabledText /></tooltip>
         </button>
+		<button id="GeoPunt_Dockpanes_SearchPlace_ShowButton"  className="GeoPunt.Dockpanes.SearchPlace_ShowButton" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png">
+          <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
+        </button>
+		<button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel_ShowButton" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png">
+          <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
+        </button>
+		<button id="GeoPunt_GipodButton" caption="Gipod" className="GipodButton" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+		<button id="GeoPunt_HeightButton" caption="Height" className="HeightButton" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+		<button id="GeoPunt_CatalogueButton" caption="Catalogue" className="CatalogueButton" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+		<button id="GeoPunt_SettingsButton" caption="Settings" className="SettingsButton" loadOnClick="true" 
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+		<button id="GeoPunt_InformationButton" caption="Informations" className="InformationButton" loadOnClick="true" 
+			largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+        
       </controls>
+		
       <dockPanes>
         <dockPane id="GeoPunt_Dockpanes_StartDockpane" caption="Welcome in Geopunt plug-in" className="GeoPunt.Dockpanes.StartDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.StartDockpaneView" />
@@ -151,6 +127,7 @@
           <content className="GeoPunt.Dockpanes.CSVfileView" />
         </dockPane>
       </dockPanes>
+	
     </insertModule>
   </modules>
   <backstage>
