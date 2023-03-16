@@ -31,5 +31,6 @@ namespace GeoPunt.Dockpanes
             //textColumn.Binding = new System.Windows.Data.Binding("FirstName");
             //csvDataGridColumn.Columns.Add(textColumn);
         }
+
     }
 }

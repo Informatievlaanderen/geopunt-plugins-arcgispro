@@ -1,6 +1,8 @@
 ﻿using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Core.Internal.CIM;
 using ArcGIS.Desktop.Catalog;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Editing;
@@ -15,11 +17,14 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -121,15 +126,15 @@ namespace GeoPunt.Dockpanes
         //DataGridView csvDataGrid;
         //csvDataGrid = new System.Windows.Forms.DataGridView();
 
-        private DataGridView _csvDataGrid = new System.Windows.Forms.DataGridView();
-        public DataGridView csvDataGrid
-        {
-            get { return _csvDataGrid; }
-            set
-            {
-                SetProperty(ref _csvDataGrid, value);
-            }
-        }
+        //private DataGridView _csvDataGrid = new System.Windows.Forms.DataGridView();
+        //public DataGridView csvDataGrid
+        //{
+        //    get { return _csvDataGrid; }
+        //    set
+        //    {
+        //        SetProperty(ref _csvDataGrid, value);
+        //    }
+        //}
 
 
         private ObservableCollection<DataRowCSV> _dataCsvList = new ObservableCollection<DataRowCSV>();
@@ -167,11 +172,12 @@ namespace GeoPunt.Dockpanes
 
 
         private const string _dockPaneID = "GeoPunt_Dockpanes_CSVfile";
-
+        //BackgroundWorker validationWorker;
         protected CSVfileViewModel() 
         {
+            //validationWorker = new System.ComponentModel.BackgroundWorker();
             //DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-  
+            sug = new DataHandler.adresSuggestion(5000);
         }
 
         public static DataTable loadCSV2datatable(string csvPath, string separator, int maxRows, System.Text.Encoding codex)
@@ -259,24 +265,7 @@ namespace GeoPunt.Dockpanes
             string csvPath = TextFilePlacement;
             DataGridViewComboBoxColumn validatedRow;
 
-            //if (!File.Exists(csvPath) || SelectedListSeparators == "" || SelectedListSeparators == null) return;
-
             DataTable csvDataTbl;
-            //DataCsvList.Clear();
-            //DataGridView csvDataGrid;
-            //csvDataGrid = new System.Windows.Forms.DataGridView();
-
-            //DataTableCSV.Columns.Clear();
-
-            //csvErrorLbl.Text = "";
-            ////clear all the stuff
-
-            //adresColCbx.Items.Clear();
-            //adresColCbx.Items.Add("");
-            //HuisNrCbx.Items.Clear();
-            //HuisNrCbx.Items.Add("");
-            //gemeenteColCbx.Items.Clear();
-            //gemeenteColCbx.Items.Add("");
 
             try
             {
@@ -306,30 +295,17 @@ namespace GeoPunt.Dockpanes
 
             await QueuedTask.Run(() =>
             {
-            DataTableCSV = new DataTable();
-            foreach (DataColumn column in csvDataTbl.Columns)
-            {
-                //csvDataGrid.Columns.Add(column.ColumnName, column.ColumnName);
-                //csvDataGrid.Columns[column.ColumnName].SortMode = DataGridViewColumnSortMode.Automatic;
-
-                
-
-                
-                    DataColumn dataTableCsvColumn = new DataColumn();
-                    dataTableCsvColumn.ColumnName = column.ColumnName;
-                    DataTableCSV.Columns.Add(dataTableCsvColumn);
-                
-
-                //adresColCbx.Items.Add(column.ColumnName);
-                //HuisNrCbx.Items.Add(column.ColumnName);
-                //gemeenteColCbx.Items.Add(column.ColumnName);
-            }
-            //csvDataGrid.Columns.Add(validatedRow);
-
-            foreach (DataRow row in csvDataTbl.Rows)
-            {
-                DataTableCSV.Rows.Add(row.ItemArray);
-            }
+                DataTableCSV = new DataTable();
+                foreach (DataColumn column in csvDataTbl.Columns)
+                {
+                        DataColumn dataTableCsvColumn = new DataColumn();
+                        dataTableCsvColumn.ColumnName = column.ColumnName;
+                        DataTableCSV.Columns.Add(dataTableCsvColumn);
+                }
+                foreach (DataRow row in csvDataTbl.Rows)
+                {
+                    DataTableCSV.Rows.Add(row.ItemArray);
+                }
             });
         }
 
@@ -346,8 +322,6 @@ namespace GeoPunt.Dockpanes
 
                     System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
                     
-                    // openFileDialog1.InitialDirectory = @"C:\";
-
                     openFileDialog1.RestoreDirectory = true;
                     openFileDialog1.Title = "Fichiers csv";
                     openFileDialog1.DefaultExt = "csv";
@@ -360,51 +334,103 @@ namespace GeoPunt.Dockpanes
                     {
                         await QueuedTask.Run(() =>
                         {
-                            
-
                             TextFilePlacement = openFileDialog1.FileName;
                             loadCSV2table();
                         });
-
-                        //Debug.WriteLine("!!!!!!!!!!! PARAMETERS !!!!!!!!!!!!!!");
-                        //Debug.WriteLine("hello");
-                        //Debug.WriteLine("!!!!!!!!!!! END !!!!!!!!!!!!!!");
                     }
                 });
             }
         }
 
+        DataHandler.adresSuggestion sug;
+        int straatCol;
+        int huisnrCol;
+        int gemeenteCol;
+
+        private List<string> validateRow(string street, string houseNr, string municapality)
+        {
+            string adres;
+            List<string> formatedAddresses = new List<string>();
+
+            //if (street == null || street == "") return formatedAddresses;
+
+            //if ((houseNr == null || houseNr == "") && (municapality == null || municapality == ""))
+            //    adres = street;
+            //else if (municapality == null || municapality == "")
+            //    adres = street + " " + houseNr;
+            //else if (houseNr == null || houseNr == "")
+            //    adres = street + ", " + municapality;
+            //else
+            //{
+            //    adres = string.Format("{0} {1}, {2}", street, houseNr, municapality);
+            //}
+
+            adres = string.Format("{0} {1}, {2}", street, houseNr, municapality);
+
+            formatedAddresses.AddRange(sug.getAdresSuggestion(adres, 5));
+            return formatedAddresses;
+        }
+        DataGridViewRow[] rows2validate;
         public ICommand CmdValideerAlles
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    //if (csvDataGrid.RowCount == 0) return;
+                    await QueuedTask.Run(() =>
+                    {
+                        List<string> suggestions;
+                        string street; string huisnr; string gemeente;
 
-                    //if (adresColCbx.Text == "")
-                    //{
-                    //    MessageBox.Show(this, "Stel eerst de adres kolommen in.", "Waarschuwing");
-                    //    return;
-                    //}
-                    //if (validationWorker.IsBusy != true)
-                    //{
-                    //    toggleInteraction(false);
+                        DataTable csvDataTbl;
+                        string csvPath = TextFilePlacement;
+                        System.Text.Encoding codex = System.Text.Encoding.Default;
+                        if (SelectedListFormats == "UTF-8") codex = System.Text.Encoding.UTF8;
+                        csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, 500, codex);
+                        //foreach (DataRow row in csvDataTbl.Rows)
+                        //{
+                        //    DataTableCSV.Rows.Add(row.ItemArray);
+                        //}
 
-                    //    rows2validate = new DataGridViewRow[csvDataGrid.Rows.Count];
-                    //    csvDataGrid.Rows.CopyTo(rows2validate, 0);
-                    //    progressBar.Maximum = csvDataGrid.Rows.Count;
+                        //DataGridViewRow[] rows = (DataGridViewRow[])DataTableCSV;
 
-                    //    validationWorker.RunWorkerAsync(rows2validate);
-                    //}
 
-                    //toggleInteraction(false);
+                        rows2validate = new DataGridViewRow[csvDataTbl.Rows.Count];
+                        csvDataTbl.Rows.CopyTo(rows2validate, 0);
 
-                    //rows2validate = new DataGridViewRow[csvDataGrid.Rows.Count];
-                    //csvDataGrid.Rows.CopyTo(rows2validate, 0);
-                    //progressBar.Maximum = csvDataGrid.Rows.Count;
+                        foreach (DataGridViewCell cel in rows2validate[1].Cells)
+                        {
+                            Debug.WriteLine(cel);
+                            //cel.Style.BackColor = clr;
+                        }
 
-                    //validationWorker.RunWorkerAsync(rows2validate);
+                        Debug.WriteLine("!!!!!!!!! PARAMETERS !!!!!!!!!!!!!!");
+                        foreach (DataRow row in csvDataTbl.Rows)
+                        {
+                            Debug.WriteLine($@":: {row}");
+                            
+                            street = row[0].ToString();
+                            huisnr = row[1].ToString();
+                            gemeente = row[2].ToString();
+
+                            suggestions = validateRow(street, huisnr, gemeente);
+
+                            
+
+                            if (suggestions.Count == 0)
+                            {
+                                Debug.WriteLine($@"{street} :: NOT FOUND");
+                                
+                            }
+                            else
+                            {
+                                Debug.WriteLine($@"{street} :: OKAY");
+                            }
+                        }
+                        Debug.WriteLine("!!!!!!!!! END !!!!!!!!!!!!!!");
+
+                        
+                    });
                 });
             }
         }

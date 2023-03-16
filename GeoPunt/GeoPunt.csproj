@@ -24,6 +24,14 @@
     <Page Remove="NewFolder\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Images\.svg" />
+    <None Remove="Images\30x30.png" />
+    <None Remove="Images\32x32.png" />
+    <None Remove="Images\34x34.png" />
+    <None Remove="Images\36x36.png" />
+    <None Remove="Images\38x38.png" />
+    <None Remove="Images\42x42.png" />
+    <None Remove="Images\64x64.png" />
     <None Remove="Images\AddInProRadarPlotExportIcon.png" />
     <None Remove="Images\AddInProRadarPlotTraceIcon.png" />
     <None Remove="Images\Adres.png" />
@@ -137,6 +145,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\30x30.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\32x32.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\34x34.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\36x36.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\38x38.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\42x42.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\64x64.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\Adres.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
