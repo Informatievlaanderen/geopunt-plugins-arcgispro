@@ -21,18 +21,18 @@
       <RowDefinition Height="100"/>
       <RowDefinition Height="200"/>
       <RowDefinition Height="60"/>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
-                <RowDefinition Height="60"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="230"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="80"/>
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" Text="CSV instellingen" />
@@ -40,17 +40,19 @@
 
             <Grid Grid.Row="1" Grid.Column="0" >
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="35"/>
+                    <RowDefinition Height="25"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="5"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBox Grid.Row="0" Grid.ColumnSpan="2" IsReadOnly = "True" Height="20" Text="{Binding TextFilePlacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <ComboBox Grid.Row="1" Grid.Column="0" Height="20" Width="85" ItemsSource="{Binding ListFormats}" SelectedItem="{Binding SelectedListFormats}" SelectedIndex="0" />
-                <ComboBox Grid.Row="1" Grid.Column="1" Height="20" Width="85" ItemsSource="{Binding ListSeparators}" SelectedItem="{Binding SelectedListSeparators}" SelectedIndex="0" />
+                <TextBox Grid.Row="0" Grid.ColumnSpan="4" IsReadOnly = "True" Height="24" Margin="5,4,5,5" Text="{Binding TextFilePlacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" Height="23" Width="85" ItemsSource="{Binding ListFormats}" SelectedItem="{Binding SelectedListFormats}" SelectedIndex="0" />
+                <ComboBox Grid.Row="1" Grid.Column="2" Height="23" Width="85" ItemsSource="{Binding ListSeparators}" SelectedItem="{Binding SelectedListSeparators}" SelectedIndex="0" />
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="1" >
@@ -58,11 +60,9 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+                
 
-                <Button Width="70" Height="20" Content="Open" Command="{Binding CmdOpen}" />
+                <Button Margin="5" Style="{DynamicResource Esri_Button}" Content="Open" Command="{Binding CmdOpen}" />
 
             </Grid>
         </Grid>
@@ -70,90 +70,122 @@
         <Grid Grid.Row="1" >
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" 
+            <TextBlock Grid.Column="1"
                        FontSize="16" FontWeight="SemiBold" 
                        VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Text="Adres Instellingen" />
-            <CheckBox Grid.Row="1" Grid.ColumnSpan="2" 
+
+            <Grid Grid.Row="1" Grid.Column="1">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+
+                
+                <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="13"
                       Margin="5" Content="Adres in meerdere kolommen" 
                       IsChecked="{Binding IsCheckedMeerdere}" />
-            <CheckBox Grid.Row="2" Grid.ColumnSpan="2" 
+                <CheckBox Grid.Row="2" Grid.ColumnSpan="2" FontSize="13"
                       Margin="5" Content="Volledig adres in 1 kolom" 
                       IsChecked="{Binding IsCheckedOne}" />
 
-            <TextBlock Grid.Row="3" Text="Adres:" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                <TextBlock Grid.Row="3" Text="Adres:" FontSize="13.5" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5"
                        Visibility="{Binding IsCheckedOne, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <ComboBox Grid.Row="3" Grid.Column="1" Height="20" 
+                <ComboBox Grid.Row="3" Grid.Column="1" Height="20" Width="140" Margin="5"
                       Visibility="{Binding IsCheckedOne, Converter={StaticResource BoolToVisibilityConverter}}" />
 
+
+                <TextBlock Grid.Row="3" Text="Straat:" FontSize="13.5" Grid.Column="0" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <ComboBox Grid.Row="3" Grid.Column="1" Height="20"  Margin="5" Width="140"
+                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                <TextBlock Grid.Row="4" Text="Huisnummer (optioneel):" FontSize="13.5" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <ComboBox Grid.Row="4" Grid.Column="1" Height="20" Margin="5" Width="140"
+                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+                <TextBlock Grid.Row="5" Text="Gemeente of postcode:" FontSize="13.5" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <ComboBox Grid.Row="5" Grid.Column="1" Height="20" Margin="5" Width="140"
+                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
+            </Grid>
+
             
-            <TextBlock Grid.Row="3" Text="Straat:" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <ComboBox Grid.Row="3" Grid.Column="1" Height="20" 
-                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
-
-            <TextBlock Grid.Row="4" Text="Huisnummer (optioneel):" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <ComboBox Grid.Row="4" Grid.Column="1" Height="20" 
-                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
-
-            <TextBlock Grid.Row="5" Text="Gemeente of postcode:" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <ComboBox Grid.Row="5" Grid.Column="1" Height="20" 
-                      Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
         </Grid>
 
         <Grid Grid.Row="2" >
             <Grid.RowDefinitions>
-                <RowDefinition Height="30" />
-                <RowDefinition Height="30" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="Valideer alles" Margin="3" 
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Valideer alles" Margin="3" 
                     Command="{Binding CmdValideerAlles}" />
-            <Button Grid.Column="1" Content="Valideer selectie" Margin="3" />
-            <Button Grid.Column="2" Content="Annuleer" Margin="3" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Valideer selectie" Margin="3" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Annuleer" Margin="3" />
 
-            <Grid Grid.Row="1" Grid.ColumnSpan="3" >
+            <Grid Grid.Row="1" Grid.ColumnSpan="5" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="80" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="Markeer" Margin="5" />
-                <Button Grid.Column="1" Content="Zoom" Margin="5" />
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Markeer" Margin="5" />
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Zoom" Margin="5" />
             </Grid>
             
             
         </Grid>
 
-        <Grid Grid.Row="3" >
+        <Grid Grid.Row="3" Margin="0,10,0,0" >
             <DataGrid x:Name="csvDataGridColumn" Grid.Row="1" IsReadOnly="true"
                 ItemsSource="{Binding DataTableCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                      SelectedItem="{Binding SelectedDataCsvList}" > 
+                      SelectedItem="{Binding SelectedDataCsvList}" 
+                      Style="{DynamicResource Esri_DataGrid}"
+                      ScrollViewer.CanContentScroll="True"      
+                      AutoGenerateColumns="True"
+                      HorizontalAlignment="Stretch"
+                      HeadersVisibility="Column"
+                      > 
                       
             </DataGrid>
 
