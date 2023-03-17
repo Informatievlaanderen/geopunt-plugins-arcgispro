@@ -503,7 +503,8 @@ namespace GeoPunt.Dockpanes
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
 
-                    TextVoegAlle = $@"Voeg alle toe ({pois.Count})";
+                    //TextVoegAlle = $@"Voeg alle toe ({pois.Count})";
+                    TextVoegAlle = $@"Voeg ({pois.Count})";
 
                     //MessageBox.Show($@"{pois.Count} interesting places found in {SelectedGemeenteList}");
 

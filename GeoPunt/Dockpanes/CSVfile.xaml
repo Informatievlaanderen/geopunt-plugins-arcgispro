@@ -153,7 +153,7 @@
         <Grid Grid.Row="3" >
             <DataGrid x:Name="csvDataGridColumn" Grid.Row="1" IsReadOnly="true"
                 ItemsSource="{Binding DataTableCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                      SelectedItem="{Binding SelectedDataCsvList}"> 
+                      SelectedItem="{Binding SelectedDataCsvList}" > 
                       
             </DataGrid>
 

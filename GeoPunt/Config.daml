@@ -65,39 +65,39 @@
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
 	    <button id="GeoPunt_Dockpanes_SearchAddressDockpane_ShowButton" caption="Adres" className="GeoPunt.Dockpanes.SearchAddressDockpane_ShowButton" loadOnClick="true"  
-				largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+				largeImage="pack://application:,,,/GeoPunt;component/Images/Adres.png">
           <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
         </button>
 		<tool id="GeoPunt_PointMap" className="PointMap" caption="Place" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png" condition="esri_mapping_mapPane">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </tool>
 		<button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVfile_ShowButton" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
           <tooltip heading="Load CSV file">Show Dockpane<disabledText /></tooltip>
         </button>
 		<button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace_ShowButton" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png">
           <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
         </button>
 		<button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel_ShowButton" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png">
           <tooltip heading="Show Dockpane">Show Dockpane<disabledText /></tooltip>
         </button>
 		<button id="GeoPunt_GipodButton" className="GipodButton" caption="Gipod" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
 		<button id="GeoPunt_HeightButton" className="HeightButton" caption="Hoogte" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
 		<button id="GeoPunt_CatalogueButton" className="CatalogueButton" caption="Catalogus" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
 		<button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Settings" loadOnClick="true" 
-			    largeImage="pack://application:,,,/GeoPunt;component/Images/38x38.png">
+			    largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
 		<button id="GeoPunt_InformationButton" caption="Informations" className="InformationButton" loadOnClick="true" 
