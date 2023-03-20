@@ -670,17 +670,11 @@ namespace GeoPunt.Dockpanes
                             ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
                             ListStringPercel.Add(SelectedSaveParceel.Perceel);
                             TextMarkeer = "Verwijder markering";
-                            //MessageBox.Show("ajoute");
                         }
                         else
                         {
                             TextMarkeer = "Markeer";
-                            //MessageBox.Show("supprime");
-                            //MessageBox.Show($@"before: {ListStringPercel.Count}");
-                            //MapPoint pointToDelete = ListPolygonesToMarkeer.FirstOrDefault(m => m.X == MapPointFromPolygone.X && m.Y == MapPointFromPolygone.Y);
-                            //ObservableCollection<MapPoint> pointToDelete = ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == aX && mp.Y == aY) == null);
                             ObservableCollection<MapPoint> pointToDelete = null;
-                            //ObservableCollection<MapPoint> pointToDeleted = ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == 1) == null);
 
                             foreach (var polygones in ListPolygonesToMarkeer)
                             {
@@ -698,11 +692,7 @@ namespace GeoPunt.Dockpanes
                             {
                                 ListPolygonesToMarkeer.Remove(pointToDelete);
                             }
-                            
 
-                            //MessageBox.Show($@"after: {ListStringPercel.Count}");
-
-                            //GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
 
                             if (_overlayObjectPerceelToMarkeer != null)
                             {

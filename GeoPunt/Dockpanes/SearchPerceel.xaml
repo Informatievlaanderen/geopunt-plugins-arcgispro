@@ -29,35 +29,35 @@
         <Grid Grid.Row="0" Margin="5,5,5,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="170" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <TextBlock FontSize="13.5" Grid.Column="0" 
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Gemeente:" />
-            <ComboBox ItemsSource="{Binding ListGemeente}" SelectedItem="{Binding SelectedListGemeente}"  Grid.Column="1" Margin="5,0,5,0" />
+            <ComboBox ItemsSource="{Binding ListGemeente}" Width="190" SelectedItem="{Binding SelectedListGemeente}"  Grid.Column="1" Margin="5,0,5,0" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomGemeente}" />
         </Grid>
 
         <Grid Grid.Row="1" Margin="5,5,5,5" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="170" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <TextBlock FontSize="13.5" Grid.Column="0" 
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Afdeling:" />
-            <ComboBox ItemsSource="{Binding ListDepartments}" SelectedItem="{Binding SelectedListDepartments}"  Grid.Column="1" Margin="5,0,5,0" />
+            <ComboBox ItemsSource="{Binding ListDepartments}" Width="190" SelectedItem="{Binding SelectedListDepartments}"  Grid.Column="1" Margin="5,0,5,0" />
             <Button Style="{DynamicResource Esri_Button}"  Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomDepartment}" />
         </Grid>
 
         <Grid Grid.Row="2" Margin="5,5,5,5" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="170" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
@@ -65,21 +65,21 @@
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Sectie:" />
             <ComboBox ItemsSource="{Binding ListSecties}" 
-                      SelectedItem="{Binding SelectedListSecties}" Grid.Column="1" Margin="5,0,5,0" />
+                      SelectedItem="{Binding SelectedListSecties}" Width="190" Grid.Column="1" Margin="5,0,5,0" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomSectie}"  />
         </Grid>
 
         <Grid Grid.Row="3" Margin="5,5,5,5" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="170" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <TextBlock FontSize="13.5" Grid.Column="0"
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Perceelnummer:" />
-            <ComboBox ItemsSource="{Binding ListParcels}" SelectedItem="{Binding SelectedListParcels}" Grid.Column="1" Margin="5,0,5,0" />
+            <ComboBox ItemsSource="{Binding ListParcels}" Width="190" SelectedItem="{Binding SelectedListParcels}" Grid.Column="1" Margin="5,0,5,0" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomParcel}"  />
         </Grid>
 
@@ -110,7 +110,7 @@
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             
-            <TextBlock Style="{DynamicResource RegularText}" Text="Favorieten Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
+            <TextBlock Style="{DynamicResource RegularText}" Margin="5" Text="Favorieten Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
             <DataGrid Grid.Row="1" x:Name="DataGridPlace" ItemsSource="{Binding ListSaveParceels, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedSaveParceel}" 
                       Style="{DynamicResource Esri_DataGrid}"
                       ScrollViewer.CanContentScroll="True"      

@@ -419,6 +419,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private string _textMarkeer;
+        public string TextMarkeer
+        {
+            get { return _textMarkeer; }
+            set
+            {
+                SetProperty(ref _textMarkeer, value);
+            }
+        }
+
         private List<string> _listStreets = new List<string>();
         public List<string> ListStreets
         {
@@ -545,6 +555,15 @@ namespace GeoPunt.Dockpanes
                 
             }
             MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+
+            if (ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
+            {
+                TextMarkeer = "Verwijder markering";
+            }
+            else
+            {
+                TextMarkeer = "Markeer";
+            }
         }
         private void zoomToQuery()
         {
@@ -596,21 +615,27 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    if (!isRemoveMarkeer)
-                    {
-                        MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                        ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
-                        ListStreetsFavourite.Remove(pointToDelete);
-                        GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                    //if (!isRemoveMarkeer)
+                    //{
+                    //    MapPoint pointToDelete = ListStreetsFavourite.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    //    ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
+                    //    ListStreetsFavourite.Remove(pointToDelete);
+                    //    GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
                         
-                    }else
-                    {
-                        MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                        ListStreetsMarkeerString.Remove(SelectedStreetMarkeer);
-                        ListStreetsMarkeer.Remove(pointToDelete);
-                        GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete, MapView.Active, true, true);
-                    }
-                    updateListBoxFavourite();
+                    //}else
+                    //{
+                    //    MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    //    ListStreetsMarkeerString.Remove(SelectedStreetMarkeer);
+                    //    ListStreetsMarkeer.Remove(pointToDelete);
+                    //    GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete, MapView.Active, true, true);
+                    //}
+
+                    MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
+                    ListStreetsMarkeer.Remove(pointToDelete);
+                    GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete, MapView.Active, true, true);
+
+                    //updateListBoxFavourite();
                     updateListBoxMarkeer();
                 });
             }
@@ -632,57 +657,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private async void loadJSON()
-        {
-            //System.Text.Encoding codex = System.Text.Encoding.Default;
-            //if (SelectedListFormats == "UTF-8") codex = System.Text.Encoding.UTF8;
-
-            //string csvPath = TextFilePlacement;
-            //DataGridViewComboBoxColumn validatedRow;
-
-            //DataTable csvDataTbl;
-
-            //try
-            //{
-            //    int maxRowCount = 500;
-            //    csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, maxRowCount, codex);
-
-            //    if (csvDataTbl.Rows.Count == maxRowCount)
-            //    {
-            //        string msg = String.Format(
-            //          "Maximaal aantal van {0} rijen overschreden, enkel de eerste {0} rijen worden getoont.", maxRowCount);
-            //        System.Windows.MessageBox.Show(msg, "Maximaal aantal rijen overschreden.");
-            //        //csvErrorLbl.Text = msg;
-            //    }
-            //}
-            //catch (Exception csvEx)
-            //{
-            //    System.Windows.MessageBox.Show(csvEx.Message, "Error");
-            //    //csvErrorLbl.Text = csvEx.Message;
-            //    return;
-            //}
-
-            ////set validation column
-            //validatedRow = new DataGridViewComboBoxColumn();
-            //validatedRow.HeaderText = "Gevalideerd adres";
-            //validatedRow.Name = "validAdres";
-            //validatedRow.Width = 120;
-
-            //await QueuedTask.Run(() =>
-            //{
-            //    DataTableCSV = new DataTable();
-            //    foreach (DataColumn column in csvDataTbl.Columns)
-            //    {
-            //        DataColumn dataTableCsvColumn = new DataColumn();
-            //        dataTableCsvColumn.ColumnName = column.ColumnName;
-            //        DataTableCSV.Columns.Add(dataTableCsvColumn);
-            //    }
-            //    foreach (DataRow row in csvDataTbl.Rows)
-            //    {
-            //        DataTableCSV.Rows.Add(row.ItemArray);
-            //    }
-            //});
-        }
+        
 
         public ICommand CmdPoint
         {
@@ -690,10 +665,18 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    if (!ListStreetsMarkeerString.Contains(SelectedStreet))
+                    if (ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) == null)
                     {
-                        ListStreetsMarkeerString.Add(SelectedStreet);
                         ListStreetsMarkeer.Add(MapPointSelectedAddress);
+                        updateListBoxMarkeer();
+                        TextMarkeer = "Verwijder markering";
+                    }
+                    else
+                    {
+                        TextMarkeer = "Markeer";
+                        MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                        ListStreetsMarkeer.Remove(pointToDelete);
+                        GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete, MapView.Active, true, true);
                         updateListBoxMarkeer();
                     }
                 });
@@ -711,36 +694,8 @@ namespace GeoPunt.Dockpanes
                         ListStreetsFavouriteString.Add(SelectedStreet);
                         ListStreetsFavourite.Add(MapPointSelectedAddress);
                         ListSaveMapPoint.Add(new SaveMapPoint(SelectedStreet, MapPointSelectedAddress));
-                        updateListBoxFavourite();
+                        //updateListBoxFavourite();
                     }  
-                });
-            }
-        }
-
-        public ICommand CmdLoad
-        {
-            get
-            {
-                return new RelayCommand(async () =>
-                {
-
-                    System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-
-                    openFileDialog1.RestoreDirectory = true;
-                    openFileDialog1.Title = "Fichiers json";
-                    openFileDialog1.DefaultExt = "json";
-                    //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                    //openFileDialog1.Filter = "fichiers csv (*.csv)|*.csv";
-                    openFileDialog1.Filter = "JSON-file(*.json)|*.json|All Files(*.*)|*.*";
-
-
-                    if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        await QueuedTask.Run(() =>
-                        {
-                            loadJSON();
-                        });
-                    }
                 });
             }
         }
@@ -802,6 +757,7 @@ namespace GeoPunt.Dockpanes
         protected SearchAddressDockpaneViewModel() 
         {
             IsSelectedFavouriteList = true;
+            TextMarkeer = "Markeer";
         }
         internal static void Show()
         {        

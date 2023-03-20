@@ -30,7 +30,7 @@
       <!-- uncomment to have the control hosted on a separate tab-->
       <tabs>
         <tab id="GeoPunt_Tab1" caption="Geopunt">
-          <group refID="GeoPunt_Group_Active" />
+          <!--<group refID="GeoPunt_Group_Active" />-->
           <group refID="GeoPunt_Group_Actions" />
           <group refID="GeoPunt_Group_Others" />
         </tab>
@@ -38,9 +38,9 @@
 		
       <groups>
         <!--Active Group-->
-        <group id="GeoPunt_Group_Active" caption="Active" appearsOnAddInTab="false">
+        <!--<group id="GeoPunt_Group_Active" caption="Active" appearsOnAddInTab="false">
           <button refID="GeoPunt_Buttons_StartButton" size="large" />
-        </group>
+        </group>-->
 		<!--Actions Group-->
         <group id="GeoPunt_Group_Actions" caption="Actions" appearsOnAddInTab="false">
           <button refID="GeoPunt_Dockpanes_SearchAddressDockpane_ShowButton" size="large" />
