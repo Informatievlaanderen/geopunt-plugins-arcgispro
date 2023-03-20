@@ -64,14 +64,14 @@
         <Grid Grid.Row="3" HorizontalAlignment="Center" Margin="0,5,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" /> 
-                <ColumnDefinition Width="*" /> 
+                <ColumnDefinition Width="Auto" /> 
                 <ColumnDefinition Width="*" /> 
                 <ColumnDefinition Width="*" /> 
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdSave}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,0,12,0" Content="Opslaan"/>
-            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdPoint}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Markeer"/>
-            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdRemoveFavourite}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Verwijderen"/>
+            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdPoint}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Markeer"/>
+            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdRemoveFavourite}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,8,0" Content="Verwijderen"/>
             <Button Grid.Column="2" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdZoom}" Content="Zoom"/>
             <Button Grid.Column="3" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdClose}" Margin="8,0,0,0" Content="Sluiten"/>
 
@@ -79,6 +79,8 @@
         </Grid>
 
         <TextBlock Style="{DynamicResource RegularText}" Grid.Row="4" Text="Favorieten Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
+        <Button Style="{DynamicResource Esri_ButtonDownSmall}" Grid.Row="4" Width="20" Height="20" Margin="140,0,0,0" Command="{Binding CmdSaveIcon}"  />
+        <Button Style="{DynamicResource Esri_ButtonUpSmall}" Grid.Row="4" Width="20" Height="20" Margin="-140,0,0,0" Command="{Binding CmdLoad}"  />
         <ListBox ItemsSource="{Binding ListStreetsFavouriteString}" SelectedItem="{Binding SelectedStreetFavourite}" Grid.Row="5" Margin="5,-5,5,0" 
                  ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
                  BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" />

@@ -12,9 +12,9 @@ TRACE;DEBUG;NET;NET6_0;NETCOREAPP
 
 61663932686
 5-1363807461
-451405821478
+46-252233569
 220-1708658152
 Dockpanes\CSVfile.xaml;Dockpanes\PointMapDockpane.xaml;Dockpanes\SearchAddressDockpane.xaml;Dockpanes\SearchPerceel.xaml;Dockpanes\SearchPlace.xaml;Dockpanes\StartDockpane.xaml;
 
-True
+False
 

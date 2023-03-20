@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using ArcGIS.Core.CIM;
@@ -36,8 +37,11 @@ using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.DataHandler;
 using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.IO;
 
-
+using System.Data;
 
 namespace GeoPunt.Dockpanes
 {
@@ -435,6 +439,9 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private ObservableCollection<SaveMapPoint> ListSaveMapPoint = new ObservableCollection<SaveMapPoint>();
+
+
         private ObservableCollection<MapPoint> _listStreetsFavourite = new ObservableCollection<MapPoint>();
         public ObservableCollection<MapPoint> ListStreetsFavourite
         {
@@ -625,6 +632,58 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private async void loadJSON()
+        {
+            //System.Text.Encoding codex = System.Text.Encoding.Default;
+            //if (SelectedListFormats == "UTF-8") codex = System.Text.Encoding.UTF8;
+
+            //string csvPath = TextFilePlacement;
+            //DataGridViewComboBoxColumn validatedRow;
+
+            //DataTable csvDataTbl;
+
+            //try
+            //{
+            //    int maxRowCount = 500;
+            //    csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, maxRowCount, codex);
+
+            //    if (csvDataTbl.Rows.Count == maxRowCount)
+            //    {
+            //        string msg = String.Format(
+            //          "Maximaal aantal van {0} rijen overschreden, enkel de eerste {0} rijen worden getoont.", maxRowCount);
+            //        System.Windows.MessageBox.Show(msg, "Maximaal aantal rijen overschreden.");
+            //        //csvErrorLbl.Text = msg;
+            //    }
+            //}
+            //catch (Exception csvEx)
+            //{
+            //    System.Windows.MessageBox.Show(csvEx.Message, "Error");
+            //    //csvErrorLbl.Text = csvEx.Message;
+            //    return;
+            //}
+
+            ////set validation column
+            //validatedRow = new DataGridViewComboBoxColumn();
+            //validatedRow.HeaderText = "Gevalideerd adres";
+            //validatedRow.Name = "validAdres";
+            //validatedRow.Width = 120;
+
+            //await QueuedTask.Run(() =>
+            //{
+            //    DataTableCSV = new DataTable();
+            //    foreach (DataColumn column in csvDataTbl.Columns)
+            //    {
+            //        DataColumn dataTableCsvColumn = new DataColumn();
+            //        dataTableCsvColumn.ColumnName = column.ColumnName;
+            //        DataTableCSV.Columns.Add(dataTableCsvColumn);
+            //    }
+            //    foreach (DataRow row in csvDataTbl.Rows)
+            //    {
+            //        DataTableCSV.Rows.Add(row.ItemArray);
+            //    }
+            //});
+        }
+
         public ICommand CmdPoint
         {
             get
@@ -651,8 +710,65 @@ namespace GeoPunt.Dockpanes
                     {
                         ListStreetsFavouriteString.Add(SelectedStreet);
                         ListStreetsFavourite.Add(MapPointSelectedAddress);
+                        ListSaveMapPoint.Add(new SaveMapPoint(SelectedStreet, MapPointSelectedAddress));
                         updateListBoxFavourite();
                     }  
+                });
+            }
+        }
+
+        public ICommand CmdLoad
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+
+                    System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+
+                    openFileDialog1.RestoreDirectory = true;
+                    openFileDialog1.Title = "Fichiers json";
+                    openFileDialog1.DefaultExt = "json";
+                    //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                    //openFileDialog1.Filter = "fichiers csv (*.csv)|*.csv";
+                    openFileDialog1.Filter = "JSON-file(*.json)|*.json|All Files(*.*)|*.*";
+
+
+                    if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        await QueuedTask.Run(() =>
+                        {
+                            loadJSON();
+                        });
+                    }
+                });
+            }
+        }
+
+        
+
+        public ICommand CmdSaveIcon
+        {
+            get
+            {
+            return new RelayCommand(async () => 
+                {
+                    List<SaveMapPoint> _data = new List<SaveMapPoint>();
+                    foreach (SaveMapPoint item in ListSaveMapPoint)
+                    {
+                        _data.Add(item);
+                    }
+
+                    using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
+                    {
+                        System.Windows.Forms.DialogResult result = fbd.ShowDialog();
+
+                        if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                        {
+                            await using FileStream createStream = File.Create($@"{fbd.SelectedPath}\path.json");
+                            await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
+                        }
+                    }
                 });
             }
         }
@@ -663,9 +779,9 @@ namespace GeoPunt.Dockpanes
             {
             return new RelayCommand(async () => 
                 {
-                DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-                FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
-                pane.Hide();
+                    DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+                    FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
+                    pane.Hide();
                 });
             }
         }
