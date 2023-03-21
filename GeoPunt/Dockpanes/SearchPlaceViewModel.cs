@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -464,6 +465,32 @@ namespace GeoPunt.Dockpanes
             return typeCodes.First<string>();
         }
 
+        private ObservableCollection<DataRowSearchPlaats> ListSavePOI = new ObservableCollection<DataRowSearchPlaats>();
+        public ICommand CmdSaveIcon
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    List<DataRowSearchPlaats> _data = new List<DataRowSearchPlaats>();
+                    foreach (DataRowSearchPlaats item in ListSavePOI)
+                    {
+                        _data.Add(item);
+                    }
+
+                    System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+                    oSaveFileDialog.Filter = "Json files (*.json) | *.json";
+                    if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        string fileName = oSaveFileDialog.FileName;
+
+                        await using FileStream createStream = File.Create(fileName);
+                        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
+                    }
+                });
+            }
+        }
+
         public ICommand CmdZoek
         {
             get
@@ -534,6 +561,7 @@ namespace GeoPunt.Dockpanes
                     row.Huisnummer = SelectedInteressantePlaatsList.Huisnummer;
 
                     FavouriteInteressantePlaatsList.Add(row);
+                    ListSavePOI.Add(row);
                 });
             }
         }
@@ -548,6 +576,7 @@ namespace GeoPunt.Dockpanes
                     if (plaatsToDelete != null)
                     {
                         FavouriteInteressantePlaatsList.Remove(plaatsToDelete);
+                        ListSavePOI.Remove(plaatsToDelete);
                     }
                 });
             }

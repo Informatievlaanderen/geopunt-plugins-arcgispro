@@ -20,7 +20,7 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
-      <RowDefinition Height="200px"/>
+      <RowDefinition Height="190px"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
@@ -130,9 +130,12 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="100"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" FontWeight="SemiBold" Text="Favorieten lijst" Style="{DynamicResource Esri_TextBlockDockPaneHeader}" Margin="5" />
+            <Button Style="{DynamicResource Esri_Button}" Content="Opslaan lijst" Grid.Row="2" Width="90" Height="20" Command="{Binding CmdSaveIcon}" Margin="0,0,0,0"  />
+
             <DataGrid Grid.Row="1" IsReadOnly="true"  ItemsSource="{Binding FavouriteInteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedFavouriteInteressantePlaatsList}" 
                       Style="{DynamicResource Esri_DataGrid}"
                       ScrollViewer.CanContentScroll="True"      
