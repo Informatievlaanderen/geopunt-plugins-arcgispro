@@ -77,7 +77,7 @@ namespace GeoPunt.Dockpanes
         public void refreshAddress(string address, double diff)
         {
             Address = address;
-            DifferenceMeters = diff.ToString("0.00")+" meters";
+            DifferenceMeters = diff.ToString("0.00")+" meter";
             updateCurrentMapPoint(address, 1);
         }
 
