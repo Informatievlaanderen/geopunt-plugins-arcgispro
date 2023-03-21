@@ -64,17 +64,18 @@
         <Grid Grid.Row="3" HorizontalAlignment="Center" Margin="0,5,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdSave}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,0,5,0" Content="Voeg to"/>
-            <Button Grid.Column="0" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdPoint}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,6,0" Content="{Binding TextMarkeer}"/>
-            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdRemoveFavourite}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="4,0,5,0" Content="Verwijderen"/>
-            <Button Grid.Column="2" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdZoom}" Content="Zoom"/>
-            <Button Grid.Column="3" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdClose}" Margin="5,0,0,0" Content="Sluiten"/>
+            <Button Grid.Column="0" Style="{DynamicResource Esri_Button}"  Height="20" Command="{Binding CmdSave}" Content="Voeg toe"/>
 
+            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}"  Height="20" Command="{Binding CmdZoom}" Content="Zoom"/>
+            <!--<Button Grid.Column="3" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdClose}" Margin="5,0,0,0" Content="Sluiten"/>-->
+
+            <!--button with visibility-->
+            <!--<Button Grid.Column="0" Style="{DynamicResource Esri_Button}" Width="70" Height="20" Command="{Binding CmdSave}" Visibility="{Binding IsSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}"  Margin="0,0,5,0" Content="Voeg to"/>
+            <Button Grid.Column="0" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdPoint}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="0,0,6,0" Content="{Binding TextMarkeer}"/>
+            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdRemoveFavourite}" Visibility="{Binding IsInverseSelectedFavouriteList, Converter={StaticResource BoolToVisibilityConverter}}" Margin="4,0,5,0" Content="Verwijderen"/>-->
 
         </Grid>
 
@@ -83,10 +84,23 @@
                  ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
                  BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" Grid.RowSpan="3" />
 
-        <Button Style="{DynamicResource Esri_Button}" Content="Opslaan lijst" Grid.Row="7" Width="90" Height="20" Command="{Binding CmdSaveIcon}" Margin="0,-8,0,0"  />
-        <!--<Button Style="{DynamicResource Esri_ButtonUpSmall}" Grid.Row="6" Width="20" Height="20" Margin="-30,0,0,0" Command="{Binding CmdLoad}"  />-->
+        <Grid Grid.Row="7" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
+            <Button Grid.Column="0" Style="{DynamicResource Esri_Button}"  Height="20" Command="{Binding CmdZoom}" Content="Zoom"/>
+            <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdPoint}" Content="{Binding TextMarkeer}"/>
+            <Button Grid.Column="2" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdRemoveFavourite}" Margin="4,0,5,0" Content="Verwijder"/>
+            <Button Grid.Column="3"  Style="{DynamicResource Esri_Button}" Content="Exporteer" Width="80" Height="20" Command="{Binding CmdSaveIcon}"  />
 
+        </Grid>
+        
+
+        <!--Markeer List-->
         <!--<TextBlock Style="{DynamicResource RegularText}" Grid.Row="6" Text="Markeer Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold"/>
         <ListBox ItemsSource="{Binding ListStreetsMarkeerString}" SelectedItem="{Binding SelectedStreetMarkeer}" Grid.Row="7" Margin="5,-5,5,0" 
                  ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
