@@ -631,7 +631,9 @@ namespace GeoPunt.Dockpanes
                     //}
 
                     MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    SaveMapPoint savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
                     ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
+                    ListSaveMapPoint.Remove(savePointToDelete);
                     ListStreetsMarkeer.Remove(pointToDelete);
                     GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete, MapView.Active, true, true);
 

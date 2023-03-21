@@ -448,7 +448,31 @@ namespace GeoPunt.Dockpanes
                 });
             }
         }
+        private ObservableCollection<DataRowParcel> ListSavePerceel = new ObservableCollection<DataRowParcel>();
+        public ICommand CmdSaveIcon
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    List<DataRowParcel> _data = new List<DataRowParcel>();
+                    foreach (DataRowParcel item in ListSavePerceel)
+                    {
+                        _data.Add(item);
+                    }
 
+                    System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+                    oSaveFileDialog.Filter = "Json files (*.json) | *.json";
+                    if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        string fileName = oSaveFileDialog.FileName;
+
+                        await using FileStream createStream = File.Create(fileName);
+                        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
+                    }
+                });
+            }
+        }
         public ICommand CmdZoomGemeente
         {
             get
@@ -583,6 +607,7 @@ namespace GeoPunt.Dockpanes
                     if (ListSaveParceels.FirstOrDefault(m => m.Perceel == row.Perceel) == null)
                     {
                         ListSaveParceels.Add(row);
+                        ListSavePerceel.Add(row);
                     }
                 });
             }
@@ -614,6 +639,7 @@ namespace GeoPunt.Dockpanes
 
                     DataRowParcel percelToDelete = ListSaveParceels.FirstOrDefault(p => p.Perceel == SelectedSaveParceel.Perceel);
                     ListSaveParceels.Remove(percelToDelete);
+                    ListSavePerceel.Remove(percelToDelete);
 
 
                 });
