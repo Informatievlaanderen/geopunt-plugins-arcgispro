@@ -27,7 +27,7 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="5,5,5,0" >
+        <Grid Grid.Row="0" Margin="5,5,5,0" HorizontalAlignment="Center" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="Auto" />
@@ -38,10 +38,10 @@
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Gemeente:" />
             <ComboBox ItemsSource="{Binding ListGemeente}" Width="190" SelectedItem="{Binding SelectedListGemeente}"  Grid.Column="1" Margin="5,0,5,0" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomGemeente}" />
+            <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomGemeente}" />-->
         </Grid>
 
-        <Grid Grid.Row="1" Margin="5,5,5,5" >
+        <Grid Grid.Row="1" Margin="5,5,5,5" HorizontalAlignment="Center" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="Auto" />
@@ -52,10 +52,10 @@
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Afdeling:" />
             <ComboBox ItemsSource="{Binding ListDepartments}" Width="190" SelectedItem="{Binding SelectedListDepartments}"  Grid.Column="1" Margin="5,0,5,0" />
-            <Button Style="{DynamicResource Esri_Button}"  Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomDepartment}" />
+            <!--<Button Style="{DynamicResource Esri_Button}"  Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomDepartment}" />-->
         </Grid>
 
-        <Grid Grid.Row="2" Margin="5,5,5,5" >
+        <Grid Grid.Row="2" Margin="5,5,5,5" HorizontalAlignment="Center" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="Auto" />
@@ -67,10 +67,10 @@
                        Text="Sectie:" />
             <ComboBox ItemsSource="{Binding ListSecties}" 
                       SelectedItem="{Binding SelectedListSecties}" Width="190" Grid.Column="1" Margin="5,0,5,0" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomSectie}"  />
+            <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomSectie}"  />-->
         </Grid>
 
-        <Grid Grid.Row="3" Margin="5,5,5,5" >
+        <Grid Grid.Row="3" Margin="5,5,5,5" HorizontalAlignment="Center" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="Auto" />
@@ -81,27 +81,25 @@
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Perceelnummer:" />
             <ComboBox ItemsSource="{Binding ListParcels}" Width="190" SelectedItem="{Binding SelectedListParcels}" Grid.Column="1" Margin="5,0,5,0" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomParcel}"  />
+            
         </Grid>
 
-        <Grid Grid.Row="4" Margin="5">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            
+        <Grid Grid.Row="4" HorizontalAlignment="Center" Margin="0,0,0,20" >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Opslaan" Command="{Binding CmdSave}" Visibility="{Binding ActiveButtonSave, Converter={StaticResource BoolToVisibilityConverter}}" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Content="Voeg toe" Command="{Binding CmdSave}"  />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Zoom" Command="{Binding CmdZoomParcel}"  />
+
+            
+            <!--button with visibility-->
+            <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Opslaan" Command="{Binding CmdSave}" Visibility="{Binding ActiveButtonSave, Converter={StaticResource BoolToVisibilityConverter}}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Verwijderen" Command="{Binding CmdRemove}" Visibility="{Binding ActiveButtonMarkeer, Converter={StaticResource BoolToVisibilityConverter}}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Sluiten" Command="{Binding CmdClose}"   />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="{Binding TextMarkeer}" Command="{Binding CmdMarkeer}" Visibility="{Binding ActiveButtonMarkeer, Converter={StaticResource BoolToVisibilityConverter}}"   />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="{Binding TextMarkeer}" Command="{Binding CmdMarkeer}" Visibility="{Binding ActiveButtonMarkeer, Converter={StaticResource BoolToVisibilityConverter}}"   />-->
+
+            <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Sluiten" Command="{Binding CmdClose}"   />-->
 
         </Grid>
 
@@ -114,6 +112,7 @@
             <TextBlock Style="{DynamicResource RegularText}" Margin="5" Text="Favorieten Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
             <DataGrid Grid.Row="1" x:Name="DataGridPlace" ItemsSource="{Binding ListSaveParceels, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedSaveParceel}" 
                       Style="{DynamicResource Esri_DataGrid}"
+                      Height="200" 
                       ScrollViewer.CanContentScroll="True"      
                       AutoGenerateColumns="True"
                       HorizontalAlignment="Stretch"
@@ -121,7 +120,22 @@
                       ></DataGrid>
         </Grid>
 
-        <Button Style="{DynamicResource Esri_Button}" Content="Opslaan lijst" Grid.Row="6" Width="90" Height="20" Command="{Binding CmdSaveIcon}" Margin="0,8,0,0"  />
+        <Grid Grid.Row="6" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Zoom" Command="{Binding CmdZoomParcel}"  />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="{Binding TextMarkeer}" Command="{Binding CmdMarkeer}"   />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Verwijder" Command="{Binding CmdRemove}"  />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Exporteer" Width="80" Height="20" Command="{Binding CmdSaveIcon}"   />
+
+
+        </Grid>
+
 
 
         <!--<DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
