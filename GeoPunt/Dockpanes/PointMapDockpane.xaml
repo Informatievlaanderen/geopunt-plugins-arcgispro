@@ -6,7 +6,7 @@
              xmlns:ui="clr-namespace:GeoPunt.Dockpanes"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="400" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.PointMapDockpaneViewModel}">
   <UserControl.Resources>
     <ResourceDictionary>
@@ -18,6 +18,7 @@
   </UserControl.Resources>
   <Grid>
     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
@@ -61,6 +62,8 @@
         <ListBox Grid.Row="6" Height="150" ItemsSource="{Binding ListStreetsFavouriteStringPoint}" SelectedItem="{Binding SelectedStreetFavouritePoint}"  Margin="5,0,5,0" 
                  ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
                  BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" />
+
+        <Button Style="{DynamicResource Esri_Button}" Content="Opslaan lijst" Grid.Row="7" Width="90" Height="20" Command="{Binding CmdSaveIcon}" Margin="0,8,0,0" />
 
 
     </Grid>

@@ -714,17 +714,6 @@ namespace GeoPunt.Dockpanes
                         _data.Add(item);
                     }
 
-                    //using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
-                    //{
-                    //    System.Windows.Forms.DialogResult result = fbd.ShowDialog();
-
-                    //    if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
-                    //    {
-                    //        await using FileStream createStream = File.Create($@"{fbd.SelectedPath}\path.json");
-                    //        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                    //    }
-                    //}
-
                     System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
                     oSaveFileDialog.Filter = "Json files (*.json) | *.json";
                     if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -733,18 +722,6 @@ namespace GeoPunt.Dockpanes
 
                         await using FileStream createStream = File.Create(fileName);
                         await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                        //string extesion = Path.GetExtension(fileName);
-
-
-                        //switch (extesion)
-                        //{
-                        //    case ".txt"://do something here 
-                        //        break;
-                        //    case ".xls"://do something here 
-                        //        break;
-                        //    default://do something here
-                        //        break;
-                        //}
                     }
                 });
             }

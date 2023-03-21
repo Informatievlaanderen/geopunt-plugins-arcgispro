@@ -16,6 +16,7 @@ using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -145,6 +146,31 @@ namespace GeoPunt.Dockpanes
                 mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
             });
         }
+        private ObservableCollection<SaveMapPoint> ListSaveMapPoint = new ObservableCollection<SaveMapPoint>();
+        public ICommand CmdSaveIcon
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    List<SaveMapPoint> _data = new List<SaveMapPoint>();
+                    foreach (SaveMapPoint item in ListSaveMapPoint)
+                    {
+                        _data.Add(item);
+                    }
+
+                    System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+                    oSaveFileDialog.Filter = "Json files (*.json) | *.json";
+                    if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        string fileName = oSaveFileDialog.FileName;
+
+                        await using FileStream createStream = File.Create(fileName);
+                        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
+                    }
+                });
+            }
+        }
         public ICommand CmdClose
         {
             get
@@ -216,6 +242,7 @@ namespace GeoPunt.Dockpanes
                     if (!ListStreetsFavouriteStringPoint.Contains(Address))
                     {
                         ListStreetsFavouriteStringPoint.Add(Address);
+                        ListSaveMapPoint.Add(new SaveMapPoint(Address, MapPointSelectedAddress));
                     }
                 });
             }
