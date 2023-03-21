@@ -117,6 +117,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private List<MapPoint> _listPOIMarkeer = new List<MapPoint>();
+        public List<MapPoint> ListPOIMarkeer
+        {
+            get { return _listPOIMarkeer; }
+            set
+            {
+                SetProperty(ref _listPOIMarkeer, value);
+            }
+        }
+
         private DataRowSearchPlaats _selectedInteressantePlaatsList;
         public DataRowSearchPlaats SelectedInteressantePlaatsList
         {
@@ -133,6 +143,15 @@ namespace GeoPunt.Dockpanes
 
                 ActiveRemoveButton = false;
                 ActiveSaveButton = true;
+
+                if (ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
+                {
+                    TextMarkeer = "Verwijder markering";
+                }
+                else
+                {
+                    TextMarkeer = "Markeer";
+                }
             }
         }
 
@@ -174,6 +193,15 @@ namespace GeoPunt.Dockpanes
             }
             MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
             //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
+
+            if (ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
+            {
+                TextMarkeer = "Verwijder markering";
+            }
+            else
+            {
+                TextMarkeer = "Markeer";
+            }
         }
 
         DataHandler.poi poiDH;
@@ -184,6 +212,7 @@ namespace GeoPunt.Dockpanes
             poiDH = new DataHandler.poi(5000);
             initGui();
             ActiveRemoveButton = false;
+            TextMarkeer = "Markeer";
             //LoadCollectionData();
         }
 
@@ -339,6 +368,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private string _textMarkeer;
+        public string TextMarkeer
+        {
+            get { return _textMarkeer; }
+            set
+            {
+                SetProperty(ref _textMarkeer, value);
+            }
+        }
+
         private List<string> _typesList = new List<string>();
         public List<string> TypesList
         {
@@ -361,11 +400,11 @@ namespace GeoPunt.Dockpanes
                 datacontract.poiAddress adres;
 
                 row.id = poi.id;
-                row.Omschrijving = "";
-                if (poi.description != null)
-                {
-                    row.Omschrijving = poi.description.value;
-                }
+                //row.Omschrijving = "";
+                //if (poi.description != null)
+                //{
+                //    row.Omschrijving = poi.description.value;
+                //}
 
                 qry = (from datacontract.poiValueGroup n in poi.categories
                        where n.type == "Type"
@@ -387,7 +426,12 @@ namespace GeoPunt.Dockpanes
                 qry = (
                     from datacontract.poiValueGroup n in poi.labels
                     select n.value).ToList();
-                row.Label = string.Join(", ", qry.ToArray());
+                //row.Naam = string.Join(", ", qry.ToArray());
+                row.Naam = qry[0];
+
+
+
+
 
                 adres = poi.location.address;
                 if (adres != null)
@@ -463,6 +507,37 @@ namespace GeoPunt.Dockpanes
             if (typeCodes.Count() == 0) return "";
 
             return typeCodes.First<string>();
+        }
+
+        public void updatePOIMarkeer()
+        {
+            foreach (MapPoint mapPoint in ListPOIMarkeer)
+            {
+                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, false);
+            }
+        }
+        public ICommand CmdPoint
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    if (ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) == null)
+                    {
+                        ListPOIMarkeer.Add(MapPointSelectedAddress);
+                        updatePOIMarkeer();
+                        TextMarkeer = "Verwijder markering";
+                    }
+                    else
+                    {
+                        TextMarkeer = "Markeer";
+                        MapPoint pointToDelete = ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                        ListPOIMarkeer.Remove(pointToDelete);
+                        GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                        updatePOIMarkeer();
+                    }
+                });
+            }
         }
 
         private ObservableCollection<DataRowSearchPlaats> ListSavePOI = new ObservableCollection<DataRowSearchPlaats>();
@@ -552,8 +627,8 @@ namespace GeoPunt.Dockpanes
                     row.Thema = SelectedInteressantePlaatsList.Thema;
                     row.Categorie = SelectedInteressantePlaatsList.Categorie;
                     row.Type = SelectedInteressantePlaatsList.Type;
-                    row.Label = SelectedInteressantePlaatsList.Label;
-                    row.Omschrijving = SelectedInteressantePlaatsList.Omschrijving;
+                    row.Naam = SelectedInteressantePlaatsList.Naam;
+                    //row.Omschrijving = SelectedInteressantePlaatsList.Omschrijving;
                     row.Straat = SelectedInteressantePlaatsList.Straat;
                     row.busnr = SelectedInteressantePlaatsList.busnr;
                     row.Gemeente = SelectedInteressantePlaatsList.Gemeente;
@@ -595,11 +670,11 @@ namespace GeoPunt.Dockpanes
                         datacontract.poiAddress adres;
 
                         row.id = poi.id;
-                        row.Omschrijving = "";
-                        if (poi.description != null)
-                        {
-                            row.Omschrijving = poi.description.value;
-                        }
+                        //row.Omschrijving = "";
+                        //if (poi.description != null)
+                        //{
+                        //    row.Omschrijving = poi.description.value;
+                        //}
 
                         qry = (from datacontract.poiValueGroup n in poi.categories
                                where n.type == "Type"
@@ -621,7 +696,7 @@ namespace GeoPunt.Dockpanes
                         qry = (
                             from datacontract.poiValueGroup n in poi.labels
                             select n.value).ToList();
-                        row.Label = string.Join(", ", qry.ToArray());
+                        row.Naam = string.Join(", ", qry.ToArray());
 
                         adres = poi.location.address;
                         if (adres != null)
