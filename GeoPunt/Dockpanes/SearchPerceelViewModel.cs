@@ -664,7 +664,7 @@ namespace GeoPunt.Dockpanes
                     DataRowParcel percelToDelete = ListSaveParceels.FirstOrDefault(p => p.Perceel == SelectedSaveParceel.Perceel);
                     ListSaveParceels.Remove(percelToDelete);
                     ListSavePerceel.Remove(percelToDelete);
-
+                    
 
                 });
             }

@@ -100,9 +100,9 @@
 			    largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
-		<button id="GeoPunt_InformationButton" caption="Informations" className="InformationButton" loadOnClick="true" 
+		<button id="GeoPunt_InformationButton" caption="Informations" className="InformationButton"  
 			largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+          <tooltip heading="Tooltip Heading">Feature not yet developed<disabledText>disabledddd</disabledText> </tooltip>
         </button>
         
       </controls>

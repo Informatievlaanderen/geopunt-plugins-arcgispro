@@ -21,8 +21,12 @@ namespace GeoPunt.Buttons
 {
     internal class InformationButton : Button
     {
+        public InformationButton()
+        {
+        }
         protected override void OnClick()
         {
+            
         }
     }
 }

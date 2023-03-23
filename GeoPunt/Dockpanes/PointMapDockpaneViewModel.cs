@@ -12,6 +12,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Mapping;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,16 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _address, value);
                 IsSelectedFavouriteList = false;        
+            }
+        }
+
+        private string _textMarkeer;
+        public string TextMarkeer
+        {
+            get { return _textMarkeer; }
+            set
+            {
+                SetProperty(ref _textMarkeer, value);
             }
         }
 
@@ -135,6 +146,15 @@ namespace GeoPunt.Dockpanes
             }
 
             MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+
+            if (ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
+            {
+                TextMarkeer = "Verwijder markering";
+            }
+            else
+            {
+                TextMarkeer = "Markeer";
+            }
         }
 
         public void updateListBoxFavouritePoint()
@@ -242,9 +262,11 @@ namespace GeoPunt.Dockpanes
                     {
                         ListStreetsFavouritePoint.Add(MapPointSelectedAddress);
                         updateListBoxFavouritePoint();
+                        TextMarkeer = "Verwijder markering";
                     }
                     else
                     {
+                        TextMarkeer = "Markeer";
                         MapPoint pointToDelete = ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
                         ListStreetsFavouritePoint.Remove(pointToDelete);
                         GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
@@ -272,6 +294,7 @@ namespace GeoPunt.Dockpanes
         public PointMapDockpaneViewModel() 
         {
             Module1.vmSearchPlace = this;
+            TextMarkeer = "Markeer";
         }
 
         /// <summary>

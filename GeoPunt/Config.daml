@@ -102,7 +102,7 @@
         </button>
 		<button id="GeoPunt_InformationButton" caption="Informations" className="InformationButton" loadOnClick="true" 
 			largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+          <tooltip heading="Tooltip Heading">Feature not yet developed<disabledText>disabledddd</disabledText> </tooltip>
         </button>
         
       </controls>
