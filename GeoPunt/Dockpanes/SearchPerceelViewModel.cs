@@ -589,6 +589,30 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        public ICommand CmdZoomParcelFavourite
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    string gemeente = SelectedSaveParceel.Gemeente;
+                    string niscode = municipality2nis(gemeente);
+
+                    string department = SelectedSaveParceel.Department;
+                    string depCode = department2code(department);
+
+                    string sectie = SelectedSaveParceel.Sectie;
+
+                    if (niscode == "" || niscode == null) return;
+                    if (depCode == "" || depCode == null) return;
+                    if (sectie == "" || sectie == null) return;
+
+                    datacontract.geojson secGeom = JsonConvert.DeserializeObject<datacontract.geojson>(perceelToSave.geometry.shape);
+                    createGrapicAndZoomTo(perceelToSave.geometry.shape, secGeom);
+                });
+            }
+        }
+
         public ICommand CmdSave
         {
             get

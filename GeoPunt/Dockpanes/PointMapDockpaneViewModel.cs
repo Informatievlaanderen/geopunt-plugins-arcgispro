@@ -78,7 +78,7 @@ namespace GeoPunt.Dockpanes
         {
             Address = address;
             DifferenceMeters = diff.ToString("0.00")+" meter";
-            updateCurrentMapPoint(address, 1);
+            updateCurrentMapPoint(address, 1,true);
         }
 
         private ObservableCollection<MapPoint> _listStreetsFavouritePoint = new ObservableCollection<MapPoint>();
@@ -114,7 +114,8 @@ namespace GeoPunt.Dockpanes
         }
 
         MapPoint MapPointSelectedAddress = null;
-        public void updateCurrentMapPoint(string query, int count)
+        MapPoint MapPointSelectedAddressSimple = null;
+        public void updateCurrentMapPoint(string query, int count, bool isSimple = false)
         {
             adresLocation = new DataHandler.adresLocation(5000);
             double x = 0;
@@ -126,6 +127,13 @@ namespace GeoPunt.Dockpanes
                 x = item.Location.X_Lambert72;
                 y = item.Location.Y_Lambert72;
             }
+
+            if(isSimple) 
+            {
+                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y);
+                return;
+            }
+
             MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
         }
 
@@ -137,12 +145,12 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private void zoomToQuery()
+        private void zoomToQuery(MapPoint mapPoint)
         {
             QueuedTask.Run(() =>
             {
                 var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 50);
+                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
                 mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
             });
         }
@@ -208,7 +216,18 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery();
+                    zoomToQuery(MapPointSelectedAddressSimple);
+                });
+            }
+        }
+
+        public ICommand CmdZoomFavourite
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    zoomToQuery(MapPointSelectedAddress);
                 });
             }
         }

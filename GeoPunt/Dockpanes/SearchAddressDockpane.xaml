@@ -92,7 +92,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Style="{DynamicResource Esri_Button}"  Height="20" Command="{Binding CmdZoom}" Content="Zoom"/>
+            <Button Grid.Column="0" Style="{DynamicResource Esri_Button}"  Height="20" Command="{Binding CmdZoomFavourite}" Content="Zoom"/>
             <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdPoint}" Content="{Binding TextMarkeer}"/>
             <Button Grid.Column="2" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdRemoveFavourite}" Margin="4,0,5,0" Content="Verwijder"/>
             <Button Grid.Column="3"  Style="{DynamicResource Esri_Button}" Content="Exporteer" Width="80" Height="20" Command="{Binding CmdSaveIcon}"  />

@@ -72,7 +72,7 @@
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Content="Exporteer" Grid.Row="7" Width="80" Height="20" Command="{Binding CmdSaveIcon}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdRemoveFavourite}"   Content="Verwijder"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdPoint}"  Content="Markeer"/>
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoom}"  Content="Zoom"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoomFavourite}"  Content="Zoom"/>
         </Grid>
       
        

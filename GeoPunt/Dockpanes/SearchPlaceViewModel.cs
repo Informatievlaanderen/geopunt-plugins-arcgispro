@@ -114,6 +114,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        MapPoint MapPointSelectedAddressSimple = null;
         private ObservableCollection<DataRowSearchPlaats> _interessantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
         public ObservableCollection<DataRowSearchPlaats> InteressantePlaatsList
         {
@@ -147,6 +148,20 @@ namespace GeoPunt.Dockpanes
                 //    string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
                 //    updateCurrentMapPoint(var, 1);
                 //}
+
+                double x = 0;
+                double y = 0;
+                string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
+
+
+                List<datacontract.locationResult> loc = adresLocation.getAdresLocation(var, 1);
+                foreach (datacontract.locationResult item in loc)
+                {
+                    x = item.Location.X_Lambert72;
+                    y = item.Location.Y_Lambert72;
+
+                }
+                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y);
 
                 ActiveRemoveButton = false;
                 ActiveSaveButton = true;
@@ -182,7 +197,7 @@ namespace GeoPunt.Dockpanes
             double x = 0;
             double y = 0;
 
-            adresLocation = new DataHandler.adresLocation(5000);
+            
 
             List<datacontract.locationResult> loc = adresLocation.getAdresLocation(query, count);
             foreach (datacontract.locationResult item in loc)
@@ -210,6 +225,7 @@ namespace GeoPunt.Dockpanes
         public SearchPlaceViewModel() 
         {
             poiDH = new DataHandler.poi(5000);
+            adresLocation = new DataHandler.adresLocation(5000);
             initGui();
             ActiveRemoveButton = false;
             TextMarkeer = "Markeer";
@@ -464,12 +480,12 @@ namespace GeoPunt.Dockpanes
             return niscodes.First<string>();
         }
 
-        private void zoomToQuery()
+        private void zoomToQuery(MapPoint mapPoint)
         {
             QueuedTask.Run(() =>
             {
                 var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(MapPointSelectedAddress, 50);
+                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
                 mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
             });
         }
@@ -725,7 +741,18 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery();
+                    zoomToQuery(MapPointSelectedAddressSimple);
+                });
+            }
+        }
+
+        public ICommand CmdZoomFavourite
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    zoomToQuery(MapPointSelectedAddress);
                 });
             }
         }
