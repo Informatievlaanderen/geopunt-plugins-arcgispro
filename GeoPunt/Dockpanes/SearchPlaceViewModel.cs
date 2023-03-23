@@ -104,6 +104,13 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedFavouriteInteressantePlaatsList, value);
                 ActiveRemoveButton = true;
                 ActiveSaveButton = false;
+
+                if (_selectedFavouriteInteressantePlaatsList != null)
+                {
+                    string var = _selectedFavouriteInteressantePlaatsList.Straat + ", " + _selectedFavouriteInteressantePlaatsList.Gemeente;
+                    updateCurrentMapPoint(var, 1);
+                }
+
             }
         }
 
@@ -135,23 +142,16 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedInteressantePlaatsList, value);
                 //string var = _selectedInteressantePlaatsList.Straat;
-                if(_selectedInteressantePlaatsList != null)
-                {
-                    string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
-                    updateCurrentMapPoint(var, 1);
-                }
+                //if(_selectedInteressantePlaatsList != null)
+                //{
+                //    string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
+                //    updateCurrentMapPoint(var, 1);
+                //}
 
                 ActiveRemoveButton = false;
                 ActiveSaveButton = true;
 
-                if (ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
-                {
-                    TextMarkeer = "Verwijder markering";
-                }
-                else
-                {
-                    TextMarkeer = "Markeer";
-                }
+                
             }
         }
 
@@ -513,7 +513,7 @@ namespace GeoPunt.Dockpanes
         {
             foreach (MapPoint mapPoint in ListPOIMarkeer)
             {
-                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, false);
+                GeocodeUtils.UpdateMapOverlay(mapPoint, MapView.Active, true);
             }
         }
         public ICommand CmdPoint
@@ -652,6 +652,11 @@ namespace GeoPunt.Dockpanes
                     {
                         FavouriteInteressantePlaatsList.Remove(plaatsToDelete);
                         ListSavePOI.Remove(plaatsToDelete);
+
+                        MapPoint pointToDelete = ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                        ListPOIMarkeer.Remove(pointToDelete);
+                        GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                        updatePOIMarkeer();
                     }
                 });
             }
