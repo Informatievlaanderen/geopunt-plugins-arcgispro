@@ -18,9 +18,9 @@
   </UserControl.Resources>
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="100"/>
-      <RowDefinition Height="200"/>
-      <RowDefinition Height="60"/>
+      <RowDefinition Height="70"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
@@ -51,8 +51,9 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox Grid.Row="0" Grid.ColumnSpan="4" IsReadOnly = "True" Height="24" Margin="5,4,5,5" Text="{Binding TextFilePlacement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <ComboBox Grid.Row="1" Grid.Column="1" Height="23" Width="85" ItemsSource="{Binding ListFormats}" SelectedItem="{Binding SelectedListFormats}" SelectedIndex="0" />
-                <ComboBox Grid.Row="1" Grid.Column="2" Height="23" Width="85" ItemsSource="{Binding ListSeparators}" SelectedItem="{Binding SelectedListSeparators}" SelectedIndex="0" />
+                <!--<ComboBox Grid.Row="1" Grid.Column="1" Height="23" Width="85" ItemsSource="{Binding ListFormats}" SelectedItem="{Binding SelectedListFormats}" SelectedIndex="0" />
+                <ComboBox Grid.Row="1" Grid.Column="2" Height="23" Width="85" ItemsSource="{Binding ListSeparators}" SelectedItem="{Binding SelectedListSeparators}" SelectedIndex="0" />-->
+            
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="1" >
@@ -124,25 +125,31 @@
                        VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ComboBox Grid.Row="3" Grid.Column="1" Height="20"  Margin="5" Width="140"
+                      ItemsSource="{Binding ComboBoxListOfColumns}"
+                      SelectedValue="{Binding SelectedStraat}"
                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                 <TextBlock Grid.Row="4" Text="Huisnummer (optioneel):" FontSize="13.5" 
                        VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ComboBox Grid.Row="4" Grid.Column="1" Height="20" Margin="5" Width="140"
+                      ItemsSource="{Binding ComboBoxListOfColumns}"
+                      SelectedValue="{Binding SelectedHuisnummer}"
                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                 <TextBlock Grid.Row="5" Text="Gemeente of postcode:" FontSize="13.5" 
                        VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ComboBox Grid.Row="5" Grid.Column="1" Height="20" Margin="5" Width="140"
+                      ItemsSource="{Binding ComboBoxListOfColumns}"
+                      SelectedValue="{Binding SelectedGemeente}"
                       Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
             </Grid>
 
             
         </Grid>
 
-        <Grid Grid.Row="2" >
+        <!--<Grid Grid.Row="2" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -161,25 +168,40 @@
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Valideer selectie" Margin="3" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Annuleer" Margin="3" />
 
-            <Grid Grid.Row="1" Grid.ColumnSpan="5" >
+            <Grid Grid.Row="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" >
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="80" />
-                    <ColumnDefinition Width="80" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Valideer alles" Margin="5" 
+                    Command="{Binding CmdValideerAlles}" />
                 <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Markeer" Margin="5" />
                 <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Zoom" Margin="5" />
             </Grid>
             
             
+        </Grid>-->
+
+        <Grid Grid.Row="2" HorizontalAlignment="Center" Margin="5,10,5,5" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Valideer alles" Margin="5" 
+                    Command="{Binding CmdValideerAlles}" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Markeer" Margin="5" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Zoom" Margin="5" />
         </Grid>
 
         <Grid Grid.Row="3" Margin="0,10,0,0" >
             <DataGrid x:Name="csvDataGridColumn" Grid.Row="1" IsReadOnly="true"
                 ItemsSource="{Binding DataTableCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                       SelectedItem="{Binding SelectedDataCsvList}" 
+                      
                       Style="{DynamicResource Esri_DataGrid}"
                       ScrollViewer.CanContentScroll="True"      
                       AutoGenerateColumns="True"

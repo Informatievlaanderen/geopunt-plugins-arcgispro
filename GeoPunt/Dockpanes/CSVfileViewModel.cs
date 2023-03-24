@@ -1,4 +1,5 @@
-﻿using ArcGIS.Core.CIM;
+﻿using ActiproSoftware.Windows.Extensions;
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
@@ -74,6 +75,36 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private string _selectedStraat;
+        public string SelectedStraat
+        {
+            get { return _selectedStraat; }
+            set
+            {
+                SetProperty(ref _selectedStraat, value);
+            }
+        }
+
+        private string _selectedHuisnummer;
+        public string SelectedHuisnummer
+        {
+            get { return _selectedHuisnummer; }
+            set
+            {
+                SetProperty(ref _selectedHuisnummer, value);
+            }
+        }
+
+        private string _selectedGemeente;
+        public string SelectedGemeente
+        {
+            get { return _selectedGemeente; }
+            set
+            {
+                SetProperty(ref _selectedGemeente, value);
+            }
+        }
+
         private ObservableCollection<string> _listFormats = new ObservableCollection<string>(new List<string>() {
             "UTF-8",
             "ANSI"
@@ -100,6 +131,16 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _listSeparators, value);
+            }
+        }
+
+        private ObservableCollection<string> _comboBoxListOfColumns = new ObservableCollection<string>(new List<string>());
+        public ObservableCollection<string> ComboBoxListOfColumns
+        {
+            get { return _comboBoxListOfColumns; }
+            set
+            {
+                SetProperty(ref _comboBoxListOfColumns, value);
             }
         }
 
@@ -191,10 +232,12 @@ namespace GeoPunt.Dockpanes
 
             textEncoding = Encoding.GetEncoding("iso-8859-1");
 
-            if (!csv.Exists)
-                throw new Exception("Deze csv-file bestaat niet: " + csv.Name);
-            if (separator == "" || separator == null)
-                throw new Exception("Deze separator is niet toegelaten");
+            //if (!csv.Exists)
+            //    throw new Exception("Deze csv-file bestaat niet: " + csv.Name);
+            //if (separator == "" || separator == null)
+            //    throw new Exception("Deze separator is niet toegelaten");
+
+            separator = "Puntcomma";
 
             switch (separator)
             {
@@ -259,8 +302,8 @@ namespace GeoPunt.Dockpanes
 
         private async void loadCSV2table()
         {
-            System.Text.Encoding codex = System.Text.Encoding.Default;
-            if (SelectedListFormats == "UTF-8") codex = System.Text.Encoding.UTF8;
+            System.Text.Encoding codex = System.Text.Encoding.UTF8;
+            //if (SelectedListFormats == "UTF-8") codex = ;
 
             string csvPath = TextFilePlacement;
             DataGridViewComboBoxColumn validatedRow;
@@ -270,7 +313,7 @@ namespace GeoPunt.Dockpanes
             try
             {
                 int maxRowCount = 500;
-                csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, maxRowCount, codex);
+                csvDataTbl = loadCSV2datatable(csvPath, "Puntcomma", maxRowCount, codex);
 
                 if (csvDataTbl.Rows.Count == maxRowCount)
                 {
@@ -282,6 +325,7 @@ namespace GeoPunt.Dockpanes
             }
             catch (Exception csvEx)
             {
+                //Debug.WriteLine(csvEx.Message, "Error");
                 System.Windows.MessageBox.Show(csvEx.Message, "Error");
                 //csvErrorLbl.Text = csvEx.Message;
                 return;
@@ -292,16 +336,49 @@ namespace GeoPunt.Dockpanes
             validatedRow.HeaderText = "Gevalideerd adres";
             validatedRow.Name = "validAdres";
             validatedRow.Width = 120;
+            ComboBoxListOfColumns = new ObservableCollection<string>(new List<string>());
 
             await QueuedTask.Run(() =>
             {
                 DataTableCSV = new DataTable();
+
+                DataColumn dataTableCsvColumn2 = new DataColumn();
+                dataTableCsvColumn2.ColumnName = "Bestaan";
+                dataTableCsvColumn2.DefaultValue = "ooo";
+                csvDataTbl.Columns.Add(dataTableCsvColumn2);
+
+                
                 foreach (DataColumn column in csvDataTbl.Columns)
                 {
                         DataColumn dataTableCsvColumn = new DataColumn();
                         dataTableCsvColumn.ColumnName = column.ColumnName;
                         DataTableCSV.Columns.Add(dataTableCsvColumn);
+                        ComboBoxListOfColumns.Add(column.ColumnName);
                 }
+
+                foreach (DataRow row in csvDataTbl.Rows)
+                {
+                    //row[2] = "aa";
+                    //row.ItemArray[3] = "koko;
+                    DataTableCSV.Rows.Add(row.ItemArray);
+                    
+                }
+            });
+        }
+
+        private async void refreshDatGrid(DataTable csvDataTbl)
+        {
+            await QueuedTask.Run(() =>
+            {
+                DataTableCSV = new DataTable();
+
+                foreach (DataColumn column in csvDataTbl.Columns)
+                {
+                    DataColumn dataTableCsvColumn = new DataColumn();
+                    dataTableCsvColumn.ColumnName = column.ColumnName;
+                    DataTableCSV.Columns.Add(dataTableCsvColumn);
+                }
+
                 foreach (DataRow row in csvDataTbl.Rows)
                 {
                     DataTableCSV.Rows.Add(row.ItemArray);
@@ -352,19 +429,6 @@ namespace GeoPunt.Dockpanes
             string adres;
             List<string> formatedAddresses = new List<string>();
 
-            //if (street == null || street == "") return formatedAddresses;
-
-            //if ((houseNr == null || houseNr == "") && (municapality == null || municapality == ""))
-            //    adres = street;
-            //else if (municapality == null || municapality == "")
-            //    adres = street + " " + houseNr;
-            //else if (houseNr == null || houseNr == "")
-            //    adres = street + ", " + municapality;
-            //else
-            //{
-            //    adres = string.Format("{0} {1}, {2}", street, houseNr, municapality);
-            //}
-
             adres = string.Format("{0} {1}, {2}", street, houseNr, municapality);
 
             formatedAddresses.AddRange(sug.getAdresSuggestion(adres, 5));
@@ -379,6 +443,14 @@ namespace GeoPunt.Dockpanes
                 {
                     await QueuedTask.Run(() =>
                     {
+                        if(SelectedGemeente == null || SelectedHuisnummer == null || SelectedStraat == null)
+                        {
+                            System.Windows.MessageBox.Show("U moet de waarde van de kolommen kiezen", "Error");
+                            return;
+                        }
+
+                        
+
                         List<string> suggestions;
                         string street; string huisnr; string gemeente;
 
@@ -387,50 +459,58 @@ namespace GeoPunt.Dockpanes
                         System.Text.Encoding codex = System.Text.Encoding.Default;
                         if (SelectedListFormats == "UTF-8") codex = System.Text.Encoding.UTF8;
                         csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, 500, codex);
-                        //foreach (DataRow row in csvDataTbl.Rows)
-                        //{
-                        //    DataTableCSV.Rows.Add(row.ItemArray);
-                        //}
 
-                        //DataGridViewRow[] rows = (DataGridViewRow[])DataTableCSV;
-
-
-                        rows2validate = new DataGridViewRow[csvDataTbl.Rows.Count];
-                        csvDataTbl.Rows.CopyTo(rows2validate, 0);
-
-                        foreach (DataGridViewCell cel in rows2validate[1].Cells)
+                        var cpt = 0;
+                        var streetIndex = 0;
+                        var huisnrIndex = 0;
+                        var gemeenteIndex = 0;
+                        foreach (DataColumn column in csvDataTbl.Columns)
                         {
-                            Debug.WriteLine(cel);
-                            //cel.Style.BackColor = clr;
+                            if(SelectedStraat == column.ColumnName)
+                            {
+                                streetIndex = cpt;
+                            }
+                            if (SelectedHuisnummer == column.ColumnName)
+                            {
+                                huisnrIndex = cpt;
+                            }
+                            if (SelectedGemeente == column.ColumnName)
+                            {
+                                gemeenteIndex = cpt;
+                            }
+                            cpt++;
                         }
 
-                        Debug.WriteLine("!!!!!!!!! PARAMETERS !!!!!!!!!!!!!!");
+                        DataColumn dataTableCsvColumn2 = new DataColumn();
+                        dataTableCsvColumn2.ColumnName = "Bestaan";
+                        dataTableCsvColumn2.DefaultValue = "ppp";
+                        csvDataTbl.Columns.Add(dataTableCsvColumn2);
+
+                        DataTableCSV.Rows.Clear();
                         foreach (DataRow row in csvDataTbl.Rows)
                         {
-                            Debug.WriteLine($@":: {row}");
-                            
-                            street = row[0].ToString();
-                            huisnr = row[1].ToString();
-                            gemeente = row[2].ToString();
+                            //street = row[0].ToString();
+                            //huisnr = row[1].ToString();
+                            //gemeente = row[2].ToString();
+
+                            street = row[streetIndex].ToString();
+                            huisnr = row[huisnrIndex].ToString();
+                            gemeente = row[gemeenteIndex].ToString();
 
                             suggestions = validateRow(street, huisnr, gemeente);
 
-                            
-
                             if (suggestions.Count == 0)
                             {
-                                Debug.WriteLine($@"{street} :: NOT FOUND");
-                                
+                                row[3] = "Nee";
                             }
                             else
                             {
-                                Debug.WriteLine($@"{street} :: OKAY");
+                                row[3] = "Ja";
                             }
                         }
-                        Debug.WriteLine("!!!!!!!!! END !!!!!!!!!!!!!!");
-
-                        
+                        refreshDatGrid(csvDataTbl);
                     });
+                    
                 });
             }
         }
