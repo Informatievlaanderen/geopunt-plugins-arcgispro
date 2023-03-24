@@ -74,34 +74,15 @@
         </Grid>
 
         <Grid Grid.Row="2" >
-            <DataGrid x:Name="DataGridPlace" IsReadOnly="true" ItemsSource="{Binding InteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedInteressantePlaatsList}" 
+            <DataGrid x:Name="DataGridPlace" IsReadOnly="true" 
+                      ItemsSource="{Binding InteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      SelectedItem="{Binding SelectedInteressantePlaatsList}" 
                       Style="{DynamicResource Esri_DataGrid}"
                       ScrollViewer.CanContentScroll="True"      
                       AutoGenerateColumns="True"
                       HorizontalAlignment="Stretch"
                       HeadersVisibility="Column"
-                      
                       >
-                <!--<DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow">
-                        <Setter Property="FontSize" Value="13.5"/>
-                        <Setter Property="FontFamily" Value="Segoe UI"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="DataGridCell">
-                                    <Border Background="red" />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </DataGrid.RowStyle>-->
-                <!--<DataGrid.ColumnHeaderStyle>
-                    <Style TargetType="{x:Type DataGridColumnHeader}">
-                        <Setter Property="FontWeight" Value="SemiBold"/>
-                        <Setter Property="FontSize" Value="13"/>
-                    </Style>
-                </DataGrid.ColumnHeaderStyle>-->
-                
             </DataGrid>
         </Grid>
 

@@ -9,8 +9,9 @@ namespace GeoPunt.Dockpanes
     internal class DataRowCSV
     {
         public string Straat { get; set; }
-        public int Nummer { get; set; }
+        public string Nummer { get; set; }
         public string Gemeente { get; set; }
+        public string Bestaan { get; set; }
 
     }
 }

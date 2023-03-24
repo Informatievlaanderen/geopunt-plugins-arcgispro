@@ -14,6 +14,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.DataHandler;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -188,6 +189,8 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+
+
         private DataRowCSV _selectedDataCsvList;
         public DataRowCSV SelectedDataCsvList
         {
@@ -195,6 +198,61 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedDataCsvList, value);
+                System.Windows.Forms.MessageBox.Show("koko csv");
+                if (_selectedDataCsvList != null)
+                {
+                    string var = _selectedDataCsvList.Straat + ", " + _selectedDataCsvList.Gemeente;
+                    updateCurrentMapPoint(var, 1);
+                }
+            }
+        }
+
+        private List<MapPoint> _listCSVMarkeer = new List<MapPoint>();
+        public List<MapPoint> ListCSVMarkeer
+        {
+            get { return _listCSVMarkeer; }
+            set
+            {
+                SetProperty(ref _listCSVMarkeer, value);
+            }
+        }
+
+        private string _textMarkeer;
+        public string TextMarkeer
+        {
+            get { return _textMarkeer; }
+            set
+            {
+                SetProperty(ref _textMarkeer, value);
+            }
+        }
+
+        DataHandler.adresLocation adresLocation;
+        MapPoint MapPointSelectedAddress = null;
+        public void updateCurrentMapPoint(string query, int count)
+        {
+            double x = 0;
+            double y = 0;
+
+
+
+            List<datacontract.locationResult> loc = adresLocation.getAdresLocation(query, count);
+            foreach (datacontract.locationResult item in loc)
+            {
+                x = item.Location.X_Lambert72;
+                y = item.Location.Y_Lambert72;
+
+            }
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
+
+            if (ListCSVMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
+            {
+                TextMarkeer = "Verwijder markering";
+            }
+            else
+            {
+                TextMarkeer = "Markeer";
             }
         }
 
@@ -219,6 +277,8 @@ namespace GeoPunt.Dockpanes
             //validationWorker = new System.ComponentModel.BackgroundWorker();
             //DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
             sug = new DataHandler.adresSuggestion(5000);
+            adresLocation = new DataHandler.adresLocation(5000);
+            TextMarkeer = "Markeer";
         }
 
         public static DataTable loadCSV2datatable(string csvPath, string separator, int maxRows, System.Text.Encoding codex)
@@ -309,6 +369,7 @@ namespace GeoPunt.Dockpanes
             DataGridViewComboBoxColumn validatedRow;
 
             DataTable csvDataTbl;
+            
 
             try
             {
@@ -341,10 +402,11 @@ namespace GeoPunt.Dockpanes
             await QueuedTask.Run(() =>
             {
                 DataTableCSV = new DataTable();
+                
 
                 DataColumn dataTableCsvColumn2 = new DataColumn();
                 dataTableCsvColumn2.ColumnName = "Bestaan";
-                dataTableCsvColumn2.DefaultValue = "ooo";
+                dataTableCsvColumn2.DefaultValue = "";
                 csvDataTbl.Columns.Add(dataTableCsvColumn2);
 
                 
@@ -354,14 +416,24 @@ namespace GeoPunt.Dockpanes
                         dataTableCsvColumn.ColumnName = column.ColumnName;
                         DataTableCSV.Columns.Add(dataTableCsvColumn);
                         ComboBoxListOfColumns.Add(column.ColumnName);
+
                 }
 
                 foreach (DataRow row in csvDataTbl.Rows)
                 {
+
                     //row[2] = "aa";
                     //row.ItemArray[3] = "koko;
+                
+
+                    //DataRowCSV DataCSV = new DataRowCSV();
+                    //DataCSV.Straat = row[0].ToString();
+                    //DataCSV.Nummer = row[1].ToString();
+                    //DataCSV.Gemeente = row[2].ToString();
+                    //DataCSV.Gemeente = "";
+
                     DataTableCSV.Rows.Add(row.ItemArray);
-                    
+                    //DataCsvList.Add(DataCSV);
                 }
             });
         }
@@ -386,6 +458,38 @@ namespace GeoPunt.Dockpanes
             });
         }
 
+        public ICommand CmdPoint
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    if (MapPointSelectedAddress == null) return;
+                    if (ListCSVMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) == null)
+                    {
+                        ListCSVMarkeer.Add(MapPointSelectedAddress);
+                        updateCSVMarkeer();
+                        TextMarkeer = "Verwijder markering";
+                    }
+                    else
+                    {
+                        TextMarkeer = "Markeer";
+                        MapPoint pointToDelete = ListCSVMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                        ListCSVMarkeer.Remove(pointToDelete);
+                        GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                        updateCSVMarkeer();
+                    }
+                });
+            }
+        }
+
+        public void updateCSVMarkeer()
+        {
+            foreach (MapPoint mapPoint in ListCSVMarkeer)
+            {
+                GeocodeUtils.UpdateMapOverlayCSV(mapPoint, MapView.Active, true);
+            }
+        }
 
         public ICommand CmdOpen
         {

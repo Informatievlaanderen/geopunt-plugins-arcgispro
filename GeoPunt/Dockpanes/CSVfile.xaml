@@ -193,22 +193,21 @@
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Valideer alles" Margin="5" 
                     Command="{Binding CmdValideerAlles}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Markeer" Margin="5" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="{Binding TextMarkeer}" Margin="5" 
+                    Command="{Binding CmdPoint}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Zoom" Margin="5" />
         </Grid>
 
         <Grid Grid.Row="3" Margin="0,10,0,0" >
             <DataGrid x:Name="csvDataGridColumn" Grid.Row="1" IsReadOnly="true"
-                ItemsSource="{Binding DataTableCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      ItemsSource="{Binding DataTableCSV, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                       SelectedItem="{Binding SelectedDataCsvList}" 
-                      
                       Style="{DynamicResource Esri_DataGrid}"
                       ScrollViewer.CanContentScroll="True"      
                       AutoGenerateColumns="True"
                       HorizontalAlignment="Stretch"
                       HeadersVisibility="Column"
                       > 
-                      
             </DataGrid>
 
         </Grid>

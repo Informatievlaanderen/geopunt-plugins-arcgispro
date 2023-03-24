@@ -92,6 +92,7 @@ namespace GeoPunt.Dockpanes
         private static ObservableCollection<System.IDisposable> _overlayObjectMarkeer = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectMapPoint = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
+        private static ObservableCollection<System.IDisposable> _overlayObjectCSV = new ObservableCollection<System.IDisposable>();
 
         /// <summary>
         /// Add a point to the specified mapview
@@ -124,6 +125,38 @@ namespace GeoPunt.Dockpanes
                 {
                     //MessageBox.Show("drawing");
                     _overlayObject.Add(mapView.AddOverlay(point, symbolReference));
+                    return;
+                }
+
+                //MessageBox.Show("removing");
+                RemoveFromMapOverlay(mapView);
+
+            });
+
+        }
+
+        public static async void AddToMapOverlayCSV(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
+        {
+            ArcGIS.Core.CIM.CIMPointSymbol symbol = null;
+
+            await QueuedTask.Run(() =>
+            {
+                // Construct point symbol
+                symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreyRGB, 10.0, SimpleMarkerStyle.HalfCircle);
+
+            });
+
+            //Get symbol reference from the symbol 
+            CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
+
+            await QueuedTask.Run(() =>
+            {
+
+
+                if (!isRemove)
+                {
+                    //MessageBox.Show("drawing");
+                    _overlayObjectCSV.Add(mapView.AddOverlay(point, symbolReference));
                     return;
                 }
 
@@ -255,6 +288,11 @@ namespace GeoPunt.Dockpanes
         public static void UpdateMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
         {
             AddToMapOverlay(point, mapView, isFavourite, isRemove);
+        }
+
+        public static void UpdateMapOverlayCSV(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
+        {
+            AddToMapOverlayCSV(point, mapView, isFavourite, isRemove);
         }
 
         public static void UpdateMapOverlayMarkeer(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)

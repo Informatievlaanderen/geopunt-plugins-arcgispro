@@ -142,12 +142,7 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedInteressantePlaatsList, value);
-                //string var = _selectedInteressantePlaatsList.Straat;
-                //if(_selectedInteressantePlaatsList != null)
-                //{
-                //    string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
-                //    updateCurrentMapPoint(var, 1);
-                //}
+                System.Windows.Forms.MessageBox.Show("koko poi");
 
                 double x = 0;
                 double y = 0;
@@ -159,14 +154,12 @@ namespace GeoPunt.Dockpanes
                 {
                     x = item.Location.X_Lambert72;
                     y = item.Location.Y_Lambert72;
-
                 }
+
                 MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y);
 
                 ActiveRemoveButton = false;
-                ActiveSaveButton = true;
-
-                
+                ActiveSaveButton = true; 
             }
         }
 
