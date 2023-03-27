@@ -54,6 +54,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private bool _isEnableButtonZoek = true;
+        public bool IsEnableButtonZoek
+        {
+            get { return _isEnableButtonZoek; }
+            set
+            {
+                SetProperty(ref _isEnableButtonZoek, value);
+            }
+        }
+
         private bool _isBeperk;
         public bool IsBeperk
         {
@@ -61,8 +71,29 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _isBeperk, value);
-                IsEnabledGemeente = !value;
+                QueuedTask.Run(() =>
+                {
+                    if (value)
+                    {
+                        GemeenteList = new List<string>();
+                        ThemeListString = new List<string>();
+                        ThemeListString = (from n in ThemeList orderby n.value select n.value).ToList<string>();
+                        ThemeListString.Insert(0, "");
+                        CategoriesListString = new List<string>();
+                        TypesListString = new List<string>();
+                        KeyWordString = "";
+                    }
+                    IsEnabledGemeente = !value;
+                    ButtonFreeze();
+                });
             }
+        }
+
+        public async void ButtonFreeze()
+        {
+            IsEnableButtonZoek = false;
+            await Task.Delay(3500);
+            IsEnableButtonZoek = true;
         }
 
         private bool _activeRemoveButton;
@@ -142,7 +173,6 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedInteressantePlaatsList, value);
-                System.Windows.Forms.MessageBox.Show("koko poi");
 
                 double x = 0;
                 double y = 0;
@@ -180,6 +210,13 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedGemeenteList, value);
+                ThemeListString = new List<string>();
+                ThemeListString = (from n in ThemeList orderby n.value select n.value).ToList<string>();
+                ThemeListString.Insert(0, "");
+                CategoriesListString = new List<string>();
+                TypesListString = new List<string>();
+                KeyWordString = "";
+                ButtonFreeze();
             }
         }
 
@@ -302,9 +339,12 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedThemeListString, value);
                 CategoriesList = poiDH.listCategories(_selectedThemeListString).categories;
+                CategoriesListString = new List<string>();
                 CategoriesListString = (from n in CategoriesList orderby n.value select n.value).ToList<string>();
                 CategoriesListString.Insert(0, "");
                 TypesListString = new List<string>();
+                KeyWordString = "";
+                ButtonFreeze();
             }
         }
 
@@ -322,8 +362,11 @@ namespace GeoPunt.Dockpanes
                 List<string> poiTypeList = (from n in qry.categories orderby n.value select n.value).ToList<string>();
                 poiTypeList.Insert(0, "");
 
+                KeyWordString = "";
+
                 TypesListString = new List<string>();
                 TypesListString = poiTypeList.ToList();
+                ButtonFreeze();
             }
         }
 
@@ -333,7 +376,9 @@ namespace GeoPunt.Dockpanes
             get { return _selectedTypesListString; }
             set
             {
-                SetProperty(ref _selectedTypesListString, value);                
+                SetProperty(ref _selectedTypesListString, value);
+                KeyWordString = "";
+                ButtonFreeze();
             }
         }
 
@@ -595,6 +640,8 @@ namespace GeoPunt.Dockpanes
 
                     if (IsBeperk)
                     {
+
+
                         Envelope env4326 = MapView.Active.Extent;
                         env4326 = GeometryEngine.Instance.Project(env4326, SpatialReferenceBuilder.CreateSpatialReference(4326)) as Envelope;
                         string extentBeforeTransform = env4326.XMin+"|"+env4326.YMin+"|"+env4326.XMax+"|"+env4326.YMax;
@@ -613,6 +660,11 @@ namespace GeoPunt.Dockpanes
                     DataHandler.CRS.WGS84, null, nis, extent);
 
                     List<datacontract.poiMaxModel> pois = poiData.pois;
+
+                    if(pois.Count == 0 || pois == null)
+                    {
+                        MessageBox.Show("Geen poi gevonden");
+                    }
 
                     //TextVoegAlle = $@"Voeg alle toe ({pois.Count})";
                     TextVoegAlle = $@"Voeg ({pois.Count})";

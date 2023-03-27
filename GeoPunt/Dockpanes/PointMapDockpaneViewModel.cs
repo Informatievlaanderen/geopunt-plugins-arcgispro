@@ -285,7 +285,7 @@ namespace GeoPunt.Dockpanes
                     if (!ListStreetsFavouriteStringPoint.Contains(Address))
                     {
                         ListStreetsFavouriteStringPoint.Add(Address);
-                        ListSaveMapPoint.Add(new SaveMapPoint(Address, MapPointSelectedAddress));
+                        ListSaveMapPoint.Add(new SaveMapPoint(Address, MapPointSelectedAddressSimple));
                     }
                 });
             }

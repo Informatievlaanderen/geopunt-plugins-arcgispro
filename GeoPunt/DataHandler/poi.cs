@@ -178,12 +178,7 @@ namespace GeoPunt.DataHandler
             client.QueryString.Add("region", niscode);
             client.QueryString.Add("category", category);
             client.QueryString.Add("maxmodel", "true");
-            Debug.WriteLine($@"!!!!!!!! PARAMETRS !!!!!!!!");
-            Debug.WriteLine($@"{bbox}");
-            Debug.WriteLine($@"!!!!!!!! END !!!!!!!!");
             if(bbox != null) client.QueryString.Add("bbox", bbox);
-
-
 
             string json = client.DownloadString(baseUrl);
 
