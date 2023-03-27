@@ -17,6 +17,7 @@ namespace GeoPunt.Dockpanes
 
         public SaveMapPoint(string adres, MapPoint mapPoint)
         {
+            if (mapPoint == null) return;
             Adres = adres;
             X = mapPoint.X;
             Y = mapPoint.Y;

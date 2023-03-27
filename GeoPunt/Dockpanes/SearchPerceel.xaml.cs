@@ -25,5 +25,7 @@ namespace GeoPunt.Dockpanes
         {
             InitializeComponent();
         }
+
+
     }
 }

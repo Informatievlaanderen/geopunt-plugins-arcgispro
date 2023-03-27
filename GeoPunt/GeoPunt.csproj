@@ -40,6 +40,7 @@
     <None Remove="Images\Gipod.png" />
     <None Remove="Images\Hoogte.png" />
     <None Remove="Images\Info.png" />
+    <None Remove="Images\loading.gif" />
     <None Remove="Images\Perceel.png" />
     <None Remove="Images\Place.png" />
     <None Remove="Images\POI.png" />
@@ -162,6 +163,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Info.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\loading.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\Perceel.png">

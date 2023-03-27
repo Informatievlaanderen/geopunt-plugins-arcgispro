@@ -19,6 +19,7 @@ using GeoPunt.Dockpanes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -41,6 +42,17 @@ namespace GeoPunt
 
             var pane = FrameworkApplication.DockPaneManager.Find("GeoPunt_Dockpanes_PointMapDockpane");
             pane.Activate();
+            Debug.WriteLine("constructor");
+        }
+
+        protected async void OnClick()
+        {
+            IsSketchTool = true;
+            SketchOutputMode = SketchOutputMode.Map;
+
+            var pane = FrameworkApplication.DockPaneManager.Find("GeoPunt_Dockpanes_PointMapDockpane");
+            pane.Activate();
+            Debug.WriteLine("method");
         }
 
         protected override void OnToolMouseDown(MapViewMouseButtonEventArgs e)

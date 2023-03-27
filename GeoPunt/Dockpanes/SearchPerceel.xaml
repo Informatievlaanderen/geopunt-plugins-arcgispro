@@ -6,26 +6,26 @@
              xmlns:ui="clr-namespace:GeoPunt.Dockpanes"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="500" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.SearchPerceelViewModel}">
-  <UserControl.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-      </ResourceDictionary.MergedDictionaries>
-      <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
-  </UserControl.Resources>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-    </Grid.RowDefinitions>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="5,5,5,0" HorizontalAlignment="Center" >
             <Grid.ColumnDefinitions>
@@ -81,7 +81,7 @@
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Perceelnummer:" />
             <ComboBox ItemsSource="{Binding ListParcels}" Width="190" SelectedItem="{Binding SelectedListParcels}" Grid.Column="1" Margin="5,0,5,0" />
-            
+
         </Grid>
 
         <Grid Grid.Row="4" HorizontalAlignment="Center" Margin="0,0,0,20" >
@@ -93,7 +93,7 @@
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Content="Voeg toe" Command="{Binding CmdSave}"  />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Zoom" Command="{Binding CmdZoomParcel}"  />
 
-            
+
             <!--button with visibility-->
             <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Opslaan" Command="{Binding CmdSave}" Visibility="{Binding ActiveButtonSave, Converter={StaticResource BoolToVisibilityConverter}}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Verwijderen" Command="{Binding CmdRemove}" Visibility="{Binding ActiveButtonMarkeer, Converter={StaticResource BoolToVisibilityConverter}}" />
@@ -108,7 +108,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            
+
             <TextBlock Style="{DynamicResource RegularText}" Margin="5" Text="Favorieten Lijst" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
             <DataGrid Grid.Row="1" x:Name="DataGridPlace" ItemsSource="{Binding ListSaveParceels, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedSaveParceel}" 
                       Style="{DynamicResource Esri_DataGrid}"
@@ -137,7 +137,6 @@
         </Grid>
 
 
-
         <!--<DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
       <TextBlock Grid.Column="1" Text="{Binding Heading}" Style="{DynamicResource Esri_TextBlockDockPaneHeader}">
         <TextBlock.ToolTip>
@@ -147,5 +146,5 @@
         </TextBlock.ToolTip>
       </TextBlock>
     </DockPanel>-->
-  </Grid>
+    </Grid>
 </UserControl>

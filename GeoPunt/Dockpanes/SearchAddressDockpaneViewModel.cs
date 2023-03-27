@@ -722,8 +722,8 @@ namespace GeoPunt.Dockpanes
                     if (!ListStreetsFavouriteString.Contains(SelectedStreet))
                     {
                         ListStreetsFavouriteString.Add(SelectedStreet);
-                        ListStreetsFavourite.Add(MapPointSelectedAddress);
-                        ListSaveMapPoint.Add(new SaveMapPoint(SelectedStreet, MapPointSelectedAddress));
+                        //ListStreetsFavourite.Add(MapPointSelectedAddress);
+                        ListSaveMapPoint.Add(new SaveMapPoint(SelectedStreet, MapPointSelectedAddressSimple));
                         //updateListBoxFavourite();
                     }  
                 });
