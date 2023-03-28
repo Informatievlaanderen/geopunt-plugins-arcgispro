@@ -37,7 +37,16 @@
             <TextBlock FontSize="13.5" Grid.Column="0" 
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Gemeente:" />
-            <ComboBox ItemsSource="{Binding ListGemeente}" Width="190" SelectedItem="{Binding SelectedListGemeente}"  Grid.Column="1" Margin="5,0,5,0" />
+            <ComboBox ItemsSource="{Binding ListGemeente}" Width="190" SelectedItem="{Binding SelectedListGemeente}"  Grid.Column="1" Margin="5,0,5,0" >
+                <!--!!!-->
+                <!--this code helps to open a combobox of 1000 items faster-->
+                <ComboBox.ItemsPanel >
+                    <ItemsPanelTemplate >
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate >
+                </ComboBox.ItemsPanel >
+                <!--!!!-->
+            </ComboBox>
             <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomGemeente}" />-->
         </Grid>
 
@@ -82,7 +91,13 @@
                        Text="Perceelnummer:" />
             <ComboBox ItemsSource="{Binding ListParcels}" Width="190" SelectedItem="{Binding SelectedListParcels}" Grid.Column="1" Margin="5,0,5,0" 
                       x:Name="cmbxPerceel"
-                      DropDownOpened="OnDropDownOpened" />
+                       >
+                <ComboBox.ItemsPanel >
+                    <ItemsPanelTemplate >
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate >
+                </ComboBox.ItemsPanel >
+            </ComboBox>
 
         </Grid>
 

@@ -758,9 +758,14 @@ namespace GeoPunt.Dockpanes
                 //if (ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == aX && mp.Y == aY) == null) == null)
                 if (!isExist)
                 {
-                    ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
-                    ListStringPercel.Add(SelectedSaveParceel.Perceel);
-                    TextMarkeer = "Verwijder markering";
+                    
+                    if (SelectedSaveParceel != null)
+                    {
+                        ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
+                        ListStringPercel.Add(SelectedSaveParceel.Perceel);
+                        TextMarkeer = "Verwijder markering";
+                    }
+                    
                 }
                 else
                 {

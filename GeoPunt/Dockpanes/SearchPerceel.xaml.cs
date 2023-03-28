@@ -26,13 +26,5 @@ namespace GeoPunt.Dockpanes
             InitializeComponent();
         }
 
-        async void OnDropDownOpened(object sender, EventArgs e)
-        {
-            //cmbxPerceel.IsEnabled = false;
-            //await Task.Delay(3500);
-            //cmbxPerceel.IsEnabled = true;
-        }
-
-
     }
 }

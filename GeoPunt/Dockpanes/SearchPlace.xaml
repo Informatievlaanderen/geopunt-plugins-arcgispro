@@ -45,7 +45,13 @@
             <CheckBox Grid.Row="0" FontSize="13" Grid.ColumnSpan="2" Margin="5" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="1" Text="Gemeente:"/>
-            <ComboBox FontSize="13" Margin="5" ItemsSource="{Binding GemeenteList}" SelectedItem="{Binding SelectedGemeenteList}" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEnabledGemeente}" />
+            <ComboBox FontSize="13" Margin="5" ItemsSource="{Binding GemeenteList}" SelectedItem="{Binding SelectedGemeenteList}" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEnabledGemeente}" >
+                <ComboBox.ItemsPanel >
+                    <ItemsPanelTemplate >
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate >
+                </ComboBox.ItemsPanel >
+            </ComboBox>
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="2" Text="Thema:"/>
             <ComboBox FontSize="13" Margin="5" ItemsSource="{Binding ThemeListString}" SelectedItem="{Binding SelectedThemeListString}" Grid.Row="2" Grid.Column="1" />
