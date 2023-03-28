@@ -52,6 +52,16 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        private bool _isCorrectAddress = true;
+        public bool IsCorrectAddress
+        {
+            get { return _isCorrectAddress; }
+            set
+            {
+                SetProperty(ref _isCorrectAddress, value);
+            }
+        }
+
         private bool _isCheckedOne;
         public bool IsCheckedOne
         {
@@ -165,20 +175,6 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        //DataGridView csvDataGrid;
-        //csvDataGrid = new System.Windows.Forms.DataGridView();
-
-        //private DataGridView _csvDataGrid = new System.Windows.Forms.DataGridView();
-        //public DataGridView csvDataGrid
-        //{
-        //    get { return _csvDataGrid; }
-        //    set
-        //    {
-        //        SetProperty(ref _csvDataGrid, value);
-        //    }
-        //}
-
-
         private ObservableCollection<DataRowCSV> _dataCsvList = new ObservableCollection<DataRowCSV>();
         public ObservableCollection<DataRowCSV> DataCsvList
         {
@@ -202,6 +198,14 @@ namespace GeoPunt.Dockpanes
                 if (_selectedDataCsvList != null)
                 {
                     string var = _selectedDataCsvList.Row.ItemArray[0] + ", " + _selectedDataCsvList.Row.ItemArray[2];
+
+                    string valCorrect = ""+_selectedDataCsvList.Row.ItemArray[3];
+                    IsCorrectAddress = true;
+                    if (valCorrect != "Ja")
+                    {
+                        IsCorrectAddress = false;
+                    }
+
                     updateCurrentMapPoint(var, 1);
                 }
             }
