@@ -191,17 +191,17 @@ namespace GeoPunt.Dockpanes
 
 
 
-        private DataRowCSV _selectedDataCsvList;
-        public DataRowCSV SelectedDataCsvList
+        private DataRowView _selectedDataCsvList;
+        public DataRowView SelectedDataCsvList
         {
             get { return _selectedDataCsvList; }
             set
             {
                 SetProperty(ref _selectedDataCsvList, value);
-                System.Windows.Forms.MessageBox.Show("koko csv");
+                Debug.WriteLine(_selectedDataCsvList);
                 if (_selectedDataCsvList != null)
                 {
-                    string var = _selectedDataCsvList.Straat + ", " + _selectedDataCsvList.Gemeente;
+                    string var = _selectedDataCsvList.Row.ItemArray[0] + ", " + _selectedDataCsvList.Row.ItemArray[2];
                     updateCurrentMapPoint(var, 1);
                 }
             }
@@ -458,6 +458,26 @@ namespace GeoPunt.Dockpanes
             });
         }
 
+        private void zoomToQuery(MapPoint mapPoint)
+        {
+            QueuedTask.Run(() =>
+            {
+                var mapView = MapView.Active;
+                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
+                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+            });
+        }
+        public ICommand CmdZoom
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    zoomToQuery(MapPointSelectedAddress);
+                });
+            }
+        }
+
         public ICommand CmdPoint
         {
             get
@@ -476,7 +496,7 @@ namespace GeoPunt.Dockpanes
                         TextMarkeer = "Markeer";
                         MapPoint pointToDelete = ListCSVMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
                         ListCSVMarkeer.Remove(pointToDelete);
-                        GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
+                        GeocodeUtils.UpdateMapOverlayCSV(pointToDelete, MapView.Active, true, true);
                         updateCSVMarkeer();
                     }
                 });

@@ -142,7 +142,7 @@ namespace GeoPunt.Dockpanes
             await QueuedTask.Run(() =>
             {
                 // Construct point symbol
-                symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreyRGB, 10.0, SimpleMarkerStyle.HalfCircle);
+                symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreyRGB, 10.0, SimpleMarkerStyle.X);
 
             });
 
@@ -161,7 +161,7 @@ namespace GeoPunt.Dockpanes
                 }
 
                 //MessageBox.Show("removing");
-                RemoveFromMapOverlay(mapView);
+                RemoveFromMapOverlayCSV(mapView);
 
             });
 
@@ -329,6 +329,20 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        public static void RemoveFromMapOverlayCSV(MapView mapView)
+        {
+            if (_overlayObjectCSV != null)
+            {
+                foreach (var overlay in _overlayObjectCSV)
+                {
+                    overlay.Dispose();
+                }
+                _overlayObjectCSV = new ObservableCollection<System.IDisposable>();
+                //MessageBox.Show($@"{_overlayObject.Count}");
+                //_overlayObject.Dispose();
+                //_overlayObject = null;
+            }
+        }
         public static void RemoveFromMapOverlayMarkeer(MapView mapView)
         {
             if (_overlayObjectMarkeer != null)

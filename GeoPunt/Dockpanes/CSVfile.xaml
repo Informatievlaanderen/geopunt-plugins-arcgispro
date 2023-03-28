@@ -195,7 +195,8 @@
                     Command="{Binding CmdValideerAlles}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="{Binding TextMarkeer}" Margin="5" 
                     Command="{Binding CmdPoint}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Zoom" Margin="5" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Zoom" Margin="5" 
+                    Command="{Binding CmdZoom}" />
         </Grid>
 
         <Grid Grid.Row="3" Margin="0,10,0,0" >
