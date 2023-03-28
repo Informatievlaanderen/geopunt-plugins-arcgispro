@@ -45,16 +45,6 @@ namespace GeoPunt
             Debug.WriteLine("constructor");
         }
 
-        protected async void OnClick()
-        {
-            IsSketchTool = true;
-            SketchOutputMode = SketchOutputMode.Map;
-
-            var pane = FrameworkApplication.DockPaneManager.Find("GeoPunt_Dockpanes_PointMapDockpane");
-            pane.Activate();
-            Debug.WriteLine("method");
-        }
-
         protected override void OnToolMouseDown(MapViewMouseButtonEventArgs e)
         {
             //On mouse down check if the mouse button pressed is the left mouse button. If it is handle the event.
@@ -113,6 +103,7 @@ namespace GeoPunt
         }        
         protected override Task OnToolActivateAsync(bool active)
         {
+            Module1.vmSearchPlace.Showw();
             return base.OnToolActivateAsync(active);
         }
 

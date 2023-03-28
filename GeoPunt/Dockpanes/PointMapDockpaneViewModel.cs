@@ -310,6 +310,11 @@ namespace GeoPunt.Dockpanes
             pane.Activate();
         }
 
+        public void Showw()
+        {
+            Show();
+        }
+
         /// <summary>
         /// Text shown near the top of the DockPane.
         /// </summary>

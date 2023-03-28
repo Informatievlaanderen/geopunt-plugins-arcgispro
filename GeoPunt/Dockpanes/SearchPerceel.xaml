@@ -37,7 +37,7 @@
             <TextBlock FontSize="13.5" Grid.Column="0" 
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Gemeente:" />
-            <ComboBox ItemsSource="{Binding ListGemeente}" Width="190" SelectedItem="{Binding SelectedListGemeente}"  Grid.Column="1" Margin="5,0,5,0" >
+            <ComboBox ItemsSource="{Binding ListGemeente}" Width="200" SelectedItem="{Binding SelectedListGemeente}"  Grid.Column="1" Margin="5,0,5,0" >
                 <!--!!!-->
                 <!--this code helps to open a combobox of 1000 items faster-->
                 <ComboBox.ItemsPanel >
@@ -60,7 +60,7 @@
             <TextBlock FontSize="13.5" Grid.Column="0" 
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Afdeling:" />
-            <ComboBox ItemsSource="{Binding ListDepartments}" Width="190" SelectedItem="{Binding SelectedListDepartments}"  Grid.Column="1" Margin="5,0,5,0" />
+            <ComboBox ItemsSource="{Binding ListDepartments}" Width="200" SelectedItem="{Binding SelectedListDepartments}"  Grid.Column="1" Margin="5,0,5,0" />
             <!--<Button Style="{DynamicResource Esri_Button}"  Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomDepartment}" />-->
         </Grid>
 
@@ -75,7 +75,7 @@
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Sectie:" />
             <ComboBox ItemsSource="{Binding ListSecties}" 
-                      SelectedItem="{Binding SelectedListSecties}" Width="190" Grid.Column="1" Margin="5,0,5,0" />
+                      SelectedItem="{Binding SelectedListSecties}" Width="200" Grid.Column="1" Margin="5,0,5,0" />
             <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Command="{Binding CmdZoomSectie}"  />-->
         </Grid>
 
@@ -89,7 +89,7 @@
             <TextBlock FontSize="13.5" Grid.Column="0"
                        VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="Perceelnummer:" />
-            <ComboBox ItemsSource="{Binding ListParcels}" Width="190" SelectedItem="{Binding SelectedListParcels}" Grid.Column="1" Margin="5,0,5,0" 
+            <ComboBox ItemsSource="{Binding ListParcels}" Width="200" SelectedItem="{Binding SelectedListParcels}" Grid.Column="1" Margin="5,0,5,0" 
                       x:Name="cmbxPerceel"
                        >
                 <ComboBox.ItemsPanel >
