@@ -73,17 +73,6 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _isBeperk, value);
                 QueuedTask.Run(() =>
                 {
-
-                    //GemeenteList = new List<string>();
-                    //ThemeListString = new List<string>();
-                    //CategoriesListString = new List<string>();
-                    //TypesListString = new List<string>();
-
-                    //ThemeListString = (from n in ThemeList orderby n.value select n.value).ToList<string>();
-                    //ThemeListString.Insert(0, "");
-                        
-                    //KeyWordString = "";
-
                     IsEnabledGemeente = !value;
                     ButtonFreeze();
                 });
