@@ -20,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using static System.Windows.Forms.AxHost;
 
 namespace GeoPunt
 {
@@ -33,7 +34,12 @@ namespace GeoPunt
         public static Module1 Current => _this ??= (Module1)FrameworkApplication.FindModule("GeoPunt_Module");
 
         public static PointMapDockpaneViewModel vmSearchPlace { get; set; }
-        
+
+        public Module1()
+        {
+            FrameworkApplication.State.Deactivate("disableButton");
+        }
+
 
 
         #region Overrides
