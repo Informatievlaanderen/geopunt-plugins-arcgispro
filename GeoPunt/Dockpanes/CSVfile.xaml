@@ -107,9 +107,9 @@
                 </Grid.ColumnDefinitions>
 
                 
-                <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="13"
+                <!--<CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="13"
                       Margin="5" Content="Adres in meerdere kolommen" 
-                      IsChecked="{Binding IsCheckedMeerdere}" />
+                      IsChecked="{Binding IsCheckedMeerdere}" />-->
                 <!--<CheckBox Grid.Row="2" Grid.ColumnSpan="2" FontSize="13"
                       Margin="5" Content="Volledig adres in 1 kolom" 
                       IsChecked="{Binding IsCheckedOne}" />-->
