@@ -647,20 +647,6 @@ namespace GeoPunt.Dockpanes
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         /// <summary>
         /// Show the DockPane.
         /// </summary>

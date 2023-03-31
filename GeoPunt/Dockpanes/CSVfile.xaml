@@ -210,18 +210,10 @@
                       AutoGenerateColumns="True"
                       HorizontalAlignment="Stretch"
                       HeadersVisibility="Column"
-                      > 
+                      >
             </DataGrid>
 
         </Grid>
-
-
-
-
-
-
-
-
 
     </Grid>
 </UserControl>
