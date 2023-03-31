@@ -24,9 +24,15 @@ https://pro.arcgis.com/en/pro-app/latest/sdk/api-reference/topic1.html
 
 
 # TODO
+
 Icon Gipod
+
 Icon Hoogte
+
 Icon Catalogus
+
 Icon Settings
+
 Icon Informations
+
 Move the files from the data folder
