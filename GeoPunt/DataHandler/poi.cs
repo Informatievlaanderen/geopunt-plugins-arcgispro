@@ -88,7 +88,7 @@ namespace GeoPunt.DataHandler
         }
         public datacontract.poiCategories listCategories()
         {
-            return listCategories("CultuurSportEnToerisme");
+            return listCategories(null);
         }
 
         public datacontract.poiCategories listPOItypes(string themeid, string categoryid)

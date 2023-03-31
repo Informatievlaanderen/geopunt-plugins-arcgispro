@@ -42,7 +42,6 @@ namespace GeoPunt
 
             var pane = FrameworkApplication.DockPaneManager.Find("GeoPunt_Dockpanes_PointMapDockpane");
             pane.Activate();
-            Debug.WriteLine("constructor");
         }
 
         protected override void OnToolMouseDown(MapViewMouseButtonEventArgs e)
@@ -91,7 +90,6 @@ namespace GeoPunt
                 diff = Math.Sqrt(Math.Pow(xAdres - xClick, 2) + Math.Pow(yAdres - yClick, 2));
 
                 Module1.vmSearchPlace.refreshAddress(adresString, diff);
-                //vm.refreshAddress(adresString, diff);
             }
             else
             {
@@ -106,10 +104,5 @@ namespace GeoPunt
             Module1.vmSearchPlace.Showw();
             return base.OnToolActivateAsync(active);
         }
-
-        //protected override Task<bool> OnSketchCompleteAsync(Geometry geometry)
-        //{
-        //    return base.OnSketchCompleteAsync(geometry);
-        //}
     }
 }

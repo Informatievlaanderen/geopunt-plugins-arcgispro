@@ -40,8 +40,6 @@ namespace GeoPunt
             FrameworkApplication.State.Deactivate("disableButton");
         }
 
-
-
         #region Overrides
         /// <summary>
         /// Called by Framework when ArcGIS Pro is closing
@@ -55,18 +53,5 @@ namespace GeoPunt
         }
 
         #endregion Overrides
-
-
-       
-        
-
-
-
-
-
-
-
-
-
     }
 }
