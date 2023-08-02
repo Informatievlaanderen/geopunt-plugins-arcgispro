@@ -53,6 +53,8 @@ namespace GeoPunt.Dockpanes
         DataHandler.adresLocation adresLocation;
 
         public bool isRemoveMarkeer = false;
+        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+
 
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
              "",
@@ -504,7 +506,7 @@ namespace GeoPunt.Dockpanes
                     y = item.Location.Y_Lambert72;
 
                 }
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, SpatialReferenceBuilder.CreateSpatialReference(31370));
+                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
 
 
 
@@ -571,7 +573,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y,lambertSpatialReference);
 
             if (ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {
