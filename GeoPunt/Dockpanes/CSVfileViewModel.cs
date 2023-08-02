@@ -578,7 +578,7 @@ namespace GeoPunt.Dockpanes
                 {
                     await QueuedTask.Run(() =>
                     {
-                        if(SelectedGemeente == null || SelectedHuisnummer == null || SelectedStraat == null)
+                        if(SelectedGemeente == null /* || SelectedHuisnummer == null */ || SelectedStraat == null)
                         {
                             System.Windows.MessageBox.Show("U moet de waarde van de kolommen kiezen", "Error");
                             return;
