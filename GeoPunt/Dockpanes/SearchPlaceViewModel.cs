@@ -34,6 +34,8 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPlace";
 
+        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+
         private string _textVoegAlle = "Voeg Alle";
         public string TextVoegAlle
         {
@@ -176,7 +178,7 @@ namespace GeoPunt.Dockpanes
                     y = item.Location.Y_Lambert72;
                 }
 
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y);
+                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
 
                 ActiveRemoveButton = false;
                 ActiveSaveButton = true; 
@@ -226,7 +228,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
             //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
 
             if (ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)

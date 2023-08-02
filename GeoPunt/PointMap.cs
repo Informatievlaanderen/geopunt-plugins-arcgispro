@@ -59,6 +59,9 @@ namespace GeoPunt
             return QueuedTask.Run(() =>
             {
                 var mapPoint = ActiveMapView.ClientToMap(e.ClientPoint);
+
+                Module1.vmSearchPlace.AddTempGraphic(mapPoint);
+
                 var coords = GeometryEngine.Instance.Project(mapPoint, SpatialReferenceBuilder.CreateSpatialReference(31370, 5710)) as MapPoint;
                 if (coords == null) return;
 
