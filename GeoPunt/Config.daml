@@ -74,7 +74,7 @@
 				largeImage="pack://application:,,,/GeoPunt;component/Images/Adres.png">
           <tooltip heading="Zoek een adres via geopunt">Zoek een adres op en toon dit op de kaart of voeg het als laag toe aan je project</tooltip>
         </button>
-		<tool id="GeoPunt_PointMap" className="PointMap" caption="Place" loadOnClick="true" 
+		<tool id="GeoPunt_PointMap" className="PointMap" caption="Plaats" loadOnClick="true" 
 			    largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
           <tooltip heading="Prik een adres op de kaart">Selecteer een locatie op je kaart en bepaal het dichtsbijzijnde CRAB-adres</tooltip>
         </tool>
@@ -122,7 +122,7 @@
         <dockPane id="GeoPunt_Dockpanes_SearchAddressDockpane" caption="Zoek een adres via Geopunt" className="GeoPunt.Dockpanes.SearchAddressDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.SearchAddressDockpaneView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_PointMapDockpane" caption="Select a point on the map" className="GeoPunt.Dockpanes.PointMapDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
+        <dockPane id="GeoPunt_Dockpanes_PointMapDockpane" caption="Prik een adres op kaart" className="GeoPunt.Dockpanes.PointMapDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.PointMapDockpaneView" />
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_SearchPlace" caption="Zoek een interessante plaats" className="GeoPunt.Dockpanes.SearchPlaceViewModel" dock="group" dockWith="esri_core_projectDockPane">
@@ -131,7 +131,7 @@
         <dockPane id="GeoPunt_Dockpanes_SearchPerceel" caption="Zoek een perceel" className="GeoPunt.Dockpanes.SearchPerceelViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.SearchPerceelView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Load CSV file" className="GeoPunt.Dockpanes.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
+        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestanden geocoderen" className="GeoPunt.Dockpanes.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.CSVfileView" />
         </dockPane>
       </dockPanes>
