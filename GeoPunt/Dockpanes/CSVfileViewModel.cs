@@ -129,13 +129,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private ObservableCollection<string> _listSeparators = new ObservableCollection<string>(new List<string>() {
-            "Puntcomma",
-            "Comma",
-            "Spatie",
-            "Tab",
-            "Ander teken"
-        });
+        private ObservableCollection<string> _listSeparators;
         public ObservableCollection<string> ListSeparators
         {
             get { return _listSeparators; }
@@ -283,6 +277,19 @@ namespace GeoPunt.Dockpanes
             sug = new DataHandler.adresSuggestion(5000);
             adresLocation = new DataHandler.adresLocation(5000);
             TextMarkeer = "Markeer";
+
+            ListSeparators = new ObservableCollection<string>(new List<string>() {
+                "Puntcomma",
+                "Comma",
+                "Spatie",
+                "Tab",
+                /* "Ander teken" */
+            });
+
+
+            SelectedListSeparators = ListSeparators[0];
+
+
         }
 
         public static DataTable loadCSV2datatable(string csvPath, string separator, int maxRows, System.Text.Encoding codex)
@@ -301,7 +308,7 @@ namespace GeoPunt.Dockpanes
             //if (separator == "" || separator == null)
             //    throw new Exception("Deze separator is niet toegelaten");
 
-            separator = "Puntcomma";
+            // separator = "Puntcomma";
 
             switch (separator)
             {
@@ -378,7 +385,7 @@ namespace GeoPunt.Dockpanes
             try
             {
                 int maxRowCount = 500;
-                csvDataTbl = loadCSV2datatable(csvPath, "Puntcomma", maxRowCount, codex);
+                csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, maxRowCount, codex);
 
                 if (csvDataTbl.Rows.Count == maxRowCount)
                 {
