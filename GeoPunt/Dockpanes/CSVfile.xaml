@@ -184,16 +184,22 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Valideer alles"
                 Margin="5"
                 Command="{Binding CmdValideerAlles}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Valideer"
+                Margin="5"
+                Command="{Binding CmdValideer}"
+                IsEnabled="{Binding ElementName=DataTableCSV, Path=SelectedItems.Count}" />
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"
                 Content="{Binding TextMarkeer}" Margin="5"
                 Command="{Binding CmdPoint}"
                 IsEnabled="{Binding IsCorrectAddress}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Zoom" Margin="5"
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Zoom" Margin="5"
                 Command="{Binding CmdZoom}"
                 IsEnabled="{Binding IsCorrectAddress}" />
         </Grid>
