@@ -29,6 +29,7 @@ using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -265,7 +266,15 @@ namespace GeoPunt.Dockpanes
         }
 
 
-
+        private string _bestaan;
+        public string Bestaan
+        {
+            get { return _bestaan; }
+            set
+            {
+                SetProperty(ref _bestaan, value);
+            }
+        }
 
 
         private const string _dockPaneID = "GeoPunt_Dockpanes_CSVfile";
@@ -414,6 +423,12 @@ namespace GeoPunt.Dockpanes
             {
                 DataTableCSV = new DataTable();
                 
+                //Bestaan = "Bestaan";
+
+                //DataColumn dataTableCsvColumn2 = new DataColumn();
+                //dataTableCsvColumn2.ColumnName = Bestaan;
+                //dataTableCsvColumn2.DefaultValue = "";
+                //csvDataTbl.Columns.Add(dataTableCsvColumn2);
 
                 DataColumn dataTableCsvColumn2 = new DataColumn();
                 dataTableCsvColumn2.ColumnName = "Bestaan";
@@ -589,17 +604,13 @@ namespace GeoPunt.Dockpanes
                         List<string> suggestions;
                         string street; string huisnr; string gemeente;
 
-                        DataTable csvDataTbl;
-                        string csvPath = TextFilePlacement;
-                        System.Text.Encoding codex = System.Text.Encoding.Default;
-                        if (SelectedListFormats == "UTF-8") codex = System.Text.Encoding.UTF8;
-                        csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, 500, codex);
+                        
 
                         var cpt = 0;
                         var streetIndex = 0;
                         var huisnrIndex = 0;
                         var gemeenteIndex = 0;
-                        foreach (DataColumn column in csvDataTbl.Columns)
+                        foreach (DataColumn column in DataTableCSV.Columns)
                         {
                             if(SelectedStraat == column.ColumnName)
                             {
@@ -616,13 +627,14 @@ namespace GeoPunt.Dockpanes
                             cpt++;
                         }
 
-                        DataColumn dataTableCsvColumn2 = new DataColumn();
-                        dataTableCsvColumn2.ColumnName = "Bestaan";
-                        dataTableCsvColumn2.DefaultValue = "ppp";
-                        csvDataTbl.Columns.Add(dataTableCsvColumn2);
+                        
+                        //DataColumn dataTableCsvColumn2 = new DataColumn();
+                        //dataTableCsvColumn2.ColumnName = "Bestaan";
+                        //dataTableCsvColumn2.DefaultValue = "";
+                        //csvDataTbl.Columns.Add(dataTableCsvColumn2);
 
-                        DataTableCSV.Rows.Clear();
-                        foreach (DataRow row in csvDataTbl.Rows)
+                        // DataTableCSV.Rows.Clear();
+                        foreach (DataRow row in DataTableCSV.Rows)
                         {
                             //street = row[0].ToString();
                             //huisnr = row[1].ToString();
@@ -636,14 +648,14 @@ namespace GeoPunt.Dockpanes
 
                             if (suggestions.Count == 0)
                             {
-                                row[3] = "Nee";
+                                row["Bestaan"] = "Nee";
                             }
                             else
                             {
-                                row[3] = "Ja";
+                                row["Bestaan"] = "Ja";
                             }
                         }
-                        refreshDatGrid(csvDataTbl);
+                        // refreshDatGrid(csvDataTbl);
                     });
                     
                 });
