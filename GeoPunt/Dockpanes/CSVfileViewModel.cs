@@ -39,6 +39,9 @@ namespace GeoPunt.Dockpanes
 {
     internal class CSVfileViewModel : DockPane
     {
+
+        private Helpers.Utils utils = new Helpers.Utils();
+
         private bool _isCheckedMeerdere = true;
         public bool IsCheckedMeerdere
         {
@@ -196,7 +199,7 @@ namespace GeoPunt.Dockpanes
 
                     string valCorrect = "" + _selectedDataCsvList.Row.ItemArray[3];
                     IsCorrectAddress = true;
-                    if (valCorrect != "Ja")
+                    if (valCorrect != "OK")
                     {
                         IsCorrectAddress = false;
                     }
@@ -266,7 +269,7 @@ namespace GeoPunt.Dockpanes
         }
 
 
-        private string _bestaan;
+        private string _bestaan = "Gevalideerd adres";
         public string Bestaan
         {
             get { return _bestaan; }
@@ -414,7 +417,7 @@ namespace GeoPunt.Dockpanes
 
             //set validation column
             validatedRow = new DataGridViewComboBoxColumn();
-            validatedRow.HeaderText = "Gevalideerd adres";
+            validatedRow.HeaderText = Bestaan;
             validatedRow.Name = "validAdres";
             validatedRow.Width = 120;
             ComboBoxListOfColumns = new ObservableCollection<string>(new List<string>());
@@ -431,7 +434,7 @@ namespace GeoPunt.Dockpanes
                 //csvDataTbl.Columns.Add(dataTableCsvColumn2);
 
                 DataColumn dataTableCsvColumn2 = new DataColumn();
-                dataTableCsvColumn2.ColumnName = "Bestaan";
+                dataTableCsvColumn2.ColumnName = "Gevalideerd adres";
                 dataTableCsvColumn2.DefaultValue = "";
                 csvDataTbl.Columns.Add(dataTableCsvColumn2);
 
@@ -484,22 +487,13 @@ namespace GeoPunt.Dockpanes
             });
         }
 
-        private void zoomToQuery(MapPoint mapPoint)
-        {
-            QueuedTask.Run(() =>
-            {
-                var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
-            });
-        }
         public ICommand CmdZoom
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddress);
+                    utils.zoomTo(MapPointSelectedAddress);
                 });
             }
         }
@@ -648,11 +642,11 @@ namespace GeoPunt.Dockpanes
 
                             if (suggestions.Count == 0)
                             {
-                                row["Bestaan"] = "Nee";
+                                row[Bestaan] = "NOK";
                             }
                             else
                             {
-                                row["Bestaan"] = "Ja";
+                                row[Bestaan] = "OK";
                             }
                         }
                         // refreshDatGrid(csvDataTbl);
@@ -724,11 +718,11 @@ namespace GeoPunt.Dockpanes
 
                         if (suggestions.Count == 0)
                         {
-                            SelectedDataCsvList["Bestaan"] = "Nee";
+                            SelectedDataCsvList[Bestaan] = "NOK";
                         }
                         else
                         {
-                            SelectedDataCsvList["Bestaan"] = "Ja";
+                            SelectedDataCsvList[Bestaan] = "OK";
                         }
 
                         SelectedDataCsvList = null;

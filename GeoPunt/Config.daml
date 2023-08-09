@@ -102,13 +102,13 @@
 			    largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png" condition="DisableButton" >
           <tooltip heading="Catalogus">Feature not yet developed</tooltip>
         </button>
-		<button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Settings" loadOnClick="true" 
+		<button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Instellingen" loadOnClick="true" 
 			    largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png" condition="DisableButton" >
-          <tooltip heading="Settings">Feature not yet developed</tooltip>
+          <tooltip heading="Instellingen">Feature not yet developed</tooltip>
         </button>
-		<button id="GeoPunt_InformationButton" caption="Informations" className="InformationButton" loadOnClick="true"
+		<button id="GeoPunt_InformationButton" caption="Info" className="InformationButton" loadOnClick="true"
 			largeImage="pack://application:,,,/GeoPunt;component/Images/Info.png" condition="DisableButton" >
-          <tooltip heading="Informations">Feature not yet developed
+          <tooltip heading="Info">Feature not yet developed
 		</tooltip>
         </button>
 		  

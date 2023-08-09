@@ -33,6 +33,7 @@ namespace GeoPunt.Dockpanes
     internal class SearchPlaceViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPlace";
+        private Helpers.Utils utils = new Helpers.Utils();
 
         private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
@@ -510,15 +511,6 @@ namespace GeoPunt.Dockpanes
             return niscodes.First<string>();
         }
 
-        private void zoomToQuery(MapPoint mapPoint)
-        {
-            QueuedTask.Run(() =>
-            {
-                var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
-            });
-        }
         private string theme2code(string theme)
         {
             if (theme == null || theme == "") return "";
@@ -778,7 +770,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddressSimple);
+                    utils.zoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -789,7 +781,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddress);
+                    utils.zoomTo(MapPointSelectedAddress);
                 });
             }
         }

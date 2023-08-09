@@ -29,6 +29,7 @@ namespace GeoPunt.Dockpanes
     internal class PointMapDockpaneViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_PointMapDockpane";
+        private Helpers.Utils utils = new Helpers.Utils();
 
         private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
@@ -176,15 +177,6 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private void zoomToQuery(MapPoint mapPoint)
-        {
-            QueuedTask.Run(() =>
-            {
-                var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
-            });
-        }
         private ObservableCollection<SaveMapPoint> ListSaveMapPoint = new ObservableCollection<SaveMapPoint>();
         public ICommand CmdSaveIcon
         {
@@ -247,7 +239,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddressSimple);
+                    utils.zoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -258,7 +250,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddress);
+                    utils.zoomTo(MapPointSelectedAddress);
                 });
             }
         }

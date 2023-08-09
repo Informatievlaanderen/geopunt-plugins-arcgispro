@@ -1,37 +1,22 @@
 ﻿using ArcGIS.Core.CIM;
-using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
-using ArcGIS.Core.Internal.CIM;
-using ArcGIS.Core.Internal.Geometry;
-using ArcGIS.Desktop.Catalog;
-using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Editing;
-using ArcGIS.Desktop.Extensions;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Internal.Mapping;
-using ArcGIS.Desktop.Layouts;
+using ArcGIS.Desktop.Internal.Catalog;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
+using GeoPunt.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
 
 
 namespace GeoPunt.Dockpanes
@@ -39,6 +24,7 @@ namespace GeoPunt.Dockpanes
     internal class SearchPerceelViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPerceel";
+        private Helpers.Utils utils = new Helpers.Utils();
 
         private string _textMarkeer;
         public string TextMarkeer
@@ -446,7 +432,10 @@ namespace GeoPunt.Dockpanes
                     
 
                     _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly,polySym.MakeSymbolReference()));
-                    MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+
+
+                    utils.zoomTo(poly);
+                    // MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
 
                 });
             }
@@ -830,7 +819,9 @@ namespace GeoPunt.Dockpanes
                     {
                         return;
                     }
-                    MapView.Active.ZoomTo(lastPolyMulti, new TimeSpan(0, 0, 0, 1));
+
+                    utils.zoomTo(lastPolyMulti);
+                    // MapView.Active.ZoomTo(lastPolyMulti, new TimeSpan(0, 0, 0, 1));
                 }
 
             });

@@ -1,47 +1,18 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Security.AccessControl;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Media3D;
-using ArcGIS.Core.CIM;
-using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
-using ArcGIS.Core.Internal.CIM;
-using ArcGIS.Core.Internal.Geometry;
-using ArcGIS.Desktop.Catalog;
-using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Core.Geoprocessing;
-using ArcGIS.Desktop.Core.Utilities;
-using ArcGIS.Desktop.Editing;
-using ArcGIS.Desktop.Extensions;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Internal.Mapping;
-using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.DataHandler;
 using Newtonsoft.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.IO;
-
-using System.Data;
+using GeoPunt.Helpers;
 
 namespace GeoPunt.Dockpanes
 {
@@ -52,8 +23,10 @@ namespace GeoPunt.Dockpanes
         DataHandler.adresSuggestion adresSuggestion;
         DataHandler.adresLocation adresLocation;
 
+        private Utils utils = new Utils();
+
         public bool isRemoveMarkeer = false;
-        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+        private SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
 
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
@@ -394,8 +367,9 @@ namespace GeoPunt.Dockpanes
         public ObservableCollection<string> ListCities
         {
             get { return _listCities; }
-            set  {
-               SetProperty(ref _listCities, value);
+            set
+            {
+                SetProperty(ref _listCities, value);
             }
         }
 
@@ -437,7 +411,7 @@ namespace GeoPunt.Dockpanes
             get { return _listStreets; }
             set
             {
-               SetProperty(ref _listStreets, value);
+                SetProperty(ref _listStreets, value);
             }
         }
 
@@ -470,7 +444,7 @@ namespace GeoPunt.Dockpanes
             get { return _listStreetsFavouriteString; }
             set
             {
-                SetProperty(ref _listStreetsFavouriteString, value); 
+                SetProperty(ref _listStreetsFavouriteString, value);
             }
         }
 
@@ -501,7 +475,7 @@ namespace GeoPunt.Dockpanes
 
                 List<datacontract.locationResult> loc = adresLocation.getAdresLocation(_selectedStreet, 1);
                 foreach (datacontract.locationResult item in loc)
-                {   
+                {
                     x = item.Location.X_Lambert72;
                     y = item.Location.Y_Lambert72;
 
@@ -562,7 +536,7 @@ namespace GeoPunt.Dockpanes
         MapPoint MapPointSelectedAddressSimple = null;
 
         public void updateCurrentMapPoint(string query, int count)
-        {            
+        {
             double x = 0;
             double y = 0;
 
@@ -573,7 +547,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y,lambertSpatialReference);
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
 
             if (ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {
@@ -583,21 +557,6 @@ namespace GeoPunt.Dockpanes
             {
                 TextMarkeer = "Markeer";
             }
-        }
-        private void zoomToQuery(MapPoint mapPoint)
-        {
-            if(mapPoint == null)
-            {
-                MessageBox.Show($"Unable to zoom: MapPoint is null");
-                return;
-            }
-            QueuedTask.Run(() =>
-            {
-                var mapView = MapView.Active;
-                // Code to remove ?
-                // var poly = GeometryEngine.Instance.Buffer(mapPoint, 50); 
-                mapView.ZoomTo(mapPoint, new TimeSpan(0, 0, 0, 1));
-            });
         }
 
         private void updateSuggestions()
@@ -614,7 +573,7 @@ namespace GeoPunt.Dockpanes
             get { return _selectedCity; }
             set
             {
-                SetProperty(ref _selectedCity, value);            
+                SetProperty(ref _selectedCity, value);
                 QueuedTask.Run(() =>
                 {
                     ListStreets.Clear();
@@ -629,7 +588,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddressSimple);
+                    utils.zoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -640,7 +599,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddress);
+                    utils.zoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -657,7 +616,7 @@ namespace GeoPunt.Dockpanes
                     //    ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
                     //    ListStreetsFavourite.Remove(pointToDelete);
                     //    GeocodeUtils.UpdateMapOverlay(pointToDelete, MapView.Active, true, true);
-                        
+
                     //}else
                     //{
                     //    MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
@@ -681,7 +640,7 @@ namespace GeoPunt.Dockpanes
 
         public void updateListBoxMarkeer()
         {
-            foreach(MapPoint mapPoint in ListStreetsMarkeer)
+            foreach (MapPoint mapPoint in ListStreetsMarkeer)
             {
                 GeocodeUtils.UpdateMapOverlayMarkeer(mapPoint, MapView.Active, false);
             }
@@ -695,7 +654,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        
+
 
         public ICommand CmdPoint
         {
@@ -733,35 +692,35 @@ namespace GeoPunt.Dockpanes
                         //ListStreetsFavourite.Add(MapPointSelectedAddress);
                         ListSaveMapPoint.Add(new SaveMapPoint(SelectedStreet, MapPointSelectedAddressSimple));
                         //updateListBoxFavourite();
-                    }  
+                    }
                 });
             }
         }
 
-        
+
 
         public ICommand CmdSaveIcon
         {
             get
             {
-            return new RelayCommand(async () => 
-                {
-                    List<SaveMapPoint> _data = new List<SaveMapPoint>();
-                    foreach (SaveMapPoint item in ListSaveMapPoint)
+                return new RelayCommand(async () =>
                     {
-                        _data.Add(item);
-                    }
+                        List<SaveMapPoint> _data = new List<SaveMapPoint>();
+                        foreach (SaveMapPoint item in ListSaveMapPoint)
+                        {
+                            _data.Add(item);
+                        }
 
-                    System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-                    oSaveFileDialog.Filter = "Json files (*.json) | *.json";
-                    if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        string fileName = oSaveFileDialog.FileName;
+                        System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+                        oSaveFileDialog.Filter = "Json files (*.json) | *.json";
+                        if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                        {
+                            string fileName = oSaveFileDialog.FileName;
 
-                        await using FileStream createStream = File.Create(fileName);
-                        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                    }
-                });
+                            await using FileStream createStream = File.Create(fileName);
+                            await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
+                        }
+                    });
             }
         }
 
@@ -769,15 +728,15 @@ namespace GeoPunt.Dockpanes
         {
             get
             {
-            return new RelayCommand(async () => 
-                {
-                    DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-                    FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
-                    pane.Hide();
-                });
+                return new RelayCommand(async () =>
+                    {
+                        DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+                        FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
+                        pane.Hide();
+                    });
             }
         }
-    
+
         private string _searchFilter;
         public string SearchFilter
         {
@@ -788,25 +747,25 @@ namespace GeoPunt.Dockpanes
                 updateSuggestions();
             }
         }
-        
 
 
-        protected SearchAddressDockpaneViewModel() 
+
+        protected SearchAddressDockpaneViewModel()
         {
             IsSelectedFavouriteList = true;
             TextMarkeer = "Markeer";
         }
         internal static void Show()
-        {        
+        {
             DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
             if (pane == null)
-              return;
+                return;
 
             FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
             pane.Activate();
         }
 
-	    private string _heading = "My DockPane";
+        private string _heading = "My DockPane";
         public string Heading
         {
             get { return _heading; }
@@ -817,11 +776,11 @@ namespace GeoPunt.Dockpanes
         }
     }
 
-	internal class SearchAddressDockpane_ShowButton : Button
-	{
-		protected async override void OnClick()
-		{
-			SearchAddressDockpaneViewModel.Show();
+    internal class SearchAddressDockpane_ShowButton : Button
+    {
+        protected async override void OnClick()
+        {
+            SearchAddressDockpaneViewModel.Show();
         }
-    }	
+    }
 }

@@ -214,50 +214,20 @@
                 HorizontalAlignment="Stretch"
                 HeadersVisibility="Column"
             >
-                <!--<DataGrid.Columns>
-                    <DataGridTextColumn  Binding="{Binding Bestaan}"   Header="Bestaan">
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Style.Triggers>
-                                    <Trigger Property="Text" Value="Nee">
-                                        <Setter Property="Background" Value="Red"/>
-                                    </Trigger>
-                                    <Trigger Property="Text" Value="Ja">
-                                        <Setter Property="Background" Value="LightGreen"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-                </DataGrid.Columns>-->
+
 
                 <DataGrid.RowStyle>
                     <Style TargetType="DataGridRow">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Bestaan}" Value="Ja">
+                            <DataTrigger Binding="{Binding [Gevalideerd adres]}" Value="OK">
                                 <Setter Property="Background" Value="LightGreen"></Setter>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Bestaan}" Value="Nee">
+                            <DataTrigger Binding="{Binding [Gevalideerd adres]}" Value="NOK">
                                 <Setter Property="Background" Value="Red"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </DataGrid.RowStyle>
-
-                <!--<DataGrid.CellStyle>
-                    <Style TargetType="DataGridCell">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Bestaan}" Value="Ja">
-                                <Setter Property="Background" Value="LightGreen"></Setter>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Bestaan}" Value="Nee">
-                                <Setter Property="Background" Value="Red"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.CellStyle>-->
-
-
 
 
             </DataGrid>
