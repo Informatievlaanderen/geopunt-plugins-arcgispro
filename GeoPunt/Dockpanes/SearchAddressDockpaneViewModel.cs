@@ -53,6 +53,8 @@ namespace GeoPunt.Dockpanes
         DataHandler.adresLocation adresLocation;
 
         public bool isRemoveMarkeer = false;
+        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+
 
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
              "",
@@ -499,12 +501,12 @@ namespace GeoPunt.Dockpanes
 
                 List<datacontract.locationResult> loc = adresLocation.getAdresLocation(_selectedStreet, 1);
                 foreach (datacontract.locationResult item in loc)
-                {
+                {   
                     x = item.Location.X_Lambert72;
                     y = item.Location.Y_Lambert72;
 
                 }
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y);
+                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
 
 
 
@@ -569,9 +571,9 @@ namespace GeoPunt.Dockpanes
             {
                 x = item.Location.X_Lambert72;
                 y = item.Location.Y_Lambert72;
-                
+
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y,lambertSpatialReference);
 
             if (ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {
@@ -584,11 +586,17 @@ namespace GeoPunt.Dockpanes
         }
         private void zoomToQuery(MapPoint mapPoint)
         {
+            if(mapPoint == null)
+            {
+                MessageBox.Show($"Unable to zoom: MapPoint is null");
+                return;
+            }
             QueuedTask.Run(() =>
             {
                 var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+                // Code to remove ?
+                // var poly = GeometryEngine.Instance.Buffer(mapPoint, 50); 
+                mapView.ZoomTo(mapPoint, new TimeSpan(0, 0, 0, 1));
             });
         }
 

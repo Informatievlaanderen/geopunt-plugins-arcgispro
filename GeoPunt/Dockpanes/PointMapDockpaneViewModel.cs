@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -28,6 +29,8 @@ namespace GeoPunt.Dockpanes
     internal class PointMapDockpaneViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_PointMapDockpane";
+
+        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
         DataHandler.adresSuggestion adresSuggestion;
         DataHandler.adresLocation adresLocation;
@@ -39,7 +42,7 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _address, value);
-                IsSelectedFavouriteList = false;        
+                IsSelectedFavouriteList = false;
             }
         }
 
@@ -88,9 +91,17 @@ namespace GeoPunt.Dockpanes
         public void refreshAddress(string address, double diff)
         {
             Address = address;
-            DifferenceMeters = diff.ToString("0.00")+" meter";
-            updateCurrentMapPoint(address, 1,true);
+            DifferenceMeters = diff.ToString("0.00") + " meter";
+            updateCurrentMapPoint(address, 1, true);
         }
+
+
+
+        public void AddTempGraphic(MapPoint mapPoint)
+        {
+            GeocodeUtils.UpdateMapOverlayTemp(mapPoint, MapView.Active);
+        }
+
 
         private ObservableCollection<MapPoint> _listStreetsFavouritePoint = new ObservableCollection<MapPoint>();
         public ObservableCollection<MapPoint> ListStreetsFavouritePoint
@@ -139,13 +150,13 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
             }
 
-            if(isSimple) 
+            if (isSimple)
             {
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y);
+                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
                 return;
             }
 
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
 
             if (ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {
@@ -291,7 +302,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        public PointMapDockpaneViewModel() 
+        public PointMapDockpaneViewModel()
         {
             Module1.vmSearchPlace = this;
             TextMarkeer = "Markeer";

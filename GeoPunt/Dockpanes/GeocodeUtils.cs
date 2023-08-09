@@ -22,6 +22,7 @@ namespace GeoPunt.Dockpanes
         private static ObservableCollection<System.IDisposable> _overlayObjectMapPoint = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectCSV = new ObservableCollection<System.IDisposable>();
+        private static ObservableCollection<System.IDisposable> _overlayObjectTemp = new ObservableCollection<System.IDisposable>();
 
         public static async void AddToMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
         {
@@ -108,7 +109,22 @@ namespace GeoPunt.Dockpanes
             });
         }
 
-    
+
+        public static async void AddToMapOverlayTemp(ArcGIS.Core.Geometry.MapPoint point, MapView mapView)
+        {
+            await QueuedTask.Run(() =>
+            {
+
+                RemoveFromMapOverlayTemp();
+
+                ArcGIS.Core.CIM.CIMPointSymbol symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreyRGB, 10.0, SimpleMarkerStyle.Circle);
+                CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
+
+                _overlayObjectTemp.Add(mapView.AddOverlay(point, symbolReference));
+
+            });
+        }
+
 
         public static void UpdateMapOverlay(ArcGIS.Core.Geometry.MapPoint point, MapView mapView, bool isFavourite = false, bool isRemove = false)
         {
@@ -130,13 +146,16 @@ namespace GeoPunt.Dockpanes
             AddToMapOverlayMapPoint(point, mapView, isFavourite, isRemove);
         }
 
-
+        public static void UpdateMapOverlayTemp(ArcGIS.Core.Geometry.MapPoint point, MapView mapView)
+        {
+            AddToMapOverlayTemp(point, mapView);
+        }
 
         public static void RemoveFromMapOverlay(MapView mapView)
         {
             if (_overlayObject != null)
             {
-                foreach(var overlay in _overlayObject)
+                foreach (var overlay in _overlayObject)
                 {
                     overlay.Dispose();
                 }
@@ -191,6 +210,17 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-     
+        public static void RemoveFromMapOverlayTemp()
+        {
+            if (_overlayObjectTemp != null)
+            {
+                foreach (var overlay in _overlayObjectTemp)
+                {
+                    overlay.Dispose();
+                }
+                _overlayObjectTemp = new ObservableCollection<System.IDisposable>();
+            }
+        }
+
     }
 }
