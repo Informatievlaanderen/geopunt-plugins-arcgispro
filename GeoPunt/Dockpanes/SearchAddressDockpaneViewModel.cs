@@ -480,7 +480,7 @@ namespace GeoPunt.Dockpanes
                     y = item.Location.Y_Lambert72;
 
                 }
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+                MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
 
 
@@ -547,7 +547,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+            MapPointSelectedAddress = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
             if (ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {

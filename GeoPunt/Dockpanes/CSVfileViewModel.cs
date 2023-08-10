@@ -246,7 +246,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+            MapPointSelectedAddress = utils.CreateMapPoint(x, y, lambertSpatialReference);
             //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
 
             if (ListCSVMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)

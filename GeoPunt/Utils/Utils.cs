@@ -3,6 +3,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System;
 using ArcGIS.Desktop.Mapping;
+using System.Collections.Generic;
 
 namespace GeoPunt.Helpers
 {
@@ -83,6 +84,38 @@ namespace GeoPunt.Helpers
                 }
 
             });
+        }
+    
+        public MapPoint CreateMapPoint(double x, double y, SpatialReference spatialReference)
+        {
+            MapPoint mapPoint = MapPointBuilderEx.CreateMapPoint(x, y, spatialReference);
+            MapView mapView = MapView.Active;
+            int mapWkid = mapView.Map.SpatialReference.Wkid;
+
+            if (mapWkid != mapPoint.SpatialReference.Wkid)
+            {
+                MapPoint projectedMapPoint = GeometryEngine.Instance.Project(mapPoint, SpatialReferenceBuilder.CreateSpatialReference(mapWkid)) as MapPoint;
+                return projectedMapPoint;
+            }
+
+            return mapPoint;
+
+        }
+
+
+        public Polygon CreatePolygon(IEnumerable<MapPoint> points, SpatialReference spatialReference)
+        {
+            Polygon polygon = PolygonBuilderEx.CreatePolygon(points, spatialReference);
+            MapView mapView = MapView.Active;
+            int mapWkid = mapView.Map.SpatialReference.Wkid;
+
+            if (mapWkid != polygon.SpatialReference.Wkid)
+            {
+                Polygon projectedPolygon = GeometryEngine.Instance.Project(polygon, SpatialReferenceBuilder.CreateSpatialReference(mapWkid)) as Polygon;
+                return projectedPolygon;
+            }
+
+            return polygon;
         }
     }
 }

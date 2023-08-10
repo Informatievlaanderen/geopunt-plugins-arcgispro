@@ -153,11 +153,11 @@ namespace GeoPunt.Dockpanes
 
             if (isSimple)
             {
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+                MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
                 return;
             }
 
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+            MapPointSelectedAddress = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
             if (ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {

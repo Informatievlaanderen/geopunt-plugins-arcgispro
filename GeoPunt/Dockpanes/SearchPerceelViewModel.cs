@@ -403,7 +403,7 @@ namespace GeoPunt.Dockpanes
                     foreach (var b in a)
                     {
 
-                        MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1], lambertSpatialReference);
+                        MapPointFromPolygone = utils.CreateMapPoint(b[0], b[1], lambertSpatialReference);
 
                         LisPointsFromPolygones.Add(MapPointFromPolygone);
 
@@ -424,9 +424,10 @@ namespace GeoPunt.Dockpanes
 
                     }
 
+                    if (LisPointsFromPolygones[0] != null)
+                    { 
 
-
-                    ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygones, lambertSpatialReference);
+                    Polygon poly = utils.CreatePolygon(LisPointsFromPolygones, LisPointsFromPolygones[0].SpatialReference);
 
                     //Set symbolology, create and add element to layout
                     CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
@@ -437,7 +438,8 @@ namespace GeoPunt.Dockpanes
 
 
                     utils.ZoomTo(poly);
-                    // MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+                        // MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
+                    }
 
                 });
             }
@@ -679,7 +681,7 @@ namespace GeoPunt.Dockpanes
                 foreach (var b in a)
                 {
 
-                    MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1], lambertSpatialReference);
+                    MapPointFromPolygone = utils.CreateMapPoint(b[0], b[1], lambertSpatialReference);
 
                     ListPointsFromPolygonesToMarkeer.Add(MapPointFromPolygone);
 
@@ -717,7 +719,7 @@ namespace GeoPunt.Dockpanes
                         foreach (var b in aa)
                         {
 
-                            MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1], lambertSpatialReference);
+                            MapPointFromPolygone = utils.CreateMapPoint(b[0], b[1], lambertSpatialReference);
 
                             if (LisPointsFromPolygones.Count == 0)
                             {
@@ -804,7 +806,8 @@ namespace GeoPunt.Dockpanes
                 //MessageBox.Show($@"polygon.count > 1 :: {ListPolygonesToMarkeer.Count}");
                 foreach (var polygon in ListPolygonesToMarkeer)
                 {
-                    ArcGIS.Core.Geometry.Polygon polyMulti = PolygonBuilderEx.CreatePolygon(polygon, lambertSpatialReference);
+                    
+                    Polygon polyMulti = utils.CreatePolygon(polygon, polygon[0].SpatialReference);
                     lastPolyMulti = polyMulti;
                     //Set symbolology, create and add element to layout
                     CIMStroke outlineMulti = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.GreenRGB, 2.0, SimpleLineStyle.Solid);
