@@ -2,10 +2,6 @@
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 
 namespace GeoPunt.Helpers
@@ -16,7 +12,7 @@ namespace GeoPunt.Helpers
         {
         }
 
-        public  void zoomTo(MapPoint mapPoint, int distance = 500)
+        public void zoomTo(MapPoint mapPoint, int distance = 500)
         {
 
 
@@ -25,6 +21,13 @@ namespace GeoPunt.Helpers
                 MessageBox.Show($"Unable to zoom: MapPoint is null");
                 return;
             }
+
+            if (mapPoint.SpatialReference == null)
+            {
+                MessageBox.Show($"Unable to zoom: MapPoint spatial reference is null");
+                return;
+            }
+
             QueuedTask.Run(() =>
             {
                 MapView mapView = MapView.Active;
@@ -55,6 +58,14 @@ namespace GeoPunt.Helpers
                 MessageBox.Show($"Unable to zoom: Polygon is null");
                 return;
             }
+
+
+            if (polygon.SpatialReference == null)
+            {
+                MessageBox.Show($"Unable to zoom: Polygon spatial reference is null");
+                return;
+            }
+
             QueuedTask.Run(() =>
             {
                 MapView mapView = MapView.Active;
