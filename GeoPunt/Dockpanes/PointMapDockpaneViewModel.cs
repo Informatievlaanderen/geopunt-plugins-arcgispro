@@ -239,7 +239,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.zoomTo(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -250,7 +250,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.zoomTo(MapPointSelectedAddress);
+                    utils.ZoomTo(MapPointSelectedAddress);
                 });
             }
         }

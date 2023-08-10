@@ -436,7 +436,7 @@ namespace GeoPunt.Dockpanes
                     _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
 
 
-                    utils.zoomTo(poly);
+                    utils.ZoomTo(poly);
                     // MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
 
                 });
@@ -822,7 +822,7 @@ namespace GeoPunt.Dockpanes
                         return;
                     }
 
-                    utils.zoomTo(lastPolyMulti);
+                    utils.ZoomTo(lastPolyMulti);
                     // MapView.Active.ZoomTo(lastPolyMulti, new TimeSpan(0, 0, 0, 1));
                 }
 

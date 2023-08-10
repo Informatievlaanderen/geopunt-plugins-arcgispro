@@ -12,7 +12,7 @@ namespace GeoPunt.Helpers
         {
         }
 
-        public void zoomTo(MapPoint mapPoint, int distance = 500)
+        public void ZoomTo(MapPoint mapPoint, int distance = 500)
         {
 
 
@@ -49,7 +49,7 @@ namespace GeoPunt.Helpers
             });
         }
 
-        public void zoomTo(Polygon polygon)
+        public void ZoomTo(Polygon polygon)
         {
 
 
