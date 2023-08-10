@@ -41,6 +41,7 @@ namespace GeoPunt.Dockpanes
     {
 
         private Helpers.Utils utils = new Helpers.Utils();
+        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
         private bool _isCheckedMeerdere = true;
         public bool IsCheckedMeerdere
@@ -245,7 +246,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y);
+            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
             //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
 
             if (ListCSVMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
@@ -389,7 +390,6 @@ namespace GeoPunt.Dockpanes
             //if (SelectedListFormats == "UTF-8") codex = ;
 
             string csvPath = TextFilePlacement;
-            DataGridViewComboBoxColumn validatedRow;
 
             DataTable csvDataTbl;
 
@@ -415,26 +415,15 @@ namespace GeoPunt.Dockpanes
                 return;
             }
 
-            //set validation column
-            validatedRow = new DataGridViewComboBoxColumn();
-            validatedRow.HeaderText = Bestaan;
-            validatedRow.Name = "validAdres";
-            validatedRow.Width = 120;
             ComboBoxListOfColumns = new ObservableCollection<string>(new List<string>());
 
             await QueuedTask.Run(() =>
             {
                 DataTableCSV = new DataTable();
 
-                //Bestaan = "Bestaan";
-
-                //DataColumn dataTableCsvColumn2 = new DataColumn();
-                //dataTableCsvColumn2.ColumnName = Bestaan;
-                //dataTableCsvColumn2.DefaultValue = "";
-                //csvDataTbl.Columns.Add(dataTableCsvColumn2);
 
                 DataColumn dataTableCsvColumn2 = new DataColumn();
-                dataTableCsvColumn2.ColumnName = "Gevalideerd adres";
+                dataTableCsvColumn2.ColumnName = Bestaan;
                 dataTableCsvColumn2.DefaultValue = "";
                 csvDataTbl.Columns.Add(dataTableCsvColumn2);
 
@@ -444,25 +433,14 @@ namespace GeoPunt.Dockpanes
                     DataColumn dataTableCsvColumn = new DataColumn();
                     dataTableCsvColumn.ColumnName = column.ColumnName;
                     DataTableCSV.Columns.Add(dataTableCsvColumn);
-                    ComboBoxListOfColumns.Add(column.ColumnName);
+                    if(column.ColumnName != Bestaan)
+                        ComboBoxListOfColumns.Add(column.ColumnName);
 
                 }
 
                 foreach (DataRow row in csvDataTbl.Rows)
                 {
-
-                    //row[2] = "aa";
-                    //row.ItemArray[3] = "koko;
-
-
-                    //DataRowCSV DataCSV = new DataRowCSV();
-                    //DataCSV.Straat = row[0].ToString();
-                    //DataCSV.Nummer = row[1].ToString();
-                    //DataCSV.Gemeente = row[2].ToString();
-                    //DataCSV.Gemeente = "";
-
                     DataTableCSV.Rows.Add(row.ItemArray);
-                    //DataCsvList.Add(DataCSV);
                 }
             });
         }

@@ -25,6 +25,7 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPerceel";
         private Helpers.Utils utils = new Helpers.Utils();
+        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
         private string _textMarkeer;
         public string TextMarkeer
@@ -169,7 +170,7 @@ namespace GeoPunt.Dockpanes
         datacontract.parcel perceelToSave;
 
         DataHandler.capakey capakey;
-        public SearchPerceelViewModel() 
+        public SearchPerceelViewModel()
         {
             capakey = new DataHandler.capakey(5000);
             perceel = null;
@@ -240,7 +241,7 @@ namespace GeoPunt.Dockpanes
 
         public void updatePercelFromSelectedPerceelToSave(DataRowParcel dataRowParcel)
         {
-            if(dataRowParcel == null)
+            if (dataRowParcel == null)
             {
                 return;
             }
@@ -263,16 +264,17 @@ namespace GeoPunt.Dockpanes
 
             ActiveButtonMarkeer = true;
 
-            
 
-            if (ListStringPercel.Contains(parcelNr)){
+
+            if (ListStringPercel.Contains(parcelNr))
+            {
                 TextMarkeer = "Verwijder markering";
             }
             else
             {
                 TextMarkeer = "Markeer";
             }
-            
+
 
             perceelToSave = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
                                                    DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
@@ -368,17 +370,17 @@ namespace GeoPunt.Dockpanes
         private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
         private static ObservableCollection<System.IDisposable> _overlayObjectPerceelToMarkeer = new ObservableCollection<System.IDisposable>();
 
-        
-        
-        
+
+
+
         ArcGIS.Core.Geometry.Polygon lastPoly;
         private async void createGrapicAndZoomTo(string capakeyResponse, datacontract.geojson Geom)
         {
-            
+
 
             if (Geom.type == "MultiPolygon")
             {
-         
+
                 datacontract.geojsonMultiPolygon muniPolygons =
                                   JsonConvert.DeserializeObject<datacontract.geojsonMultiPolygon>(capakeyResponse);
 
@@ -401,8 +403,8 @@ namespace GeoPunt.Dockpanes
                     foreach (var b in a)
                     {
 
-                        MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
-                                                
+                        MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1], lambertSpatialReference);
+
                         LisPointsFromPolygones.Add(MapPointFromPolygone);
 
                     }
@@ -412,26 +414,26 @@ namespace GeoPunt.Dockpanes
                 {
                     if (_overlayObjectPerceel.Count > 0)
                     {
-   
+
 
                         foreach (var overlay in _overlayObjectPerceel)
                         {
                             overlay.Dispose();
                         }
                         _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
-                        
+
                     }
 
-                    
 
-                    ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygones);
+
+                    ArcGIS.Core.Geometry.Polygon poly = PolygonBuilderEx.CreatePolygon(LisPointsFromPolygones, lambertSpatialReference);
 
                     //Set symbolology, create and add element to layout
                     CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
                     CIMPolygonSymbol polySym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
-                    
 
-                    _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly,polySym.MakeSymbolReference()));
+
+                    _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
 
 
                     utils.zoomTo(poly);
@@ -618,7 +620,7 @@ namespace GeoPunt.Dockpanes
                     row.Sectie = SelectedListSecties;
                     row.Perceel = SelectedListParcels;
 
-                   
+
 
                     if (ListSaveParceels.FirstOrDefault(m => m.Perceel == row.Perceel) == null)
                     {
@@ -649,7 +651,7 @@ namespace GeoPunt.Dockpanes
                 {
                     methodButtonMarkeer(true);
 
-                    
+
 
                     DataRowParcel percelToDelete = ListSaveParceels.FirstOrDefault(p => p.Perceel == SelectedSaveParceel.Perceel);
                     ListSaveParceels.Remove(percelToDelete);
@@ -677,7 +679,7 @@ namespace GeoPunt.Dockpanes
                 foreach (var b in a)
                 {
 
-                    MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
+                    MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1], lambertSpatialReference);
 
                     ListPointsFromPolygonesToMarkeer.Add(MapPointFromPolygone);
 
@@ -715,9 +717,9 @@ namespace GeoPunt.Dockpanes
                         foreach (var b in aa)
                         {
 
-                            MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1]);
+                            MapPointFromPolygone = MapPointBuilderEx.CreateMapPoint(b[0], b[1], lambertSpatialReference);
 
-                            if(LisPointsFromPolygones.Count == 0)
+                            if (LisPointsFromPolygones.Count == 0)
                             {
                                 break;
                             }
@@ -739,7 +741,7 @@ namespace GeoPunt.Dockpanes
 
                             }
                             break;
-                            
+
                         }
                     }
                 }
@@ -747,14 +749,14 @@ namespace GeoPunt.Dockpanes
                 //if (ListPolygonesToMarkeer.FirstOrDefault(m => m.FirstOrDefault(mp => mp.X == aX && mp.Y == aY) == null) == null)
                 if (!isExist)
                 {
-                    
+
                     if (SelectedSaveParceel != null)
                     {
                         ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
                         ListStringPercel.Add(SelectedSaveParceel.Perceel);
                         TextMarkeer = "Verwijder markering";
                     }
-                    
+
                 }
                 else
                 {
@@ -775,7 +777,7 @@ namespace GeoPunt.Dockpanes
                         ListStringPercel.Remove(SelectedSaveParceel.Perceel);
                     }
 
-                    
+
 
                     if (pointToDelete != null)
                     {
@@ -802,7 +804,7 @@ namespace GeoPunt.Dockpanes
                 //MessageBox.Show($@"polygon.count > 1 :: {ListPolygonesToMarkeer.Count}");
                 foreach (var polygon in ListPolygonesToMarkeer)
                 {
-                    ArcGIS.Core.Geometry.Polygon polyMulti = PolygonBuilderEx.CreatePolygon(polygon);
+                    ArcGIS.Core.Geometry.Polygon polyMulti = PolygonBuilderEx.CreatePolygon(polygon, lambertSpatialReference);
                     lastPolyMulti = polyMulti;
                     //Set symbolology, create and add element to layout
                     CIMStroke outlineMulti = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.GreenRGB, 2.0, SimpleLineStyle.Solid);
@@ -832,7 +834,7 @@ namespace GeoPunt.Dockpanes
 
         public ICommand CmdMarkeer
         {
-            get 
+            get
             {
                 return new RelayCommand(async () =>
                 {
