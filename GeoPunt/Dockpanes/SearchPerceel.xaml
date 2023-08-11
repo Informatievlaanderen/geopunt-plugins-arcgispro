@@ -131,10 +131,21 @@
                       Style="{DynamicResource Esri_DataGrid}"
                       Height="200" 
                       ScrollViewer.CanContentScroll="True"      
-                      AutoGenerateColumns="True"
+                      AutoGenerateColumns="False"
                       HorizontalAlignment="Stretch"
                       HeadersVisibility="Column"
-                      ></DataGrid>
+                      >
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Attributes[Gemeente]}" Header="Gemeente" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Department]}" Header="Department" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Sectie]}" Header="Sectie" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Perceel]}" Header="Perceel" />
+                </DataGrid.Columns>
+
+
+
+            </DataGrid>
         </Grid>
 
         <Grid Grid.Row="6" HorizontalAlignment="Center">

@@ -13,6 +13,7 @@ using GeoPunt.DataHandler;
 using Newtonsoft.Json;
 using System.IO;
 using GeoPunt.Helpers;
+using ArcGIS.Desktop.Layouts;
 
 namespace GeoPunt.Dockpanes
 {
@@ -425,7 +426,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private ObservableCollection<SaveMapPoint> ListSaveMapPoint = new ObservableCollection<SaveMapPoint>();
+        private ObservableCollection<Graphic> ListSaveMapPoint = new ObservableCollection<Graphic>();
 
 
         private ObservableCollection<MapPoint> _listStreetsFavourite = new ObservableCollection<MapPoint>();
@@ -480,7 +481,7 @@ namespace GeoPunt.Dockpanes
                     y = item.Location.Y_Lambert72;
 
                 }
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+                MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
 
 
@@ -547,7 +548,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+            MapPointSelectedAddress = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
             if (ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {
@@ -588,7 +589,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.zoomTo(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -599,7 +600,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.zoomTo(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -624,9 +625,10 @@ namespace GeoPunt.Dockpanes
                     //    ListStreetsMarkeer.Remove(pointToDelete);
                     //    GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete, MapView.Active, true, true);
                     //}
+                    
 
                     MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                    SaveMapPoint savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    Graphic savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => (m.Geometry as MapPoint).X == MapPointSelectedAddress.X && (m.Geometry as MapPoint).Y == MapPointSelectedAddress.Y);
                     ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
                     ListSaveMapPoint.Remove(savePointToDelete);
                     ListStreetsMarkeer.Remove(pointToDelete);
@@ -690,7 +692,10 @@ namespace GeoPunt.Dockpanes
                     {
                         ListStreetsFavouriteString.Add(SelectedStreet);
                         //ListStreetsFavourite.Add(MapPointSelectedAddress);
-                        ListSaveMapPoint.Add(new SaveMapPoint(SelectedStreet, MapPointSelectedAddressSimple));
+                        ListSaveMapPoint.Add(new Graphic(new Dictionary<string, object>
+                                {
+                                    {"adres", SelectedStreet},
+                                }, MapPointSelectedAddressSimple));
                         //updateListBoxFavourite();
                     }
                 });
@@ -705,21 +710,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                     {
-                        List<SaveMapPoint> _data = new List<SaveMapPoint>();
-                        foreach (SaveMapPoint item in ListSaveMapPoint)
-                        {
-                            _data.Add(item);
-                        }
-
-                        System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-                        oSaveFileDialog.Filter = "Json files (*.json) | *.json";
-                        if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                        {
-                            string fileName = oSaveFileDialog.FileName;
-
-                            await using FileStream createStream = File.Create(fileName);
-                            await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                        }
+                        utils.ExportToGeoJson(ListSaveMapPoint.ToList());
                     });
             }
         }
