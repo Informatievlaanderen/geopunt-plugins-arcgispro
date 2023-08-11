@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -37,8 +38,8 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private ObservableCollection<DataRowParcel> _listSaveParceels = new ObservableCollection<DataRowParcel>();
-        public ObservableCollection<DataRowParcel> ListSaveParceels
+        private ObservableCollection<Graphic> _listSaveParceels = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> ListSaveParceels
         {
             get { return _listSaveParceels; }
             set
@@ -47,8 +48,8 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private DataRowParcel _selectedSaveParceel;
-        public DataRowParcel SelectedSaveParceel
+        private Graphic _selectedSaveParceel;
+        public Graphic SelectedSaveParceel
         {
             get { return _selectedSaveParceel; }
             set
@@ -239,34 +240,24 @@ namespace GeoPunt.Dockpanes
             ListParcels = (from n in parcels select n.perceelnummer).ToList();
         }
 
-        public void updatePercelFromSelectedPerceelToSave(DataRowParcel dataRowParcel)
+        public void updatePercelFromSelectedPerceelToSave(Graphic graphic)
         {
-            if (dataRowParcel == null)
+            if (graphic == null)
             {
                 return;
             }
 
             ActiveButtonSave = false;
             ActiveButtonMarkeer = false;
-            string gemeente = SelectedListGemeente;
-            string niscode = municipality2nis(dataRowParcel.Gemeente);
 
-            string department = SelectedListDepartments;
-            string depCode = department2code(dataRowParcel.Department);
-
-            string sectie = dataRowParcel.Sectie;
-            string parcelNr = dataRowParcel.Perceel;
-
-            if (niscode == "" || niscode == null) return;
-            if (depCode == "" || depCode == null) return;
-            if (sectie == "" || sectie == null) return;
-            if (parcelNr == "" || parcelNr == null) return;
+            if (graphic.Attributes["Gemeente"] == null || graphic.Attributes["Gemeente"].ToString() == "") return;
+            if (graphic.Attributes["Department"] == null || graphic.Attributes["Department"].ToString() == "") return;
+            if (graphic.Attributes["Sectie"] == null || graphic.Attributes["Sectie"].ToString() == "") return;
+            if (graphic.Attributes["Perceel"] == null || graphic.Attributes["Perceel"].ToString() == "") return;
 
             ActiveButtonMarkeer = true;
 
-
-
-            if (ListStringPercel.Contains(parcelNr))
+            if (ListStringPercel.Contains(graphic.Attributes["Perceel"].ToString()))
             {
                 TextMarkeer = "Verwijder markering";
             }
@@ -276,7 +267,11 @@ namespace GeoPunt.Dockpanes
             }
 
 
-            perceelToSave = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
+            perceelToSave = capakey.getParcel(
+                int.Parse(graphic.Attributes["Gemeente"].ToString()), 
+                int.Parse(graphic.Attributes["Department"].ToString()), 
+                graphic.Attributes["Sectie"].ToString(), 
+                graphic.Attributes["Perceel"].ToString(),
                                                    DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
         }
 
@@ -371,9 +366,55 @@ namespace GeoPunt.Dockpanes
         private static ObservableCollection<System.IDisposable> _overlayObjectPerceelToMarkeer = new ObservableCollection<System.IDisposable>();
 
 
+        private Polygon CreateParcelPolygon(string capakeyResponse, geojson Geom)
+        {
 
 
-        ArcGIS.Core.Geometry.Polygon lastPoly;
+            if (Geom.type == "MultiPolygon")
+            {
+
+                datacontract.geojsonMultiPolygon muniPolygons =
+                                  JsonConvert.DeserializeObject<datacontract.geojsonMultiPolygon>(capakeyResponse);
+
+                foreach (datacontract.geojsonPolygon poly in muniPolygons.toPolygonList())
+                {
+                    MessageBox.Show($@"Multipolygones :: {poly}");
+
+                }
+                return null;
+            }
+            else if (Geom.type == "Polygon")
+            {
+                datacontract.geojsonPolygon municipalityPolygon =
+                            JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(capakeyResponse);
+                MapPoint MapPointFromPolygone = null;
+                LisPointsFromPolygones.Clear();
+
+
+                foreach (var a in municipalityPolygon.coordinates)
+                {
+                    foreach (var b in a)
+                    {
+
+                        MapPointFromPolygone = utils.CreateMapPoint(b[0], b[1], lambertSpatialReference);
+
+                        LisPointsFromPolygones.Add(MapPointFromPolygone);
+
+                    }
+                }
+
+                Polygon poly = utils.CreatePolygon(LisPointsFromPolygones, LisPointsFromPolygones[0].SpatialReference);
+                return poly;
+
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+
         private async void createGrapicAndZoomTo(string capakeyResponse, datacontract.geojson Geom)
         {
 
@@ -425,47 +466,33 @@ namespace GeoPunt.Dockpanes
                     }
 
                     if (LisPointsFromPolygones[0] != null)
-                    { 
+                    {
 
-                    Polygon poly = utils.CreatePolygon(LisPointsFromPolygones, LisPointsFromPolygones[0].SpatialReference);
+                        Polygon poly = utils.CreatePolygon(LisPointsFromPolygones, LisPointsFromPolygones[0].SpatialReference);
 
-                    //Set symbolology, create and add element to layout
-                    CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
-                    CIMPolygonSymbol polySym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
-
-
-                    _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
+                        //Set symbolology, create and add element to layout
+                        CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
+                        CIMPolygonSymbol polySym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
 
 
-                    utils.ZoomTo(poly);
+                        _overlayObjectPerceel.Add(MapView.Active.AddOverlay(poly, polySym.MakeSymbolReference()));
+
+
+                        utils.ZoomTo(poly);
                         // MapView.Active.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
                     }
 
                 });
             }
         }
-        private ObservableCollection<DataRowParcel> ListSavePerceel = new ObservableCollection<DataRowParcel>();
+        private ObservableCollection<Graphic> ListSavePerceel = new ObservableCollection<Graphic>();
         public ICommand CmdSaveIcon
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    List<DataRowParcel> _data = new List<DataRowParcel>();
-                    foreach (DataRowParcel item in ListSavePerceel)
-                    {
-                        _data.Add(item);
-                    }
-
-                    System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-                    oSaveFileDialog.Filter = "Json files (*.json) | *.json";
-                    if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        string fileName = oSaveFileDialog.FileName;
-
-                        await using FileStream createStream = File.Create(fileName);
-                        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                    }
+                    utils.ExportToGeoJson(ListSavePerceel.ToList());
                 });
             }
         }
@@ -591,13 +618,13 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    string gemeente = SelectedSaveParceel.Gemeente;
+                    string gemeente = SelectedSaveParceel.Attributes["Gemeente"].ToString();
                     string niscode = municipality2nis(gemeente);
 
-                    string department = SelectedSaveParceel.Department;
+                    string department = SelectedSaveParceel.Attributes["Department"].ToString();
                     string depCode = department2code(department);
 
-                    string sectie = SelectedSaveParceel.Sectie;
+                    string sectie = SelectedSaveParceel.Attributes["Sectie"].ToString();
 
                     if (niscode == "" || niscode == null) return;
                     if (depCode == "" || depCode == null) return;
@@ -615,19 +642,23 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    DataRowParcel row = new DataRowParcel();
 
-                    row.Gemeente = SelectedListGemeente;
-                    row.Department = SelectedListDepartments;
-                    row.Sectie = SelectedListSecties;
-                    row.Perceel = SelectedListParcels;
+                    geojson geojson = JsonConvert.DeserializeObject<geojson>(perceel.geometry.shape);
+                    Polygon polygon = CreateParcelPolygon(perceel.geometry.shape, geojson);
 
 
+                    Graphic graphic = new Graphic(new Dictionary<string, object>
+                                {
+                                    {"Gemeente", SelectedListGemeente},
+                                    {"Department", SelectedListDepartments},
+                                    {"Sectie", SelectedListSecties},
+                                    {"Perceel", SelectedListParcels},
+                                }, polygon);
 
-                    if (ListSaveParceels.FirstOrDefault(m => m.Perceel == row.Perceel) == null)
+                    if (ListSaveParceels.FirstOrDefault(m => m.Attributes["Perceel"] == graphic.Attributes["Perceel"]) == null)
                     {
-                        ListSaveParceels.Add(row);
-                        ListSavePerceel.Add(row);
+                        ListSaveParceels.Add(graphic);
+                        ListSavePerceel.Add(graphic);
                     }
                 });
             }
@@ -655,7 +686,7 @@ namespace GeoPunt.Dockpanes
 
 
 
-                    DataRowParcel percelToDelete = ListSaveParceels.FirstOrDefault(p => p.Perceel == SelectedSaveParceel.Perceel);
+                    Graphic percelToDelete = ListSaveParceels.FirstOrDefault(p => p.Attributes["Perceel"] == SelectedSaveParceel.Attributes["Perceel"]);
                     ListSaveParceels.Remove(percelToDelete);
                     ListSavePerceel.Remove(percelToDelete);
 
@@ -755,7 +786,7 @@ namespace GeoPunt.Dockpanes
                     if (SelectedSaveParceel != null)
                     {
                         ListPolygonesToMarkeer.Add(ListPointsFromPolygonesToMarkeer);
-                        ListStringPercel.Add(SelectedSaveParceel.Perceel);
+                        ListStringPercel.Add(SelectedSaveParceel.Attributes["Perceel"].ToString());
                         TextMarkeer = "Verwijder markering";
                     }
 
@@ -776,7 +807,7 @@ namespace GeoPunt.Dockpanes
 
                     if (SelectedSaveParceel != null)
                     {
-                        ListStringPercel.Remove(SelectedSaveParceel.Perceel);
+                        ListStringPercel.Remove(SelectedSaveParceel.Attributes["Perceel"].ToString());
                     }
 
 
@@ -806,7 +837,7 @@ namespace GeoPunt.Dockpanes
                 //MessageBox.Show($@"polygon.count > 1 :: {ListPolygonesToMarkeer.Count}");
                 foreach (var polygon in ListPolygonesToMarkeer)
                 {
-                    
+
                     Polygon polyMulti = utils.CreatePolygon(polygon, polygon[0].SpatialReference);
                     lastPolyMulti = polyMulti;
                     //Set symbolology, create and add element to layout

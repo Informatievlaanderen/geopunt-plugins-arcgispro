@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ArcGIS.Desktop.Internal.DesktopService;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace GeoPunt.Helpers
 {
@@ -96,7 +97,7 @@ namespace GeoPunt.Helpers
 
             });
         }
-    
+
         public MapPoint CreateMapPoint(double x, double y, SpatialReference spatialReference)
         {
             MapPoint mapPoint = MapPointBuilderEx.CreateMapPoint(x, y, spatialReference);
@@ -134,7 +135,7 @@ namespace GeoPunt.Helpers
             List<GeoJSONFeature> geoJSONFeatures = new List<GeoJSONFeature>();
             foreach (Graphic graphic in graphics)
             {
-              
+
                 switch (graphic.Geometry.GeometryType)
                 {
 
@@ -142,22 +143,39 @@ namespace GeoPunt.Helpers
                         MapPoint mapPoint = graphic.Geometry as MapPoint;
                         geoJSONFeatures.Add(new GeoJSONFeature(new GeoJSONPointGeometry(mapPoint.X, mapPoint.Y), graphic.Attributes));
                         break;
-                    
+
                     case GeometryType.Polyline:
                         Polyline polyline = graphic.Geometry as Polyline;
                         geoJSONFeatures.Add(new GeoJSONFeature(new GeoJSONLineStringGeometry((List<List<double>>)polyline.Copy2DCoordinatesToList()), graphic.Attributes));
                         break;
                     case GeometryType.Polygon:
                         Polygon polygon = graphic.Geometry as Polygon;
-                        geoJSONFeatures.Add(new GeoJSONFeature(new GeoJSONPolygonGeometry((List<List<List<double>>>)polygon.Copy2DCoordinatesToList()), graphic.Attributes));
+                        List<List<double>> coordinates = new List<List<double>>();
+                        ReadOnlyPointCollection test = polygon.Points;
+                        foreach (MapPoint item in test)
+                        {
+                            List<double> xAndY = new List<double>
+                            {
+                                item.X,
+                                item.Y
+                            };
+                            coordinates.Add(xAndY);
+                        }
+
+                        List<List<List<double>>> polygonCoordinates = new List<List<List<double>>>
+                        {
+                            coordinates
+                        };
+
+                        geoJSONFeatures.Add(new GeoJSONFeature(new GeoJSONPolygonGeometry(polygonCoordinates), graphic.Attributes));
                         break;
-                  
+
                     default:
                         break;
-                }                
+                }
             }
 
-            if(graphics.Count > 0 && graphics[0].Geometry.SpatialReference != null && graphics[0].Geometry.SpatialReference.Wkid != 4326)
+            if (graphics.Count > 0 && graphics[0].Geometry.SpatialReference != null && graphics[0].Geometry.SpatialReference.Wkid != 4326)
             {
                 GeoJSONClass geoJSON = new GeoJSONClass(geoJSONFeatures, graphics[0].Geometry.SpatialReference.Wkid);
                 SaveJsonFile(geoJSON);
@@ -168,7 +186,7 @@ namespace GeoPunt.Helpers
                 SaveJsonFile(geoJSON);
             }
 
-            
+
         }
 
         private void SaveJsonFile(object objectToExport)
