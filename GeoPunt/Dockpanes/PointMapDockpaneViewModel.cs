@@ -222,7 +222,7 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
                     MapPoint pointToDelete = ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                    SaveMapPoint savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    SaveMapPoint savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => m.MapPoint.X == MapPointSelectedAddress.X && m.MapPoint.Y == MapPointSelectedAddress.Y);
                     ListStreetsFavouriteStringPoint.Remove(SelectedStreetFavouritePoint);
                     ListSaveMapPoint.Remove(savePointToDelete);
                     ListStreetsFavouritePoint.Remove(pointToDelete);

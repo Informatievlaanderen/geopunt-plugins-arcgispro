@@ -4,6 +4,17 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System;
 using ArcGIS.Desktop.Mapping;
 using System.Collections.Generic;
+using GeoPunt.Dockpanes;
+using System.IO;
+using System.Drawing;
+using GeoPunt.GeoJSON;
+using static GeoPunt.GeoJSON.GeoJSONGeometry;
+using System.Linq;
+using GeoPunt.datacontract;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using ArcGIS.Desktop.Internal.DesktopService;
+using System.Diagnostics;
 
 namespace GeoPunt.Helpers
 {
@@ -117,5 +128,63 @@ namespace GeoPunt.Helpers
 
             return polygon;
         }
+
+        public void ExportToGeoJson(List<Graphic> graphics)
+        {
+            List<GeoJSONFeature> geoJSONFeatures = new List<GeoJSONFeature>();
+            foreach (Graphic graphic in graphics)
+            {
+              
+                switch (graphic.Geometry.GeometryType)
+                {
+
+                    case GeometryType.Point:
+                        MapPoint mapPoint = graphic.Geometry as MapPoint;
+                        geoJSONFeatures.Add(new GeoJSONFeature(new GeoJSONPointGeometry(mapPoint.X, mapPoint.Y), graphic.Attributes));
+                        break;
+                    
+                    case GeometryType.Polyline:
+                        Polyline polyline = graphic.Geometry as Polyline;
+                        geoJSONFeatures.Add(new GeoJSONFeature(new GeoJSONLineStringGeometry((List<List<double>>)polyline.Copy2DCoordinatesToList()), graphic.Attributes));
+                        break;
+                    case GeometryType.Polygon:
+                        Polygon polygon = graphic.Geometry as Polygon;
+                        geoJSONFeatures.Add(new GeoJSONFeature(new GeoJSONPolygonGeometry((List<List<List<double>>>)polygon.Copy2DCoordinatesToList()), graphic.Attributes));
+                        break;
+                  
+                    default:
+                        break;
+                }                
+            }
+
+            if(graphics.Count > 0 && graphics[0].Geometry.SpatialReference != null && graphics[0].Geometry.SpatialReference.Wkid != 4326)
+            {
+                GeoJSONClass geoJSON = new GeoJSONClass(geoJSONFeatures, graphics[0].Geometry.SpatialReference.Wkid);
+                SaveJsonFile(geoJSON);
+            }
+            else
+            {
+                GeoJSONClass geoJSON = new GeoJSONClass(geoJSONFeatures);
+                SaveJsonFile(geoJSON);
+            }
+
+            
+        }
+
+        private void SaveJsonFile(object objectToExport)
+        {
+            System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            oSaveFileDialog.Filter = "Json files (*.json) | *.json";
+            if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string fileName = oSaveFileDialog.FileName;
+
+                using StreamWriter file = File.CreateText(fileName);
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, objectToExport);
+
+            }
+        }
+
     }
 }

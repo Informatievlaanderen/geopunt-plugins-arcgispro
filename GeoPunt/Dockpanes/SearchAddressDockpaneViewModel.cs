@@ -626,7 +626,7 @@ namespace GeoPunt.Dockpanes
                     //}
 
                     MapPoint pointToDelete = ListStreetsMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                    SaveMapPoint savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    SaveMapPoint savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => m.MapPoint.X == MapPointSelectedAddress.X && m.MapPoint.Y == MapPointSelectedAddress.Y);
                     ListStreetsFavouriteString.Remove(SelectedStreetFavourite);
                     ListSaveMapPoint.Remove(savePointToDelete);
                     ListStreetsMarkeer.Remove(pointToDelete);
@@ -705,21 +705,19 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                     {
-                        List<SaveMapPoint> _data = new List<SaveMapPoint>();
+
+
+                        List<Graphic> graphics = new List<Graphic>();
                         foreach (SaveMapPoint item in ListSaveMapPoint)
                         {
-                            _data.Add(item);
+                            graphics.Add(new Graphic(new Dictionary<string, object>
+                                {
+                                    {"adres", item.Adres},
+                                }, item.MapPoint));
                         }
 
-                        System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-                        oSaveFileDialog.Filter = "Json files (*.json) | *.json";
-                        if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                        {
-                            string fileName = oSaveFileDialog.FileName;
+                        utils.ExportToGeoJson(graphics);
 
-                            await using FileStream createStream = File.Create(fileName);
-                            await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                        }
                     });
             }
         }
