@@ -8,23 +8,23 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="600"
              d:DataContext="{Binding Path=ui.SearchPlaceViewModel}">
-  <UserControl.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-      </ResourceDictionary.MergedDictionaries>
-      <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-    </ResourceDictionary>
-  </UserControl.Resources>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="190px"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="Auto"/>
-    </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="190px"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
@@ -116,14 +116,31 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" FontWeight="SemiBold" Text="Favorieten lijst" Style="{DynamicResource Esri_TextBlockDockPaneHeader}" Margin="5" />
-            
+
             <DataGrid Grid.Row="1" IsReadOnly="true"  ItemsSource="{Binding FavouriteInteressantePlaatsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedFavouriteInteressantePlaatsList}" 
                       Style="{DynamicResource Esri_DataGrid}"
                       ScrollViewer.CanContentScroll="True"      
-                      AutoGenerateColumns="True"
+                      AutoGenerateColumns="False"
                       HorizontalAlignment="Stretch"
                       HeadersVisibility="Column"
-                      ></DataGrid>
+                      >
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Binding="{Binding Attributes[id]}" Header="id" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Thema]}" Header="Thema" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Categorie]}" Header="Categorie" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Type]}" Header="Type" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Naam]}" Header="Naam" />
+                    <!--<DataGridTextColumn Binding="{Binding Attributes[Omschrijving]}" Header="Omschrijving" />-->
+                    <DataGridTextColumn Binding="{Binding Attributes[Straat]}" Header="Straat" />
+                    <DataGridTextColumn Binding="{Binding Attributes[busnr]}" Header="busnr" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Gemeente]}" Header="Gemeente" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Postcode]}" Header="Postcode" />
+                    <DataGridTextColumn Binding="{Binding Attributes[Huisnummer]}" Header="Huisnummer" />
+                </DataGrid.Columns>
+
+
+            </DataGrid>
 
             <Grid Grid.Row="2" HorizontalAlignment="Center" >
                 <Grid.ColumnDefinitions>
@@ -154,5 +171,5 @@
         </TextBlock.ToolTip>
       </TextBlock>
     </DockPanel>-->
-  </Grid>
+    </Grid>
 </UserControl>
