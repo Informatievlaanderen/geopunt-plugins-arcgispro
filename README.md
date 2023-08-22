@@ -36,3 +36,7 @@ Icon Settings
 Icon Informations
 
 Move the files from the data folder
+
+# Testing
++ ArcGIS Pro Add-in Regression Testing: https://github.com/esri/arcgis-pro-sdk/wiki/ProGuide-Regression-Testing
++ NUnit for unit testing: https://nunit.org/
