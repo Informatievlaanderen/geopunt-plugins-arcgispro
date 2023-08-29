@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeoPunt", "GeoPunt.csproj", "{AE2B8B05-1BE3-4CAD-B49D-6A2B4C28319D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoPuntTests", "..\GeoPuntTests\GeoPuntTests.csproj", "{F4972E03-6970-4E9B-9966-93A8B476AB7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeoPuntTests", "..\GeoPuntTests\GeoPuntTests.csproj", "{F4972E03-6970-4E9B-9966-93A8B476AB7B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AE2B8B05-1BE3-4CAD-B49D-6A2B4C28319D} = {AE2B8B05-1BE3-4CAD-B49D-6A2B4C28319D}
 	EndProjectSection
