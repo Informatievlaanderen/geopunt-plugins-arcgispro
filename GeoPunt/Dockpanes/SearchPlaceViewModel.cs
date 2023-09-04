@@ -33,6 +33,7 @@ namespace GeoPunt.Dockpanes
     internal class SearchPlaceViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPlace";
+        private Helpers.Utils utils = new Helpers.Utils();
 
         private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
@@ -108,8 +109,8 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private ObservableCollection<DataRowSearchPlaats> _favouriteInteressantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
-        public ObservableCollection<DataRowSearchPlaats> FavouriteInteressantePlaatsList
+        private ObservableCollection<Graphic> _favouriteInteressantePlaatsList = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> FavouriteInteressantePlaatsList
         {
             get { return _favouriteInteressantePlaatsList; }
             set
@@ -118,8 +119,8 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private DataRowSearchPlaats _selectedFavouriteInteressantePlaatsList;
-        public DataRowSearchPlaats SelectedFavouriteInteressantePlaatsList
+        private Graphic _selectedFavouriteInteressantePlaatsList;
+        public Graphic SelectedFavouriteInteressantePlaatsList
         {
             get { return _selectedFavouriteInteressantePlaatsList; }
             set
@@ -130,7 +131,7 @@ namespace GeoPunt.Dockpanes
 
                 if (_selectedFavouriteInteressantePlaatsList != null)
                 {
-                    string var = _selectedFavouriteInteressantePlaatsList.Straat + ", " + _selectedFavouriteInteressantePlaatsList.Gemeente;
+                    string var = _selectedFavouriteInteressantePlaatsList.Attributes["Straat"] + ", " + _selectedFavouriteInteressantePlaatsList.Attributes["Gemeente"];
                     updateCurrentMapPoint(var, 1);
                 }
 
@@ -178,7 +179,7 @@ namespace GeoPunt.Dockpanes
                     y = item.Location.Y_Lambert72;
                 }
 
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+                MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
                 ActiveRemoveButton = false;
                 ActiveSaveButton = true; 
@@ -228,7 +229,7 @@ namespace GeoPunt.Dockpanes
                 y = item.Location.Y_Lambert72;
 
             }
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+            MapPointSelectedAddress = utils.CreateMapPoint(x, y, lambertSpatialReference);
             //MessageBox.Show($@"update: {MapPointSelectedAddress.X} || {MapPointSelectedAddress.Y}");
 
             if (ListPOIMarkeer.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
@@ -510,15 +511,6 @@ namespace GeoPunt.Dockpanes
             return niscodes.First<string>();
         }
 
-        private void zoomToQuery(MapPoint mapPoint)
-        {
-            QueuedTask.Run(() =>
-            {
-                var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
-            });
-        }
         private string theme2code(string theme)
         {
             if (theme == null || theme == "") return "";
@@ -586,28 +578,14 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private ObservableCollection<DataRowSearchPlaats> ListSavePOI = new ObservableCollection<DataRowSearchPlaats>();
+        private ObservableCollection<Graphic> ListSavePOI = new ObservableCollection<Graphic>();
         public ICommand CmdSaveIcon
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    List<DataRowSearchPlaats> _data = new List<DataRowSearchPlaats>();
-                    foreach (DataRowSearchPlaats item in ListSavePOI)
-                    {
-                        _data.Add(item);
-                    }
-
-                    System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-                    oSaveFileDialog.Filter = "Json files (*.json) | *.json";
-                    if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        string fileName = oSaveFileDialog.FileName;
-
-                        await using FileStream createStream = File.Create(fileName);
-                        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                    }
+                    utils.ExportToGeoJson(ListSavePOI.ToList());
                 });
             }
         }
@@ -674,22 +652,26 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    DataRowSearchPlaats row = new DataRowSearchPlaats();
 
-                    row.id = SelectedInteressantePlaatsList.id;
-                    row.Thema = SelectedInteressantePlaatsList.Thema;
-                    row.Categorie = SelectedInteressantePlaatsList.Categorie;
-                    row.Type = SelectedInteressantePlaatsList.Type;
-                    row.Naam = SelectedInteressantePlaatsList.Naam;
-                    //row.Omschrijving = SelectedInteressantePlaatsList.Omschrijving;
-                    row.Straat = SelectedInteressantePlaatsList.Straat;
-                    row.busnr = SelectedInteressantePlaatsList.busnr;
-                    row.Gemeente = SelectedInteressantePlaatsList.Gemeente;
-                    row.Postcode = SelectedInteressantePlaatsList.Postcode;
-                    row.Huisnummer = SelectedInteressantePlaatsList.Huisnummer;
 
-                    FavouriteInteressantePlaatsList.Add(row);
-                    ListSavePOI.Add(row);
+                    Dictionary<string,object> attributes = new Dictionary<string, object>();
+
+                    attributes["id"] = SelectedInteressantePlaatsList.id;
+                    attributes["Thema"] = SelectedInteressantePlaatsList.Thema;
+                    attributes["Categorie"] = SelectedInteressantePlaatsList.Categorie;
+                    attributes["Type"] = SelectedInteressantePlaatsList.Type;
+                    attributes["Naam"] = SelectedInteressantePlaatsList.Naam;
+                    //attributes["Omschrijving"] = SelectedInteressantePlaatsList.Omschrijving;
+                    attributes["Straat"] = SelectedInteressantePlaatsList.Straat;
+                    attributes["busnr"] = SelectedInteressantePlaatsList.busnr;
+                    attributes["Gemeente"] = SelectedInteressantePlaatsList.Gemeente;
+                    attributes["Postcode"] = SelectedInteressantePlaatsList.Postcode;
+                    attributes["Huisnummer"] = SelectedInteressantePlaatsList.Huisnummer;
+
+                    Graphic graphic = new Graphic(attributes, MapPointSelectedAddressSimple);
+
+                    FavouriteInteressantePlaatsList.Add(graphic);
+                    ListSavePOI.Add(graphic);
                 });
             }
         }
@@ -700,7 +682,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    DataRowSearchPlaats plaatsToDelete = FavouriteInteressantePlaatsList.FirstOrDefault(m => m.id == SelectedFavouriteInteressantePlaatsList.id);
+                    Graphic plaatsToDelete = FavouriteInteressantePlaatsList.FirstOrDefault(m => m.Attributes["id"] == SelectedFavouriteInteressantePlaatsList.Attributes["id"]);
                     if (plaatsToDelete != null)
                     {
                         FavouriteInteressantePlaatsList.Remove(plaatsToDelete);
@@ -715,70 +697,13 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        public ICommand CmdVoeg
-        {
-            get
-            {
-                return new RelayCommand(async () =>
-                {
-                    foreach (datacontract.poiMaxModel poi in listPois)
-                    {
-                        DataRowSearchPlaats row = new DataRowSearchPlaats();
-                        List<string> qry;
-                        datacontract.poiAddress adres;
-
-                        row.id = poi.id;
-                        //row.Omschrijving = "";
-                        //if (poi.description != null)
-                        //{
-                        //    row.Omschrijving = poi.description.value;
-                        //}
-
-                        qry = (from datacontract.poiValueGroup n in poi.categories
-                               where n.type == "Type"
-                               select n.value).ToList();
-                        if (qry.Count > 0) row.Type = qry[0];
-
-                        qry = (from datacontract.poiValueGroup n in poi.categories
-                               where n.type == "Categorie"
-                               select n.value).ToList();
-                        if (qry.Count > 0) row.Categorie = qry[0];
-                        //if (row.Categorie == null) row.Categorie = SelectedCategoriesListString;
-
-
-                        qry = (from datacontract.poiValueGroup n in poi.categories
-                               where n.type == "Thema"
-                               select n.value).ToList();
-                        if (qry.Count > 0) row.Thema = qry[0];
-
-                        qry = (
-                            from datacontract.poiValueGroup n in poi.labels
-                            select n.value).ToList();
-                        row.Naam = string.Join(", ", qry.ToArray());
-
-                        adres = poi.location.address;
-                        if (adres != null)
-                        {
-                            row.Straat = adres.street;
-                            row.Huisnummer = adres.streetnumber;
-                            row.Postcode = adres.postalcode;
-                            row.Gemeente = adres.municipality;
-                        }
-
-
-                        FavouriteInteressantePlaatsList.Add(row);
-                    }
-                });
-            }
-        }
-
         public ICommand CmdZoom
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -789,7 +714,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddress);
+                    utils.ZoomTo(MapPointSelectedAddress);
                 });
             }
         }

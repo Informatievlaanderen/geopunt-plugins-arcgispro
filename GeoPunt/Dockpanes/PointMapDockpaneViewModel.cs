@@ -29,6 +29,7 @@ namespace GeoPunt.Dockpanes
     internal class PointMapDockpaneViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_PointMapDockpane";
+        private Helpers.Utils utils = new Helpers.Utils();
 
         private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
@@ -152,11 +153,11 @@ namespace GeoPunt.Dockpanes
 
             if (isSimple)
             {
-                MapPointSelectedAddressSimple = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+                MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
                 return;
             }
 
-            MapPointSelectedAddress = MapPointBuilderEx.CreateMapPoint(x, y, lambertSpatialReference);
+            MapPointSelectedAddress = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
             if (ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
             {
@@ -176,37 +177,14 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private void zoomToQuery(MapPoint mapPoint)
-        {
-            QueuedTask.Run(() =>
-            {
-                var mapView = MapView.Active;
-                var poly = GeometryEngine.Instance.Buffer(mapPoint, 50);
-                mapView.ZoomTo(poly, new TimeSpan(0, 0, 0, 1));
-            });
-        }
-        private ObservableCollection<SaveMapPoint> ListSaveMapPoint = new ObservableCollection<SaveMapPoint>();
+        private ObservableCollection<Graphic> ListSaveMapPoint = new ObservableCollection<Graphic>();
         public ICommand CmdSaveIcon
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    List<SaveMapPoint> _data = new List<SaveMapPoint>();
-                    foreach (SaveMapPoint item in ListSaveMapPoint)
-                    {
-                        _data.Add(item);
-                    }
-
-                    System.Windows.Forms.SaveFileDialog oSaveFileDialog = new System.Windows.Forms.SaveFileDialog();
-                    oSaveFileDialog.Filter = "Json files (*.json) | *.json";
-                    if (oSaveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        string fileName = oSaveFileDialog.FileName;
-
-                        await using FileStream createStream = File.Create(fileName);
-                        await System.Text.Json.JsonSerializer.SerializeAsync(createStream, _data);
-                    }
+                        utils.ExportToGeoJson(ListSaveMapPoint.ToList());
                 });
             }
         }
@@ -230,7 +208,7 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
                     MapPoint pointToDelete = ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                    SaveMapPoint savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
+                    Graphic savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => (m.Geometry as MapPoint).X == MapPointSelectedAddress.X && (m.Geometry as MapPoint).Y == MapPointSelectedAddress.Y);
                     ListStreetsFavouriteStringPoint.Remove(SelectedStreetFavouritePoint);
                     ListSaveMapPoint.Remove(savePointToDelete);
                     ListStreetsFavouritePoint.Remove(pointToDelete);
@@ -247,7 +225,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(MapPointSelectedAddressSimple);
                 });
             }
         }
@@ -258,7 +236,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    zoomToQuery(MapPointSelectedAddress);
+                    utils.ZoomTo(MapPointSelectedAddress);
                 });
             }
         }
@@ -296,7 +274,10 @@ namespace GeoPunt.Dockpanes
                     if (!ListStreetsFavouriteStringPoint.Contains(Address))
                     {
                         ListStreetsFavouriteStringPoint.Add(Address);
-                        ListSaveMapPoint.Add(new SaveMapPoint(Address, MapPointSelectedAddressSimple));
+                        ListSaveMapPoint.Add(new Graphic(new Dictionary<string, object>
+                                {
+                                    {"adres", Address},
+                                }, MapPointSelectedAddressSimple));
                     }
                 });
             }
