@@ -20,6 +20,7 @@ using System.Net;
 using System.Windows.Input;
 
 
+
 namespace GeoPunt.Dockpanes
 {
     internal class SearchPerceelViewModel : DockPane
@@ -266,13 +267,12 @@ namespace GeoPunt.Dockpanes
                 TextMarkeer = "Markeer";
             }
 
-
             perceelToSave = capakey.getParcel(
-                int.Parse(graphic.Attributes["Gemeente"].ToString()), 
-                int.Parse(graphic.Attributes["Department"].ToString()), 
+                int.Parse(municipality2nis(graphic.Attributes["Gemeente"].ToString())), 
+                int.Parse(department2code(graphic.Attributes["Department"].ToString())), 
                 graphic.Attributes["Sectie"].ToString(), 
                 graphic.Attributes["Perceel"].ToString(),
-                                                   DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
         }
 
         public void parcelSelectionChange()
