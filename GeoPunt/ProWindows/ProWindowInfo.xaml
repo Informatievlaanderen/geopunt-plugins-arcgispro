@@ -17,9 +17,13 @@
         </ResourceDictionary>
     </controls:ProWindow.Resources>
     <Grid>
-        <TextBlock TextWrapping="Wrap">
+        <ScrollViewer>
+        <TextBlock TextWrapping="Wrap" Padding="30">
            <Bold><Span FontSize="32">Geopunt voor Arcgis </Span></Bold>
             <LineBreak></LineBreak>
+            <LineBreak></LineBreak>
+            
+            
            <Bold><Span FontSize="22">Functies</Span></Bold>
             <LineBreak></LineBreak>
             <Hyperlink
@@ -47,7 +51,7 @@
             <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">
                  •   Geopunt catalogus
             </Hyperlink><LineBreak></LineBreak>
-           
+           <LineBreak></LineBreak>
             
            <Bold><Span FontSize="22">Systeem vereisten </Span></Bold>
             <LineBreak></LineBreak>
@@ -79,9 +83,11 @@
             <LineBreak></LineBreak>
             • <Bold>Metadata zoekdienst</Bold>, dienst om datasets te zoeken via het <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">metadatacenter</Hyperlink>, Deze bevat ondermeer metadatasets van AGIV, het samenwerkingsverband MercatorNet en DOV.
             <LineBreak></LineBreak>
+
+            <LineBreak></LineBreak> 
             Om GIS gebruikers binnen en buiten de Vlaamse Overheid dezelfde functionaliteit ter beschikking te stellen als aangeboden in Geopunt, wenst AGIV deze gebruikers te voorzien van software plug-ins die deze functionaliteit geïntegreerd aanbieden binnen de meest gangbare GIS desktop omgevingen. Op basis van voorafgaand overleg met de GDI-Vlaanderen gemeenschap werd volgende GIS software geselecteerd: Quantum GIS (QGIS) en <Run Foreground="Red" FontWeight="Bold">ESRI ArcGIS Pro</Run>.
             <LineBreak></LineBreak>
-            
+             <LineBreak></LineBreak>
             
            <Bold><Span FontSize="22">Wat is Geopunt ?</Span></Bold>
             <LineBreak></LineBreak>
@@ -91,6 +97,7 @@
 
             Geopunt is de website van het samenwerkingsverband voor geografische informatie binnen de Vlaamse overheid, GDI-Vlaanderen (GDI = Geografische Data Infrastructuur). In de rol van geografische dienstenintegrator en als uitvoerend orgaan van het samenwerkingsverband GDI-Vlaanderen staat het Agentschap voor Geografische Informatie Vlaanderen (AGIV) in voor de realisatie en het onderhoud van Geopunt. 
             <LineBreak></LineBreak>
+            <LineBreak></LineBreak>
             
             
             <Bold><Span FontSize="22">Auteurs</Span></Bold>
@@ -98,5 +105,6 @@
             Kay Warrie, Dawid Sienkiewicz, Hélias Brénéol, Elie-Alban Lescout
             <LineBreak></LineBreak>
         </TextBlock>
+    </ScrollViewer>
     </Grid>
 </controls:ProWindow>
