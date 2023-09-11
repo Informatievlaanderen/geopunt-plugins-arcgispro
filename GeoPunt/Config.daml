@@ -78,8 +78,8 @@
         <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png">
           <tooltip heading="Zoek een perceel">Zoek een kadastraal perceel op via gemeente, department, sectie en perceelnummer</tooltip>
         </button>
-        <button id="GeoPunt_GipodButton" className="GipodButton" caption="Gipod" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png" condition="DisableButton">
-          <tooltip heading="Gipod">Feature not yet developed</tooltip>
+        <button id="GeoPunt_GipodButton" caption="GIPOD" className="GeoPunt.Dockpanes.Gipod_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png">
+          <tooltip heading="Bevraag GIPOD">Bevraag GIPOD ...</tooltip>
         </button>
         <button id="GeoPunt_HeightButton" className="HeightButton" caption="Hoogte" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png" condition="DisableButton">
           <tooltip heading="Hoogte">Feature not yet developed</tooltip>
@@ -90,9 +90,9 @@
         <button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Instellingen" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png" condition="DisableButton">
           <tooltip heading="Instellingen">Feature not yet developed</tooltip>
         </button>
-		  <button id="GeoPunt_InformationButton" caption="Info" className="ShowProWindowInfo" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Info.png">
-			  <tooltip heading="Info">Meer informatie over deze add-in</tooltip>
-		  </button>
+        <button id="GeoPunt_InformationButton" caption="Info" className="ShowProWindowInfo" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Info.png">
+          <tooltip heading="Info">Meer informatie over deze add-in</tooltip>
+        </button>
       </controls>
       <dockPanes>
         <dockPane id="GeoPunt_Dockpanes_StartDockpane" caption="Welcome in Geopunt plug-in" className="GeoPunt.Dockpanes.StartDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
@@ -112,6 +112,9 @@
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestanden geocoderen" className="GeoPunt.Dockpanes.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.CSVfileView" />
+        </dockPane>
+        <dockPane id="GeoPunt_Dockpanes_Gipod" caption="Bevraag GIPOD" className="GeoPunt.Dockpanes.GipodViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.GipodView" />
         </dockPane>
       </dockPanes>
     </insertModule>
