@@ -8,26 +8,137 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.GipodViewModel}">
-  <UserControl.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </UserControl.Resources>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-    <DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
-      <TextBlock Grid.Column="1" Text="{Binding Heading}" Style="{DynamicResource Esri_TextBlockDockPaneHeader}">
-        <TextBlock.ToolTip>
-          <WrapPanel Orientation="Vertical" MaxWidth="300">
-            <TextBlock Text="{Binding Heading}" TextWrapping="Wrap"/>
-          </WrapPanel>
-        </TextBlock.ToolTip>
-      </TextBlock>
-    </DockPanel>
-  </Grid>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <Grid Grid.Row="0"  HorizontalAlignment="Stretch" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+
+            <RadioButton   
+                HorizontalAlignment="Center"
+               Grid.Column="0"  
+               Content="Werkopdracht"   
+               Command="{Binding Path=ChangeTypeManifestation}"   
+               />
+
+            <RadioButton   
+                        HorizontalAlignment="Center"
+               Grid.Column="1"  
+               Content="Manifestatie"   
+               Command="{Binding Path=ChangeTypeManifestation}"   
+               />
+        </Grid>
+
+        <Grid Grid.Row="1">
+
+
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="1" Text="Provincie:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ProvincieList}" SelectedItem="{Binding SelectedProvincie}" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEnabledGemeente}" />
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="2" Text="Gemeente:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding GemeenteList}" SelectedItem="{Binding SelectedGemeente}" Grid.Row="2" Grid.Column="1" />
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="3" Text="Eigenaar:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding EigenaarList}" SelectedItem="{Binding SelectedEigenaar}" Grid.Row="3" Grid.Column="1" />
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="4" Text="Type manifestatie:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ManifestatieList}" SelectedItem="{Binding SelectedManifestatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" IsEnabled="False" />
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="5" Text="Startdatum:"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1"/>
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="6" Text="Einddatum:"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedEndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="1"/>
+
+        </Grid>
+
+
+        <CheckBox Grid.Row="2" FontSize="13" Margin="5" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
+
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ListBox Grid.Row="1" Height="150" ItemsSource="{Binding ListStreetsFavouriteStringPoint}" SelectedItem="{Binding SelectedStreetFavouritePoint}"  Margin="5,0,5,0" 
+                 ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
+                 BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" />
+
+            <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Content="Exporteer" Grid.Row="7" Width="80" Height="20" Command="{Binding CmdSaveIcon}" />
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdRemoveFavourite}"   Content="Verwijder"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Height="20" Command="{Binding CmdPoint}"  Content="{Binding TextMarkeer}"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoomFavourite}"  Content="Zoom"/>
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Row="4" HorizontalAlignment="Right"   Margin="5">
+
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Opslaan" Command="{Binding CmdSave}" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Sluiten" Command="{Binding CmdClose}" />
+        </Grid>
+
+        
+
+
+
+
+    </Grid>
+
+
 </UserControl>
