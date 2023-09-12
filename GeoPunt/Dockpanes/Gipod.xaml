@@ -72,16 +72,16 @@
 
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="1" Text="Provincie:"/>
-            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ProvincieList}" SelectedItem="{Binding SelectedProvincie}" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEnabledGemeente}" />
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListProvincie}" SelectedItem="{Binding SelectedProvincie}" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEnabledGemeente}" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="2" Text="Gemeente:"/>
-            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding GemeenteList}" SelectedItem="{Binding SelectedGemeente}" Grid.Row="2" Grid.Column="1" />
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListGemeente}" SelectedItem="{Binding SelectedGemeente}" Grid.Row="2" Grid.Column="1" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="3" Text="Eigenaar:"/>
-            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding EigenaarList}" SelectedItem="{Binding SelectedEigenaar}" Grid.Row="3" Grid.Column="1" />
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListEigenaar}" SelectedItem="{Binding SelectedEigenaar}" Grid.Row="3" Grid.Column="1" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="4" Text="Type manifestatie:"/>
-            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ManifestatieList}" SelectedItem="{Binding SelectedManifestatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" IsEnabled="False" />
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListManifestatie}" SelectedItem="{Binding SelectedManifestatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" IsEnabled="False" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="5" Text="Startdatum:"/>
             <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1"/>
