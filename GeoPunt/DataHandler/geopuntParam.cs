@@ -15,4 +15,23 @@ namespace GeoPunt.DataHandler
     {
         public CRS crs;
     }
+
+
+    public enum gipodtype { workassignment, manifestation }
+
+    public enum gipodReferencedata { city, province, eventtype, owner }
+
+    public struct gipodParam
+    {
+        public gipodtype gipodType;
+        // public boundingBox bbox;
+        public string city;
+        public string province;
+        public string owner;
+        public string eventtype;
+        public DateTime startdate;
+        public DateTime enddate;
+        public CRS crs;
+        public string shapePath;
+    }
 }
