@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeoPuntTests", "..\GeoPuntT
 		{AE2B8B05-1BE3-4CAD-B49D-6A2B4C28319D} = {AE2B8B05-1BE3-4CAD-B49D-6A2B4C28319D}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeopuntTests1", "..\GeopuntTests1\GeopuntTests1.csproj", "{830A8756-5017-45D4-ABE3-78BA99C8C68A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{F4972E03-6970-4E9B-9966-93A8B476AB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4972E03-6970-4E9B-9966-93A8B476AB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F4972E03-6970-4E9B-9966-93A8B476AB7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{830A8756-5017-45D4-ABE3-78BA99C8C68A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{830A8756-5017-45D4-ABE3-78BA99C8C68A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{830A8756-5017-45D4-ABE3-78BA99C8C68A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{830A8756-5017-45D4-ABE3-78BA99C8C68A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
