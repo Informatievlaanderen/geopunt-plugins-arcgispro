@@ -38,7 +38,7 @@
             <RadioButton   
                 HorizontalAlignment="Center"
                Grid.Column="0"  
-               Content="Werkopdracht"   
+               Content="Werkopdracht"  
                Command="{Binding Path=ChangeTypeManifestation}"   
                />
 
@@ -46,6 +46,7 @@
                         HorizontalAlignment="Center"
                Grid.Column="1"  
                Content="Manifestatie"   
+               IsChecked="{Binding ManifestionChecked, Mode=TwoWay}"
                Command="{Binding Path=ChangeTypeManifestation}"   
                />
         </Grid>
@@ -81,7 +82,7 @@
             <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListEigenaar}" SelectedItem="{Binding SelectedEigenaar}" Grid.Row="3" Grid.Column="1" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="4" Text="Type manifestatie:"/>
-            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListManifestatie}" SelectedItem="{Binding SelectedManifestatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" IsEnabled="False" />
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListManifestatie}" SelectedItem="{Binding SelectedManifestatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" IsEnabled="{Binding ManifestionChecked}" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="5" Text="Startdatum:"/>
             <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1"/>

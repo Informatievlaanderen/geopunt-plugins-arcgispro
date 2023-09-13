@@ -16,10 +16,11 @@ using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
 
 namespace GeoPunt.Dockpanes
 {
@@ -50,12 +51,18 @@ namespace GeoPunt.Dockpanes
             ListEigenaar = new ObservableCollection<string>(owners);
             ListManifestatie = new ObservableCollection<string>(eventTypes);
 
+        
+
+
+        private bool _manifestionChecked = false;
+        public bool ManifestionChecked
+        {
+            get { return _manifestionChecked; }
+            set
+            {
+                SetProperty(ref _manifestionChecked, value);
+            }
         }
-
-
-
-
-
 
         private ObservableCollection<string> _listProvincie = new ObservableCollection<string>();
         public ObservableCollection<string> ListProvincie
