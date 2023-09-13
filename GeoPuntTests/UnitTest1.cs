@@ -1,7 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-
-namespace GeoPuntTests
+namespace GeopuntTests
 {
     [TestClass]
     public class UnitTest1
@@ -9,7 +6,6 @@ namespace GeoPuntTests
         [TestMethod]
         public void TestMethod1()
         {
-            Assert.Fail();
         }
     }
 }

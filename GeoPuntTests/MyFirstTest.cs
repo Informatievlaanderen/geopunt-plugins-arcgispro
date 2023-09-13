@@ -1,4 +1,4 @@
-﻿namespace GeopuntTests1
+﻿namespace GeopuntTests
 {
     [TestClass]
     public class MyFirstTest

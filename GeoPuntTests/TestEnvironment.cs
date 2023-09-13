@@ -1,13 +1,11 @@
 ﻿using ArcGIS.Core;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Internal.Core;
-using ArcGISTest;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+
 using System.Diagnostics;
 using System.Windows.Markup;
 
-namespace GeoPuntTests
+namespace GeopuntTests
 {
     [ArcGISTestClass]
     public static class TestEnvironment
