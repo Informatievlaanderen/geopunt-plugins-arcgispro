@@ -1,6 +1,10 @@
-﻿using System.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ArcGISTest
+namespace GeopuntTests
 {
     public class ArcGISTestClass : Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute
     {

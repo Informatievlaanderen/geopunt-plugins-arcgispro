@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text.Json;
 using Microsoft.Win32;
 
-namespace ArcGISTest
+namespace GeopuntTests
 {
     internal static class TestResolver
     {
