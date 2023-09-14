@@ -22,7 +22,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -40,22 +40,24 @@
                Grid.Column="0"  
                Content="Werkopdracht"  
                Command="{Binding Path=ChangeTypeManifestation}"   
+               IsChecked="True"
+                CommandParameter="Werkopdracht"
                />
 
             <RadioButton   
-                        HorizontalAlignment="Center"
+               HorizontalAlignment="Center"
                Grid.Column="1"  
                Content="Manifestatie"   
                IsChecked="{Binding ManifestionChecked, Mode=TwoWay}"
                Command="{Binding Path=ChangeTypeManifestation}"   
+               CommandParameter="Manifestatie"
                />
         </Grid>
 
         <Grid Grid.Row="1">
 
-
-
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -73,7 +75,7 @@
 
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="1" Text="Provincie:"/>
-            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListProvincie}" SelectedItem="{Binding SelectedProvincie}" Grid.Row="1" Grid.Column="1" IsEnabled="{Binding IsEnabledGemeente}" />
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListProvincie}" SelectedItem="{Binding SelectedProvincie}" Grid.Row="1" Grid.Column="1" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="2" Text="Gemeente:"/>
             <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListGemeente}" SelectedItem="{Binding SelectedGemeente}" Grid.Row="2" Grid.Column="1" />
@@ -82,29 +84,63 @@
             <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListEigenaar}" SelectedItem="{Binding SelectedEigenaar}" Grid.Row="3" Grid.Column="1" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="4" Text="Type manifestatie:"/>
-            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListManifestatie}" SelectedItem="{Binding SelectedManifestatie, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="4" Grid.Column="1" IsEnabled="{Binding ManifestionChecked}" />
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListManifestatie}" SelectedItem="{Binding SelectedManifestatie}" Grid.Row="4" Grid.Column="1" IsEnabled="{Binding ManifestionChecked}" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="5" Text="Startdatum:"/>
-            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1"/>
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="6" Text="Einddatum:"/>
-            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedEndDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="1"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedEndDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="1" />
 
+
+            <CheckBox Grid.Row="7" Grid.ColumnSpan="2" FontSize="13" Margin="5" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
         </Grid>
 
-
-        <CheckBox Grid.Row="2" FontSize="13" Margin="5" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
+        <Button Grid.Row="2" Style="{DynamicResource Esri_Button}" HorizontalAlignment="Right" Width="80" Height="20" Command="{Binding CmdSearch}"  Content="Zoek"/>
 
         <Grid Grid.Row="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <ListBox Grid.Row="1" Height="150" ItemsSource="{Binding ListStreetsFavouriteStringPoint}" SelectedItem="{Binding SelectedStreetFavouritePoint}"  Margin="5,0,5,0" 
+            <!--<ListBox Grid.Row="1" Height="150" ItemsSource="{Binding ListStreetsFavouriteStringPoint}" SelectedItem="{Binding SelectedStreetFavouritePoint}"  Margin="5,0,5,0" 
                  ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
-                 BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" />
+                 BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" />-->
+
+
+
+            <DataGrid Grid.Row="1" x:Name="DataGridPlace" ItemsSource="{Binding ListGIPODData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedGIPODData}" 
+                      Style="{DynamicResource Esri_DataGrid}"
+                       
+                      ScrollViewer.CanContentScroll="True"      
+                      AutoGenerateColumns="False"
+                      HorizontalAlignment="Stretch"
+                      HeadersVisibility="Column"
+                      >
+
+                <DataGrid.Columns>
+                    <!--<DataGridTextColumn Binding="{Binding Attributes[initiator]}" Header="Initiator" />-->
+                    <DataGridTextColumn Binding="{Binding Attributes[eventType]}" Header="EventType"  MaxWidth="150"/>
+                    <!--<DataGridTextColumn Binding="{Binding Attributes[recurrencePattern]}" Header="RecurrencePattern" />-->
+                    <DataGridTextColumn Binding="{Binding Attributes[gipodId]}" Header="GipodId" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[owner]}" Header="Owner" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[description]}" Header="Description"  MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[startDateTime]}" Header="StartDateTime" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[endDateTime]}" Header="EndDateTime" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[importantHindrance]}" Header="ImportantHindrance" MaxWidth="150"/>
+                    <DataGridHyperlinkColumn Binding="{Binding Attributes[detail]}" Header="Detail" MaxWidth="150"/>
+
+
+                    <!--<DataGridTextColumn Binding="{Binding Attributes[cities]}" Header="Cities" />-->
+                    <!--<= this is a list -->
+                </DataGrid.Columns>
+
+
+
+
+            </DataGrid>
 
             <Grid Grid.Row="2" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
@@ -112,11 +148,13 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+
                 </Grid.ColumnDefinitions>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Content="Exporteer" Grid.Row="7" Width="80" Height="20" Command="{Binding CmdSaveIcon}" />
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdRemoveFavourite}"   Content="Verwijder"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Height="20" Command="{Binding CmdPoint}"  Content="{Binding TextMarkeer}"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoomFavourite}"  Content="Zoom"/>
+
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoom}" IsEnabled="{Binding GIPODDataIsSelected}" Content="Zoom"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdMarkeer}" IsEnabled="{Binding GIPODDataIsSelected}" Content="Markeer"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdMarkeerAll}" IsEnabled="{Binding ListGIPODHaveData}" Content="Markeer alles"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Width="80" Height="20" Command="{Binding CmdExport}" IsEnabled="{Binding ListGIPODHaveData}" Content="Exporteer"  />
             </Grid>
 
         </Grid>
@@ -130,11 +168,10 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Opslaan" Command="{Binding CmdSave}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Sluiten" Command="{Binding CmdClose}" />
         </Grid>
 
-        
+
 
 
 
