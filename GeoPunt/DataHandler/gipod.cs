@@ -172,6 +172,7 @@ namespace GeoPunt.DataHandler
             
             )
         {
+            qryValues.Clear();
             //counters
             qryValues.Add("offset", offset.ToString());
             qryValues.Add("limit", c.ToString());
