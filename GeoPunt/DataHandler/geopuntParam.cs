@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArcGIS.Core.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace GeoPunt.DataHandler
     public struct gipodParam
     {
         public gipodtype gipodType;
-        // public boundingBox bbox;
+        public string bbox;
         public string city;
         public string province;
         public string owner;

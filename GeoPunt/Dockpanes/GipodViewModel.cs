@@ -56,7 +56,7 @@ namespace GeoPunt.Dockpanes
             municipality = capakey.getMunicipalities();
 
             List<string> provincies = new List<string>() { "", "Antwerpen", "Limburg", "Vlaams-Brabant", "Oost-Vlaanderen", "West-Vlaanderen" };
-            List<string> municipalities = (from datacontract.municipality t in municipality.municipalities select t.municipalityName).ToList();
+            List<string> municipalities = (from municipality t in municipality.municipalities select t.municipalityName).ToList();
             municipalities.Insert(0, "");
             List<string> owners = gipod.getReferencedata(gipodReferencedata.owner);
             owners.Insert(0, "");
@@ -74,8 +74,6 @@ namespace GeoPunt.Dockpanes
         {
             get
             {
-
-
                 return new RelayCommand((param) =>
                 {
                     GipodType = (string)param;
@@ -116,13 +114,6 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private void provinceCombo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-
 
         private string _selectedProvincie;
         public string SelectedProvincie
@@ -138,38 +129,28 @@ namespace GeoPunt.Dockpanes
         private void ProvincieSelectionChange()
         {
             List<string> cities;
-            switch (SelectedProvincie)
+
+
+            Dictionary<string, string> mapProvincie = new Dictionary<string, string>() {
+                { "Antwerpen", "1" }, 
+                { "Limburg", "7" }, 
+                { "Vlaams-Brabant", "2" }, 
+                { "Oost-Vlaanderen", "4" }, 
+                { "West-Vlaanderen", "3" } };
+                
+
+            if(!mapProvincie.ContainsKey(SelectedProvincie))
             {
-                case "Antwerpen":
-                    cities = (from datacontract.municipality t in municipality.municipalities
-                              where t.municipalityCode.StartsWith("1")
-                              select t.municipalityName).ToList();
-                    break;
-                case "Limburg":
-                    cities = (from datacontract.municipality t in municipality.municipalities
-                              where t.municipalityCode.StartsWith("7")
-                              select t.municipalityName).ToList();
-                    break;
-                case "Vlaams-Brabant":
-                    cities = (from datacontract.municipality t in municipality.municipalities
-                              where t.municipalityCode.StartsWith("2")
-                              select t.municipalityName).ToList();
-                    break;
-                case "Oost-Vlaanderen":
-                    cities = (from datacontract.municipality t in municipality.municipalities
-                              where t.municipalityCode.StartsWith("4")
-                              select t.municipalityName).ToList();
-                    break;
-                case "West-Vlaanderen":
-                    cities = (from datacontract.municipality t in municipality.municipalities
-                              where t.municipalityCode.StartsWith("3")
-                              select t.municipalityName).ToList();
-                    break;
-                default:
-                    cities = (from datacontract.municipality t in municipality.municipalities
-                              select t.municipalityName).ToList();
-                    break;
+                cities = (from municipality t in municipality.municipalities
+                          select t.municipalityName).ToList();
             }
+            else
+            {
+                cities = (from municipality t in municipality.municipalities
+                          where t.municipalityCode.StartsWith(mapProvincie[SelectedProvincie])
+                          select t.municipalityName).ToList();
+            }
+
             // cities.Insert(0, "");
             ListGemeente = new ObservableCollection<string>(cities);
         }
@@ -323,12 +304,12 @@ namespace GeoPunt.Dockpanes
                 {
 
                     ListGIPODData = new ObservableCollection<Graphic>();
-                    
+
                     await QueuedTask.Run(() =>
                     {
                         try
                         {
-                            
+
 
                             gipodParam param = getGipodParam();
 
@@ -372,15 +353,18 @@ namespace GeoPunt.Dockpanes
                 param.eventtype = "";
             }
             //set bounds
-            //if (IsBeperk)
-            //{
-            //    IEnvelope arcGIsBbox = geopuntHelper.Transform(view.Extent, lam72) as IEnvelope;
-            //    param.bbox = new boundingBox(arcGIsBbox);
-            //}
-            //else
-            //{
-            //    param.bbox = null;
-            //}
+            if (IsBeperk)
+            {
+
+                Envelope env4326 = MapView.Active.Extent;
+                env4326 = GeometryEngine.Instance.Project(env4326, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Envelope;
+                string extentBeforeTransform = env4326.XMin.ToString().Replace(',', '.') + "," + env4326.YMin.ToString().Replace(',', '.') + "|" + env4326.XMax.ToString().Replace(',', '.') + "," + env4326.YMax.ToString().Replace(',', '.');
+                param.bbox = extentBeforeTransform;
+            }
+            else
+            {
+                param.bbox = null;
+            }
             return param;
         }
 
@@ -397,38 +381,27 @@ namespace GeoPunt.Dockpanes
             DateTime startdate = param.startdate;
             DateTime enddate = param.enddate;
 
+            string bbox = param.bbox;
+
+            Debug.WriteLine(bbox);
+            Console.WriteLine(bbox.ToString());
+
             CRS crs = param.crs;
 
             //get data from gipod
-            List<datacontract.gipodResponse> response;
-            //if (param.bbox == null)
-            //{
-            //    if (param.gipodType == gipodtype.manifestation)
-            //    {
-            //        response = gipod.allManifestations(startdate, enddate, city, province, owner, eventtype, crs);
-            //        return response;
-            //    }
-            //    else if (param.gipodType == gipodtype.workassignment)
-            //    {
-            //        response = gipod.allWorkassignments(startdate, enddate, city, province, owner, crs);
-            //        return response;
-            //    }
-            //    else return null;
-            //}
-            //else
-            //{
+            List<gipodResponse> response;
+
             if (param.gipodType == gipodtype.manifestation)
             {
-                response = gipod.allManifestations(startdate, enddate, city, province, owner, eventtype, crs);
+                response = gipod.allManifestations(startdate, enddate, city, province, owner, eventtype, crs, bbox);
                 return response;
             }
             else if (param.gipodType == gipodtype.workassignment)
             {
-                response = gipod.allWorkassignments(startdate, enddate, city, province, owner, crs);
+                response = gipod.allWorkassignments(startdate, enddate, city, province, owner, crs, bbox);
                 return response;
             }
             else return null;
-            //}
         }
 
         private void updateDataGrid(List<gipodResponse> gipodResponses)
@@ -560,7 +533,7 @@ namespace GeoPunt.Dockpanes
                         CIMPointSymbol symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreenRGB, 10.0, SimpleMarkerStyle.Diamond);
                         CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
                         overlays.Add(MapView.Active.AddOverlay(SelectedGIPODData.Geometry, symbolReference));
-                        
+
                     });
                 });
             }
