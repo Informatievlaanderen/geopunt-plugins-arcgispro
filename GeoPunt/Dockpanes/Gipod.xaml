@@ -144,7 +144,13 @@
                     <DataGridTextColumn Binding="{Binding Attributes[startDateTime]}" Header="StartDateTime" MaxWidth="150"/>
                     <DataGridTextColumn Binding="{Binding Attributes[endDateTime]}" Header="EndDateTime" MaxWidth="150"/>
                     <DataGridTextColumn Binding="{Binding Attributes[importantHindrance]}" Header="ImportantHindrance" MaxWidth="150"/>
-                    <DataGridHyperlinkColumn Binding="{Binding Attributes[detail]}" Header="Detail" MaxWidth="150"/>
+                    <DataGridHyperlinkColumn Binding="{Binding Attributes[detail]}" Header="Detail" MaxWidth="150" >
+                        <DataGridHyperlinkColumn.ElementStyle>
+                            <Style>
+                                <EventSetter Event="Hyperlink.RequestNavigate" Handler="DataGridHyperlinkColumn_RequestNavigate"/>
+                            </Style>
+                        </DataGridHyperlinkColumn.ElementStyle>
+                    </DataGridHyperlinkColumn>
 
 
                     <!--<DataGridTextColumn Binding="{Binding Attributes[cities]}" Header="Cities" />-->
