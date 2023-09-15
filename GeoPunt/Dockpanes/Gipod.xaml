@@ -65,6 +65,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -86,14 +87,27 @@
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="4" Text="Type manifestatie:"/>
             <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListManifestatie}" SelectedItem="{Binding SelectedManifestatie}" Grid.Row="4" Grid.Column="1" IsEnabled="{Binding ManifestionChecked}" />
 
-            <TextBlock FontSize="13.5" Margin="5" Grid.Row="5" Text="Startdatum:"/>
-            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="5" Grid.Column="1"/>
+            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <TextBlock FontSize="13.5" Margin="5" Grid.Row="6" Text="Einddatum:"/>
-            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedEndDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="1" />
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdChangeDateToday}"  Content="Vandaag"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdChangeDateTomorrow}" Content="Morgen"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdChangeDate30Days}" Content="30 dagen"/>
+
+            </Grid>
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="6" Text="Startdatum:"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="1"/>
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="7" Text="Einddatum:"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedEndDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" Grid.Column="1" />
 
 
-            <CheckBox Grid.Row="7" Grid.ColumnSpan="2" FontSize="13" Margin="5" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
+            <CheckBox Grid.Row="8" Grid.ColumnSpan="2" FontSize="13" Margin="5" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
         </Grid>
 
         <Button Grid.Row="2" Style="{DynamicResource Esri_Button}" HorizontalAlignment="Right" Width="80" Height="20" Command="{Binding CmdSearch}"  Content="Zoek"/>

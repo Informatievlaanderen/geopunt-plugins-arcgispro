@@ -37,8 +37,8 @@ namespace GeoPunt.Dockpanes
         private const string _dockPaneID = "GeoPunt_Dockpanes_Gipod";
 
         private Utils utils = new Utils();
-        private capakey capakey = new capakey(5000);
-        private gipod gipod = new gipod(5000);
+        private capakey capakey = new capakey(8000);
+        private gipod gipod = new gipod(8000);
         private municipalityList municipality;
         private SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
         private ObservableCollection<IDisposable> overlays = new ObservableCollection<IDisposable>();
@@ -241,6 +241,46 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedManifestatie, value);
             }
         }
+
+        public ICommand CmdChangeDateToday
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    Debug.WriteLine("CmdChangeDateToday");
+                    SelectedStartDate = DateTime.Today;
+                    SelectedEndDate = DateTime.Today.AddSeconds(86399); // 24h = 36400
+                });
+            }
+        }
+
+        public ICommand CmdChangeDateTomorrow
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    Debug.WriteLine("CmdChangeDateTomorrow");
+                    SelectedStartDate = DateTime.Today.AddDays(1);
+                    SelectedEndDate = DateTime.Today.AddDays(1).AddSeconds(86399); // 24h = 36400
+                });
+            }
+        }
+
+        public ICommand CmdChangeDate30Days
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    Debug.WriteLine("CmdChangeDate30Days");
+                    SelectedStartDate = DateTime.Today;
+                    SelectedEndDate = DateTime.Today.AddDays(30);
+                });
+            }
+        }
+
 
 
 
