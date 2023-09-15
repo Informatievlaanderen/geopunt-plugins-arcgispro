@@ -18,8 +18,9 @@
     </controls:ProWindow.Resources>
     <Grid>
         <ScrollViewer>
-        <TextBlock TextWrapping="Wrap" Padding="30">
-           <Bold><Span FontSize="32">Geopunt voor Arcgis </Span></Bold>
+            <TextBlock TextWrapping="Wrap" Padding="30">
+
+            <Bold><Span FontSize="32">Geopunt voor Arcgis </Span></Bold>
             <LineBreak></LineBreak>
             <LineBreak></LineBreak>
             
@@ -27,53 +28,69 @@
            <Bold><Span FontSize="22">Functies</Span></Bold>
             <LineBreak></LineBreak>
             <Hyperlink
+                RequestNavigate="Hyperlink_RequestNavigate"
                 NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-adres-in-arcgis">
                  •   Zoek een Adres
              </Hyperlink><LineBreak></LineBreak>
             <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/prik-een-adres-op-kaart-in-arcgis">
                  •   Prik een Adres op kaart
             </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/csv-bestanden-geocoderen-in-arcgis">
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/csv-bestanden-geocoderen-in-arcgis">
                  •   CSV-adresbestanden geocoderen 
             </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-interessante-plaats-in-arcgis">
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-interessante-plaats-in-arcgis">
                  •   Zoek een Plaats - interesse punt
             </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/gipod-data-gebruiken-in-arcgis">
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/gipod-data-gebruiken-in-arcgis">
                  •   GIPOD
             </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/hoogteprofiel-gebruiken-in-arcgis">
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/hoogteprofiel-gebruiken-in-arcgis">
                  •   Hoogteprofiel  
             </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-perceel-in-arcgis">
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-perceel-in-arcgis">
                  •   Zoek een perceel 
             </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">
                  •   Geopunt catalogus
             </Hyperlink><LineBreak></LineBreak>
            <LineBreak></LineBreak>
-            
+
            <Bold><Span FontSize="22">Systeem vereisten </Span></Bold>
             <LineBreak></LineBreak>
-            •  Minimaal: Windows XP, <Run Foreground="Red" FontWeight="Bold">ArcGIS Pro versie 3.1.0 of hoger</Run>, .net-framework versie 6.05
+            •  Minimaal: Windows XP, ArcGIS Pro versie 3.1.0 of hoger, .net-framework versie 6.05
             <LineBreak></LineBreak>
             • Een verbinding met het internet, restrictieve firewalls kunnen mogelijk de connectie blokkeren.  <LineBreak></LineBreak>
            <LineBreak></LineBreak>
             
+                <Bold><Span FontSize="22">Doelstelling</Span></Bold>
+
+               <LineBreak></LineBreak>
+                Geopunt4arcgis - 'Geopunt voor ArcGIS' is een add-in voor ESRI ArcGIS Pro, die de webservices van het Vlaamse geoportaal Geopunt ontsluit naar desktop ArcGIS-gebruikers.
+                <LineBreak></LineBreak>
+                Het Vlaamse Geoportaal Geopunt biedt een aantal geografische diensten (web-services) aan die mogen gebruikt worden door derden zoals andere overheden en bedrijven.
+                <LineBreak></LineBreak>
+                De kaartdiensten zijn gebaseerd op de OGC open standaard WMS of WMTS en kunnen gemakkelijk worden toegevoegd aan desktop GIS. GIS-gebruikers kunnen deze diensten ontdekken via het <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">metadatacenter</Hyperlink>. De achterliggende zoekservice voor deze diensten is niet direct bruikbaar in QGIS en wordt in deze plugin ingebouwd.
+                <LineBreak></LineBreak>
+                Sommige diensten aangeboden door geopunt zijn niet gebaseerd op een open standaard omdat het gaat om diensten die geen courant gebruikte open standaard hebben. Deze publieke webdiensten bieden een REST-interface aan, die eenvoudiger in gebruik is voor programmeurs dan OGC-diensten, maar omdat ze niet gestandaardiseerd zijn, kunnen ze niet zomaar binnen getrokken worden in desktop software.
+                <LineBreak></LineBreak>
+
             
-            <Bold><Span FontSize="22">Doelstelling</Span></Bold>
-           <LineBreak></LineBreak>
-            Geopunt4arcgis - 'Geopunt voor ArcGIS' is een add-in voor <Run Foreground="Red" FontWeight="Bold">ESRI ArcGIS Pro</Run>, die de webservices van het Vlaamse geoportaal Geopunt ontsluit naar desktop ArcGIS-gebruikers.
-            <LineBreak></LineBreak>
-            Het Vlaamse Geoportaal Geopunt biedt een aantal geografische diensten (web-services) aan die mogen gebruikt worden door derden zoals andere overheden en bedrijven.
-            <LineBreak></LineBreak>
-            De kaartdiensten zijn gebaseerd op de OGC open standaard WMS of WMTS en kunnen gemakkelijk worden toegevoegd aan desktop GIS. GIS-gebruikers kunnen deze diensten ontdekken via het <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">metadatacenter</Hyperlink>. De achterliggende zoekservice voor deze diensten is niet direct bruikbaar in QGIS en wordt in deze plugin ingebouwd.
-            <LineBreak></LineBreak>
-            Sommige diensten aangeboden door geopunt zijn niet gebaseerd op een open standaard omdat het gaat om diensten die geen courant gebruikte open standaard hebben. Deze publieke webdiensten bieden een REST-interface aan, die eenvoudiger in gebruik is voor programmeurs dan OGC-diensten, maar omdat ze niet gestandaardiseerd zijn, kunnen ze niet zomaar binnen getrokken worden in desktop software.
-            <LineBreak></LineBreak>
+
             Het gaat onder andere over:
             <LineBreak></LineBreak>
-            • <Bold>Geocoderen</Bold>, gebaseerd op het officiële <Hyperlink NavigateUri="https://www.vlaanderen.be/digitaal-vlaanderen/onze-oplossingen/gebouwen-en-adressenregister">adressenregister</Hyperlink> van de vlaamse overhied.
+            • <Bold>Geocoderen</Bold>, gebaseerd op het officiële <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/digitaal-vlaanderen/onze-oplossingen/gebouwen-en-adressenregister">adressenregister</Hyperlink> van de vlaamse overhied.
             <LineBreak></LineBreak>
             • <Bold>Interessante locaties zoeken</Bold> (points of interest). Typisch locaties beschikbaar gesteld door Vlaamse instanties.
             <LineBreak></LineBreak>
@@ -81,11 +98,11 @@
             <LineBreak></LineBreak>
             • <Bold>Percelen zoeken</Bold>, op getrapte wijze op de basis van gemeente naar departement, sectie dan naar perceelnummer in KADMAP.
             <LineBreak></LineBreak>
-            • <Bold>Metadata zoekdienst</Bold>, dienst om datasets te zoeken via het <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">metadatacenter</Hyperlink>, Deze bevat ondermeer metadatasets van AGIV, het samenwerkingsverband MercatorNet en DOV.
+            • <Bold>Metadata zoekdienst</Bold>, dienst om datasets te zoeken via het <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">metadatacenter</Hyperlink>, Deze bevat ondermeer metadatasets van AGIV, het samenwerkingsverband MercatorNet en DOV.
             <LineBreak></LineBreak>
 
             <LineBreak></LineBreak> 
-            Om GIS gebruikers binnen en buiten de Vlaamse Overheid dezelfde functionaliteit ter beschikking te stellen als aangeboden in Geopunt, wenst AGIV deze gebruikers te voorzien van software plug-ins die deze functionaliteit geïntegreerd aanbieden binnen de meest gangbare GIS desktop omgevingen. Op basis van voorafgaand overleg met de GDI-Vlaanderen gemeenschap werd volgende GIS software geselecteerd: Quantum GIS (QGIS) en <Run Foreground="Red" FontWeight="Bold">ESRI ArcGIS Pro</Run>.
+            Om GIS gebruikers binnen en buiten de Vlaamse Overheid dezelfde functionaliteit ter beschikking te stellen als aangeboden in Geopunt, wenst AGIV deze gebruikers te voorzien van software plug-ins die deze functionaliteit geïntegreerd aanbieden binnen de meest gangbare GIS desktop omgevingen. Op basis van voorafgaand overleg met de GDI-Vlaanderen gemeenschap werd volgende GIS software geselecteerd: Quantum GIS (QGIS) en ESRI ArcGIS Pro.
             <LineBreak></LineBreak>
              <LineBreak></LineBreak>
             

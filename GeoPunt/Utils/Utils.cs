@@ -25,6 +25,26 @@ namespace GeoPunt.Helpers
         {
         }
 
+
+        public void ZoomTo(Geometry geometry)
+        {
+
+            switch (geometry.GeometryType)
+            {
+                case GeometryType.Point:
+                    ZoomTo(geometry as MapPoint);
+                    break;
+                case GeometryType.Polygon:
+                    ZoomTo(geometry as Polygon);
+                    break;
+                default:
+                    MessageBox.Show("Zoom is not supported for this geometry.");
+                    break;
+            }
+
+        }
+
+
         public void ZoomTo(MapPoint mapPoint, int distance = 500)
         {
 
