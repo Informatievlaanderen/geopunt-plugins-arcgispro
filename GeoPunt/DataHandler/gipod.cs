@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Collections.Specialized;
 
 using GeoPunt.Share;
-
+using ArcGIS.Core.Geometry;
 
 namespace GeoPunt.DataHandler
 {
@@ -22,7 +22,7 @@ namespace GeoPunt.DataHandler
         {
             this.init(proxyUrl, port, timeout);
         }
-        public gipod( int timeout)
+        public gipod(int timeout)
         {
             this.init("", 80, timeout);
         }
@@ -35,12 +35,16 @@ namespace GeoPunt.DataHandler
         {
             if (proxyUrl == null || proxyUrl == "")
             {
-                client = new gpWebClient() { Encoding = System.Text.Encoding.UTF8, timeout= timeout };
+                client = new gpWebClient() { Encoding = System.Text.Encoding.UTF8, timeout = timeout };
             }
             else
             {
-                client = new gpWebClient() { Encoding = System.Text.Encoding.UTF8, 
-                                             Proxy = new System.Net.WebProxy(proxyUrl, port), timeout= timeout };
+                client = new gpWebClient()
+                {
+                    Encoding = System.Text.Encoding.UTF8,
+                    Proxy = new System.Net.WebProxy(proxyUrl, port),
+                    timeout = timeout
+                };
             }
             client.Headers["Content-type"] = "application/json";
             qryValues = new NameValueCollection();
@@ -63,43 +67,43 @@ namespace GeoPunt.DataHandler
             }
 
             client.QueryString = qryValues;
-            Uri gipodUri = new Uri( GipodBaseUrl + "/referencedata/" + tail);
+            Uri gipodUri = new Uri(GipodBaseUrl + "/referencedata/" + tail);
             string json = client.DownloadString(gipodUri);
             List<string> gipodResponse = JsonConvert.DeserializeObject<List<string>>(json);
             return gipodResponse;
         }
 
         //manifestation
-        public List<datacontract.gipodResponse> getManifestation( 
+        public List<datacontract.gipodResponse> getManifestation(
                 DateTime? startdate, DateTime? enddate,
-                string city , string province, string owner, string eventtype,
+                string city, string province, string owner, string eventtype,
                 CRS CRS, int c, int offset
-                //, boundingBox bbox
+                , string bbox
                  )
         {
             setQueryValues(startdate, enddate, city, province, owner, eventtype, CRS, c, offset
-            // , bbox
+             , bbox
             );
 
             client.QueryString = qryValues;
-            
+
             Uri gipodUri = new Uri(GipodBaseUrl + "/manifestation");
             string json = client.DownloadString(gipodUri);
 
             var gipodRespons = JsonConvert.DeserializeObject<List<datacontract.gipodResponse>>(json);
-            
+
             client.QueryString.Clear();
             return gipodRespons;
         }
 
-        public List<datacontract.gipodResponse> allManifestations( DateTime? startdate, DateTime? enddate,
+        public List<datacontract.gipodResponse> allManifestations(DateTime? startdate, DateTime? enddate,
                 string city, string province, string owner, string eventtype, CRS CRS
-                //, boundingBox bbox
+                , string bbox
                 )
         {
             List<datacontract.gipodResponse> allWA = new List<datacontract.gipodResponse>();
             List<datacontract.gipodResponse> WA = getManifestation(startdate, enddate, city, province, owner, eventtype, CRS, 500, 0
-            // , bbox
+             , bbox
             );
 
             allWA.AddRange(WA);
@@ -110,7 +114,7 @@ namespace GeoPunt.DataHandler
             {
                 counter += 500;
                 WA = getManifestation(startdate, enddate, city, province, owner, eventtype, CRS, 500, counter
-                // , bbox
+                 , bbox
                 );
                 allWA.AddRange(WA);
             }
@@ -118,13 +122,13 @@ namespace GeoPunt.DataHandler
         }
 
         //workassignments
-        public List<datacontract.gipodResponse> getWorkassignment(DateTime? startdate , DateTime? enddate,
+        public List<datacontract.gipodResponse> getWorkassignment(DateTime? startdate, DateTime? enddate,
                 string city, string province, string owner, CRS CRS, int c, int offset
-                //, boundingBox bbox
+                , string bbox
                 )
         {
             setQueryValues(startdate, enddate, city, province, owner, "", CRS, 500, offset
-            // , bbox
+             , bbox
             );
 
             client.QueryString = qryValues;
@@ -140,14 +144,14 @@ namespace GeoPunt.DataHandler
 
         public List<datacontract.gipodResponse> allWorkassignments(DateTime? startdate, DateTime? enddate,
                 string city, string province, string owner, CRS CRS
-            //
-            //, boundingBox bbox
-            
+
+            , string bbox
+
             )
         {
             List<datacontract.gipodResponse> allWA = new List<datacontract.gipodResponse>();
             List<datacontract.gipodResponse> WA = getWorkassignment(startdate, enddate, city, province, owner, CRS, 500, 0
-            // , bbox
+             , bbox
             );
 
             allWA.AddRange(WA);
@@ -158,18 +162,16 @@ namespace GeoPunt.DataHandler
             {
                 counter += 500;
                 WA = getWorkassignment(startdate, enddate, city, province, owner, CRS, 500, counter
-                // , bbox
+                 , bbox
                 );
                 allWA.AddRange(WA);
             }
             return allWA;
         }
 
-        private void setQueryValues(DateTime? startdate, DateTime? enddate, 
-            string city, string province, string owner, string eventtype, CRS sRS, int c, int offset
-            //
-            //, boundingBox bbox
-            
+        private void setQueryValues(DateTime? startdate, DateTime? enddate,
+            string city, string province, string owner, string eventtype, CRS sRS, int c, int offset, string bbox
+
             )
         {
             qryValues.Clear();
@@ -190,6 +192,7 @@ namespace GeoPunt.DataHandler
 
             //bbox
             //if (bbox != null) qryValues.Add("bbox", bbox.ToBboxString(",", "|") );
+            if (bbox != null) qryValues.Add("bbox", bbox);
         }
 
     }
