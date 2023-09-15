@@ -323,7 +323,7 @@ namespace GeoPunt.Dockpanes
                 {
 
                     ListGIPODData = new ObservableCollection<Graphic>();
-                    
+
                     await QueuedTask.Run(() =>
                     {
                         try
@@ -372,15 +372,18 @@ namespace GeoPunt.Dockpanes
                 param.eventtype = "";
             }
             //set bounds
-            //if (IsBeperk)
-            //{
-            //    IEnvelope arcGIsBbox = geopuntHelper.Transform(view.Extent, lam72) as IEnvelope;
-            //    param.bbox = new boundingBox(arcGIsBbox);
-            //}
-            //else
-            //{
-            //    param.bbox = null;
-            //}
+            if (IsBeperk)
+            {
+
+                Envelope env4326 = MapView.Active.Extent;
+                env4326 = GeometryEngine.Instance.Project(env4326, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Envelope;
+                string extentBeforeTransform = env4326.XMin.ToString().Replace(',', '.') + "," + env4326.YMin.ToString().Replace(',', '.') + "|" + env4326.XMax.ToString().Replace(',', '.') + "," + env4326.YMax.ToString().Replace(',', '.');
+                param.bbox = extentBeforeTransform;
+            }
+            else
+            {
+                param.bbox = null;
+            }
             return param;
         }
 
@@ -397,38 +400,27 @@ namespace GeoPunt.Dockpanes
             DateTime startdate = param.startdate;
             DateTime enddate = param.enddate;
 
+            string bbox = param.bbox;
+
+            Debug.WriteLine(bbox);
+            Console.WriteLine(bbox.ToString());
+
             CRS crs = param.crs;
 
             //get data from gipod
             List<datacontract.gipodResponse> response;
-            //if (param.bbox == null)
-            //{
-            //    if (param.gipodType == gipodtype.manifestation)
-            //    {
-            //        response = gipod.allManifestations(startdate, enddate, city, province, owner, eventtype, crs);
-            //        return response;
-            //    }
-            //    else if (param.gipodType == gipodtype.workassignment)
-            //    {
-            //        response = gipod.allWorkassignments(startdate, enddate, city, province, owner, crs);
-            //        return response;
-            //    }
-            //    else return null;
-            //}
-            //else
-            //{
+
             if (param.gipodType == gipodtype.manifestation)
             {
-                response = gipod.allManifestations(startdate, enddate, city, province, owner, eventtype, crs);
+                response = gipod.allManifestations(startdate, enddate, city, province, owner, eventtype, crs, bbox);
                 return response;
             }
             else if (param.gipodType == gipodtype.workassignment)
             {
-                response = gipod.allWorkassignments(startdate, enddate, city, province, owner, crs);
+                response = gipod.allWorkassignments(startdate, enddate, city, province, owner, crs, bbox);
                 return response;
             }
             else return null;
-            //}
         }
 
         private void updateDataGrid(List<gipodResponse> gipodResponses)
