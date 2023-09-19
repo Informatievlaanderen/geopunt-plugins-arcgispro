@@ -52,6 +52,7 @@
           <button refID="GeoPunt_ElevationProfileButton" size="large" />
           <button refID="GeoPunt_CatalogueButton" size="large" />
           <button refID="GeoPunt_ProWindowInfo" size="large" />
+          <tool refID="GeoPunt_DrawTools_Drawline" size="large" />
         </group>
         <!--Others Group-->
         <group id="GeoPunt_Group_Others" caption="Others" appearsOnAddInTab="false">

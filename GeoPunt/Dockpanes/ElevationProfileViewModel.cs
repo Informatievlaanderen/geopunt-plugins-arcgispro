@@ -11,20 +11,81 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.DrawTools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Input;
 
 namespace GeoPunt.Dockpanes
 {
     internal class ElevationProfileViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_ElevationProfile";
+        private IDisposable _profileLineDisposable;
 
-        protected ElevationProfileViewModel() { }
+        protected ElevationProfileViewModel()
+        {
+            Module1.ElevationProfileViewModel = this;
+
+        }
+
+        public ICommand CmdActiveDraw
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+
+                    ClearDisposable();
+
+                    ICommand ccmd = FrameworkApplication.GetPlugInWrapper("GeoPunt_DrawTools_Drawline") as ICommand;
+                    if ((ccmd != null) && ccmd.CanExecute(null)) // --> CanExecute results to false
+                    {
+                        ccmd.Execute(null);
+                    }
+                });
+            }
+        }
+
+        private Polyline _profileLine;
+        public Polyline ProfileLine
+        {
+            get { return _profileLine; }
+            set
+            {
+                SetProperty(ref _profileLine, value);
+
+                if(_profileLine != null)
+                {
+
+                    QueuedTask.Run(() =>
+                    {
+                        ClearDisposable();
+
+                        //Set symbolology, create and add element to layout
+                        // CIMStroke outlineMulti = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.GreenRGB, 2.0, SimpleLineStyle.Solid);
+                        CIMLineSymbol lineSymbol = SymbolFactory.Instance.ConstructLineSymbol(ColorFactory.Instance.GreenRGB, 2);
+                        _profileLineDisposable = MapView.Active.AddOverlay(_profileLine, lineSymbol.MakeSymbolReference());
+                    });
+
+
+                }
+            }
+        }
+
+      
+
+        private void ClearDisposable() {
+            if(_profileLineDisposable != null)
+                _profileLineDisposable.Dispose();
+
+        }
+
 
         /// <summary>
         /// Show the DockPane.
@@ -36,16 +97,6 @@ namespace GeoPunt.Dockpanes
                 return;
 
             pane.Activate();
-        }
-
-        /// <summary>
-        /// Text shown near the top of the DockPane.
-        /// </summary>
-        private string _heading = "My DockPane";
-        public string Heading
-        {
-            get => _heading;
-            set => SetProperty(ref _heading, value);
         }
     }
 

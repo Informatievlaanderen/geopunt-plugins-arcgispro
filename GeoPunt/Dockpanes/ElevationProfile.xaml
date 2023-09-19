@@ -8,19 +8,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.ElevationProfileViewModel}">
-  <UserControl.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </UserControl.Resources>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-    <DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!--<DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
       <TextBlock Grid.Column="1" Text="{Binding Heading}" Style="{DynamicResource Esri_TextBlockDockPaneHeader}">
         <TextBlock.ToolTip>
           <WrapPanel Orientation="Vertical" MaxWidth="300">
@@ -28,6 +24,49 @@
           </WrapPanel>
         </TextBlock.ToolTip>
       </TextBlock>
-    </DockPanel>
-  </Grid>
+    </DockPanel>-->
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdActiveDraw}"  Content="Teken de profiellijn"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdAddLayer}"  Content="Voege hoogtemodel toe als laag"/>
+        </Grid>
+
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdChangeDateToday}"  Content="Teken de profiellijn"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdChangeDateToday}"  Content="Voege hoogtemodel toe als laag"/>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdSavePoints}"  Content="Profielpunten opslaan"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Height="20" Command="{Binding CmdSaveLine}"  Content="Profiellijn opslaan"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Height="20" Command="{Binding CmdClose}"  Content="Sluiten"/>
+        </Grid>
+    </Grid>
 </UserControl>
