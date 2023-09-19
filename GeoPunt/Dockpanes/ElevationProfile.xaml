@@ -41,7 +41,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdActiveDraw}"  Content="Teken de profiellijn"/>
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdAddLayer}"  Content="Voege hoogtemodel toe als laag"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdAddLayer}"  Content="Voeg hoogtemodel toe als laag"/>
         </Grid>
 
 
@@ -53,7 +53,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdChangeDateToday}"  Content="Teken de profiellijn"/>
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdChangeDateToday}"  Content="Voege hoogtemodel toe als laag"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdChangeDateToday}"  Content="Voeg hoogtemodel toe als laag"/>
         </Grid>
 
         <Grid Grid.Row="2">

@@ -27,6 +27,7 @@ namespace GeoPunt.Dockpanes
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_ElevationProfile";
         private IDisposable _profileLineDisposable;
+        private Layer hoogteWMS;
 
         protected ElevationProfileViewModel()
         {
@@ -78,7 +79,48 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-      
+        public ICommand CmdAddLayer
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+
+                    if(MapView.Active == null)
+                    {
+                        MessageBox.Show("No map view active.");
+                        return;
+                    }
+
+                    // Create a connection to the WMS server
+                    var serverConnection = new CIMInternetServerConnection { URL = "https://geo.api.vlaanderen.be/DHMV/wms" };
+                    var connection = new CIMWMSServiceConnection { ServerConnection = serverConnection };
+
+                    // Add a new layer to the map
+                    var layerParams = new LayerCreationParams(connection);
+
+                    if(hoogteWMS != null)
+                    { 
+                        MapView.Active.Map.RemoveLayer(hoogteWMS);
+                        hoogteWMS = null;
+                    }
+
+                    await QueuedTask.Run(() =>
+                    {
+                        try
+                        {
+                            hoogteWMS = LayerFactory.Instance.CreateLayer<Layer>(layerParams, MapView.Active.Map);
+                            hoogteWMS.SetTransparency(40);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, $@"Error trying to add layer");
+                        }
+                    });
+                });
+            }
+        }
+
 
         private void ClearDisposable() {
             if(_profileLineDisposable != null)
