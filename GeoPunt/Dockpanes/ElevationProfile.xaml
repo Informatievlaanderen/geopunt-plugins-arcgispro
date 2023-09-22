@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"   
              xmlns:ui="clr-namespace:GeoPunt.Dockpanes"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
+             xmlns:ScottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.ElevationProfileViewModel}">
@@ -40,20 +41,16 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdActiveDraw}"  Content="Teken de profiellijn"/>
+            <Button x:Name="test" Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdActiveDraw}"  Content="Teken de profiellijn"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdAddLayer}"  Content="Voeg hoogtemodel toe als laag"/>
         </Grid>
 
 
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
+            <ContentControl Content="{Binding PlotControl}" />
 
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdChangeDateToday}"  Content="Teken de profiellijn"/>
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdChangeDateToday}"  Content="Voeg hoogtemodel toe als laag"/>
+
+            <!--<ScottPlot  x:Name="EvelationProfilePlot"/>-->
         </Grid>
 
         <Grid Grid.Row="2">
