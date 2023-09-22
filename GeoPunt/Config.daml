@@ -52,7 +52,7 @@
           <button refID="GeoPunt_ElevationProfileButton" size="large" />
           <button refID="GeoPunt_CatalogueButton" size="large" />
           <button refID="GeoPunt_ProWindowInfo" size="large" />
-          <tool refID="GeoPunt_DrawTools_Drawline" size="large" />
+          <!--<tool refID="GeoPunt_DrawTools_Drawline" size="large" />-->
         </group>
         <!--Others Group-->
         <group id="GeoPunt_Group_Others" caption="Others" appearsOnAddInTab="false">
@@ -94,7 +94,9 @@
         <button id="GeoPunt_InformationButton" caption="Info" className="ShowProWindowInfo" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Info.png">
           <tooltip heading="Info">Meer informatie over deze add-in</tooltip>
         </button>
-        
+        <tool id="GeoPunt_DrawTools_Drawline" caption="HoogteProfielTool" className="GeoPunt.DrawTools.Drawline" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png" condition="esri_mapping_mapPane">
+          <tooltip heading="HoogteProfiel tool">HoogteProfiel tool ...</tooltip>
+        </tool>
       </controls>
       <dockPanes>
         <dockPane id="GeoPunt_Dockpanes_StartDockpane" caption="Welcome in Geopunt plug-in" className="GeoPunt.Dockpanes.StartDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
