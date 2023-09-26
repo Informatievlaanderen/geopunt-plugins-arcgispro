@@ -383,9 +383,6 @@ namespace GeoPunt.Dockpanes
 
             string bbox = param.bbox;
 
-            Debug.WriteLine(bbox);
-            Console.WriteLine(bbox.ToString());
-
             CRS crs = param.crs;
 
             //get data from gipod
