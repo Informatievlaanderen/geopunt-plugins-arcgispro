@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using ArcGIS.Desktop.Internal.DesktopService;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using System.Windows.Documents;
 
 namespace GeoPunt.Helpers
 {
@@ -152,8 +153,10 @@ namespace GeoPunt.Helpers
 
         public void ExportToGeoJson(List<Graphic> graphics)
         {
+            List<Graphic> graphicsInMapCoord = GraphicsToMapCoord(graphics);
+
             List<GeoJSONFeature> geoJSONFeatures = new List<GeoJSONFeature>();
-            foreach (Graphic graphic in graphics)
+            foreach (Graphic graphic in graphicsInMapCoord)
             {
 
                 switch (graphic.Geometry.GeometryType)
@@ -195,9 +198,9 @@ namespace GeoPunt.Helpers
                 }
             }
 
-            if (graphics.Count > 0 && graphics[0].Geometry.SpatialReference != null && graphics[0].Geometry.SpatialReference.Wkid != 4326)
+            if (graphicsInMapCoord.Count > 0 && graphicsInMapCoord[0].Geometry.SpatialReference != null && graphicsInMapCoord[0].Geometry.SpatialReference.Wkid != 4326)
             {
-                GeoJSONClass geoJSON = new GeoJSONClass(geoJSONFeatures, graphics[0].Geometry.SpatialReference.Wkid);
+                GeoJSONClass geoJSON = new GeoJSONClass(geoJSONFeatures, graphicsInMapCoord[0].Geometry.SpatialReference.Wkid);
                 SaveJsonFile(geoJSON);
             }
             else
@@ -207,6 +210,13 @@ namespace GeoPunt.Helpers
             }
 
 
+        }
+
+        private List<Graphic> GraphicsToMapCoord(List<Graphic> graphics)
+        {
+            List<Graphic> graphicsInMapCoord = new List<Graphic>(graphics);
+            graphicsInMapCoord.ForEach(graphic => graphic.Geometry = GeometryEngine.Instance.Project(graphic.Geometry, SpatialReferenceBuilder.CreateSpatialReference(MapView.Active.Map.SpatialReference)));
+            return graphicsInMapCoord;
         }
 
         private void SaveJsonFile(object objectToExport)
