@@ -67,7 +67,7 @@
           <tooltip heading="Zoek een adres">Zoek een adres op en markeer dit adres op de kaart</tooltip>
         </button>
         <tool id="GeoPunt_PointMap" className="PointMap" caption="Plaats" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
-          <tooltip heading="Prik een adres op de kaart">Selecteer een locatie op je kaart en bepaal het dichtsbijzijnde CRAB-adres</tooltip>
+          <tooltip heading="Prik een locatie op kaart">Klik op de kaart en verkrijg het dichtstbijzijnde adres en de afstand tussen beide punten</tooltip>
         </tool>
         <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
           <tooltip heading="CSV-adresbestanden geocoderen">Met deze tool kan je een CSV-bestand geocoderen en omzetten naar een kaartlaag</tooltip>
@@ -101,7 +101,7 @@
         <dockPane id="GeoPunt_Dockpanes_SearchAddressDockpane" caption="Zoek een adres" className="GeoPunt.Dockpanes.SearchAddressDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.SearchAddressDockpaneView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_PointMapDockpane" caption="Prik een adres op kaart" className="GeoPunt.Dockpanes.PointMapDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
+        <dockPane id="GeoPunt_Dockpanes_PointMapDockpane" caption="Prik een locatie op kaart" className="GeoPunt.Dockpanes.PointMapDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.PointMapDockpaneView" />
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_SearchPlace" caption="Zoek een interessante plaats" className="GeoPunt.Dockpanes.SearchPlaceViewModel" dock="group" dockWith="esri_core_projectDockPane">
