@@ -73,7 +73,7 @@
           <tooltip heading="CSV-adresbestanden geocoderen">Met deze tool kan je een CSV-bestand geocoderen en omzetten naar een kaartlaag</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png">
-          <tooltip heading="Zoek een interessante plaats">Met deze tool kan je naar interessante plaatsen (POI: Points of Interest) in de Geopunt POI-dienst zoeken</tooltip>
+          <tooltip heading="Zoek een interessante plaats">Vul parameters in en zoek naar interessante plaatsen (POI: Points of Interest)</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png">
           <tooltip heading="Zoek een perceel">Zoek een kadastraal perceel op via gemeente, department, sectie en perceelnummer</tooltip>
