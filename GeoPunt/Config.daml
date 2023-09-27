@@ -70,7 +70,7 @@
           <tooltip heading="Prik een locatie op kaart">Klik op de kaart en verkrijg het dichtstbijzijnde adres en de afstand tussen beide punten</tooltip>
         </tool>
         <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
-          <tooltip heading="CSV-adresbestanden geocoderen">Met deze tool kan je een CSV-bestand geocoderen en omzetten naar een kaartlaag</tooltip>
+          <tooltip heading="Bestand geocoderen">Laad een CSV-bestand met adressen op om vervolgens de adressen te geocoderen</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png">
           <tooltip heading="Zoek een interessante plaats">Met deze tool kan je naar interessante plaatsen (POI: Points of Interest) in de Geopunt POI-dienst zoeken</tooltip>
