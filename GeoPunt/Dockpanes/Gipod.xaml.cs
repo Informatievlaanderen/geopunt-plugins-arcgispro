@@ -18,16 +18,16 @@ using System.Windows.Shapes;
 namespace GeoPunt.Dockpanes
 {
     /// <summary>
-    /// Interaction logic for PointMapDockpaneView.xaml
+    /// Interaction logic for GipodView.xaml
     /// </summary>
-    public partial class PointMapDockpaneView : UserControl
+    public partial class GipodView : UserControl
     {
-        public PointMapDockpaneView()
+        public GipodView()
         {
             InitializeComponent();
         }
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        private void DataGridHyperlinkColumn_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
         }

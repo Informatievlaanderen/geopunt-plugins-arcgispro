@@ -1,0 +1,202 @@
+﻿<UserControl x:Class="GeoPunt.Dockpanes.GipodView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"   
+             xmlns:ui="clr-namespace:GeoPunt.Dockpanes"
+             xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{Binding Path=ui.GipodViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <Grid Grid.Row="0"  HorizontalAlignment="Stretch" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+
+            <RadioButton   
+                HorizontalAlignment="Center"
+               Grid.Column="0"  
+               Content="Werkopdracht"  
+               Command="{Binding Path=ChangeTypeManifestation}"   
+               IsChecked="True"
+                CommandParameter="Werkopdracht"
+               />
+
+            <RadioButton   
+               HorizontalAlignment="Center"
+               Grid.Column="1"  
+               Content="Manifestatie"   
+               IsChecked="{Binding ManifestionChecked, Mode=TwoWay}"
+               Command="{Binding Path=ChangeTypeManifestation}"   
+               CommandParameter="Manifestatie"
+               />
+        </Grid>
+
+        <Grid Grid.Row="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="1" Text="Provincie:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListProvincie}" SelectedItem="{Binding SelectedProvincie}" Grid.Row="1" Grid.Column="1" />
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="2" Text="Gemeente:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListGemeente}" SelectedItem="{Binding SelectedGemeente}" Grid.Row="2" Grid.Column="1" />
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="3" Text="Eigenaar:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListEigenaar}" SelectedItem="{Binding SelectedEigenaar}" Grid.Row="3" Grid.Column="1" />
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="4" Text="Type manifestatie:"/>
+            <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListManifestatie}" SelectedItem="{Binding SelectedManifestatie}" Grid.Row="4" Grid.Column="1" IsEnabled="{Binding ManifestionChecked}" />
+
+            <Grid Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdChangeDateToday}"  Content="Vandaag"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdChangeDateTomorrow}" Content="Morgen"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdChangeDate30Days}" Content="30 dagen"/>
+
+            </Grid>
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="6" Text="Startdatum:"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedStartDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="1"/>
+
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="7" Text="Einddatum:"/>
+            <DatePicker Height="Auto" Margin="5" SelectedDate="{Binding SelectedEndDate, Mode=TwoWay, TargetNullValue='', UpdateSourceTrigger=PropertyChanged}" Grid.Row="7" Grid.Column="1" />
+
+
+            <CheckBox Grid.Row="8" Grid.ColumnSpan="2" FontSize="13" Margin="5" IsChecked="{Binding IsBeperk}" >Beperk zoekresultaten tot huidige zoomniveau</CheckBox>
+        </Grid>
+
+        <Button Grid.Row="2" Style="{DynamicResource Esri_Button}" HorizontalAlignment="Right" Width="80" Height="20" Command="{Binding CmdSearch}"  Content="Zoek"/>
+
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!--<ListBox Grid.Row="1" Height="150" ItemsSource="{Binding ListStreetsFavouriteStringPoint}" SelectedItem="{Binding SelectedStreetFavouritePoint}"  Margin="5,0,5,0" 
+                 ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
+                 BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" />-->
+
+
+
+            <DataGrid Grid.Row="1" x:Name="DataGridPlace" ItemsSource="{Binding ListGIPODData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedGIPODData}" 
+                      Style="{DynamicResource Esri_DataGrid}"
+                       
+                      ScrollViewer.CanContentScroll="True"      
+                      AutoGenerateColumns="False"
+                      HorizontalAlignment="Stretch"
+                      HeadersVisibility="Column"
+                      >
+
+                <DataGrid.Columns>
+                    <!--<DataGridTextColumn Binding="{Binding Attributes[initiator]}" Header="Initiator" />-->
+                    <DataGridTextColumn Binding="{Binding Attributes[eventType]}" Header="EventType"  MaxWidth="150"/>
+                    <!--<DataGridTextColumn Binding="{Binding Attributes[recurrencePattern]}" Header="RecurrencePattern" />-->
+                    <DataGridTextColumn Binding="{Binding Attributes[gipodId]}" Header="GipodId" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[owner]}" Header="Owner" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[description]}" Header="Description"  MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[startDateTime]}" Header="StartDateTime" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[endDateTime]}" Header="EndDateTime" MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[importantHindrance]}" Header="ImportantHindrance" MaxWidth="150"/>
+                    <DataGridHyperlinkColumn Binding="{Binding Attributes[detail]}" Header="Detail" MaxWidth="150" >
+                        <DataGridHyperlinkColumn.ElementStyle>
+                            <Style>
+                                <EventSetter Event="Hyperlink.RequestNavigate" Handler="DataGridHyperlinkColumn_RequestNavigate"/>
+                            </Style>
+                        </DataGridHyperlinkColumn.ElementStyle>
+                    </DataGridHyperlinkColumn>
+
+
+                    <!--<DataGridTextColumn Binding="{Binding Attributes[cities]}" Header="Cities" />-->
+                    <!--<= this is a list -->
+                </DataGrid.Columns>
+
+
+
+
+            </DataGrid>
+
+            <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+
+                </Grid.ColumnDefinitions>
+
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoom}" IsEnabled="{Binding GIPODDataIsSelected}" Content="Zoom"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdMarkeer}" IsEnabled="{Binding GIPODDataIsSelected}" Content="Markeer"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdMarkeerAll}" IsEnabled="{Binding ListGIPODHaveData}" Content="Markeer alles"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Width="80" Height="20" Command="{Binding CmdExport}" IsEnabled="{Binding ListGIPODHaveData}" Content="Exporteer"  />
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Row="4" HorizontalAlignment="Right"   Margin="5">
+
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Sluiten" Command="{Binding CmdClose}" />
+        </Grid>
+
+
+
+
+
+
+    </Grid>
+
+
+</UserControl>

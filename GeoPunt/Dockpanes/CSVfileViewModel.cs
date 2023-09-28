@@ -1,39 +1,22 @@
-﻿using ActiproSoftware.Windows.Extensions;
-using ArcGIS.Core.CIM;
-using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.UtilityNetwork.Trace;
-using ArcGIS.Core.Geometry;
-using ArcGIS.Core.Internal.CIM;
-using ArcGIS.Desktop.Catalog;
-using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Editing;
-using ArcGIS.Desktop.Extensions;
+﻿using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
-using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.DataHandler;
 using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace GeoPunt.Dockpanes
 {
@@ -42,6 +25,36 @@ namespace GeoPunt.Dockpanes
 
         private Helpers.Utils utils = new Helpers.Utils();
         private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+        DataHandler.adresLocation adresLocation;
+        MapPoint MapPointSelectedAddress = null;
+
+        private const string defaultPlaceHolder = "Nog geen bestand gekozen";
+
+        private const string _dockPaneID = "GeoPunt_Dockpanes_CSVfile";
+        //BackgroundWorker validationWorker;
+        protected CSVfileViewModel()
+        {
+            //validationWorker = new System.ComponentModel.BackgroundWorker();
+            //DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+            sug = new DataHandler.adresSuggestion(5000);
+            adresLocation = new DataHandler.adresLocation(5000);
+            TextMarkeer = "Markeer";
+
+            ListSeparators = new ObservableCollection<string>(new List<string>() {
+                "Puntkomma",
+                "Komma",
+                "Spatie",
+                "Tab",
+                /* "Ander teken" */
+            });
+
+
+
+            SelectedSeparator = ListSeparators[0];
+
+
+        }
+
 
         private bool _isCheckedMeerdere = true;
         public bool IsCheckedMeerdere
@@ -57,7 +70,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private bool _isCorrectAddress = true;
+        private bool _isCorrectAddress = false;
         public bool IsCorrectAddress
         {
             get { return _isCorrectAddress; }
@@ -81,7 +94,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private string _textFilePlacement = "< input CSV-file >";
+        private string _textFilePlacement = defaultPlaceHolder;
         public string TextFilePlacement
         {
             get { return _textFilePlacement; }
@@ -164,13 +177,21 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private string _selectedListSeparators;
-        public string SelectedListSeparators
+        private string _selectedSeparator;
+        public string SelectedSeparator
         {
-            get { return _selectedListSeparators; }
+            get { return _selectedSeparator; }
             set
             {
-                SetProperty(ref _selectedListSeparators, value);
+                SetProperty(ref _selectedSeparator, value);
+
+                if (SelectedSeparator != null && TextFilePlacement != null && TextFilePlacement != defaultPlaceHolder)
+                {
+                    QueuedTask.Run(() =>
+                    {
+                        loadCSV2table();
+                    });
+                }
             }
         }
 
@@ -194,15 +215,28 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedDataCsvList, value);
                 Debug.WriteLine(_selectedDataCsvList);
-                if (_selectedDataCsvList != null)
+                SelectedDataRowChanged();
+                
+            }
+        }
+
+        private void SelectedDataRowChanged()
+        {
+            IsCorrectAddress = false;
+            if (SelectedDataCsvList != null)
+            {
+
+                if (SelectedStraat != null && SelectedGemeente != null)
                 {
-                    string var = _selectedDataCsvList.Row.ItemArray[0] + ", " + _selectedDataCsvList.Row.ItemArray[2];
+
+                    string optionalHuisnummer = SelectedHuisnummer != null ? _selectedDataCsvList.Row[SelectedHuisnummer].ToString() : "";
+                    string var = $@"{_selectedDataCsvList.Row[SelectedStraat]} {optionalHuisnummer} ,{_selectedDataCsvList.Row[SelectedGemeente]}";
 
                     string valCorrect = "" + _selectedDataCsvList.Row.ItemArray[3];
-                    IsCorrectAddress = true;
-                    if (valCorrect != "OK")
+
+                    if (_selectedDataCsvList.Row[Bestaan] != null && _selectedDataCsvList.Row[Bestaan].ToString() == "OK")
                     {
-                        IsCorrectAddress = false;
+                        IsCorrectAddress = true;
                     }
 
                     updateCurrentMapPoint(var, 1);
@@ -230,8 +264,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        DataHandler.adresLocation adresLocation;
-        MapPoint MapPointSelectedAddress = null;
+
         public void updateCurrentMapPoint(string query, int count)
         {
             double x = 0;
@@ -266,6 +299,7 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _dataTableCSV, value);
+                SelectedDataRowChanged();
             }
         }
 
@@ -281,29 +315,7 @@ namespace GeoPunt.Dockpanes
         }
 
 
-        private const string _dockPaneID = "GeoPunt_Dockpanes_CSVfile";
-        //BackgroundWorker validationWorker;
-        protected CSVfileViewModel()
-        {
-            //validationWorker = new System.ComponentModel.BackgroundWorker();
-            //DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-            sug = new DataHandler.adresSuggestion(5000);
-            adresLocation = new DataHandler.adresLocation(5000);
-            TextMarkeer = "Markeer";
 
-            ListSeparators = new ObservableCollection<string>(new List<string>() {
-                "Puntcomma",
-                "Comma",
-                "Spatie",
-                "Tab",
-                /* "Ander teken" */
-            });
-
-
-            SelectedListSeparators = ListSeparators[0];
-
-
-        }
 
         public static DataTable loadCSV2datatable(string csvPath, string separator, int maxRows, System.Text.Encoding codex)
         {
@@ -386,84 +398,94 @@ namespace GeoPunt.Dockpanes
 
         private async void loadCSV2table()
         {
-            System.Text.Encoding codex = System.Text.Encoding.UTF8;
-            //if (SelectedListFormats == "UTF-8") codex = ;
-
-            string csvPath = TextFilePlacement;
-
-            DataTable csvDataTbl;
-
-
             try
             {
-                int maxRowCount = 500;
-                csvDataTbl = loadCSV2datatable(csvPath, SelectedListSeparators, maxRowCount, codex);
 
-                if (csvDataTbl.Rows.Count == maxRowCount)
-                {
-                    string msg = String.Format(
-                      "Maximaal aantal van {0} rijen overschreden, enkel de eerste {0} rijen worden getoont.", maxRowCount);
-                    System.Windows.MessageBox.Show(msg, "Maximaal aantal rijen overschreden.");
-                    //csvErrorLbl.Text = msg;
-                }
-            }
-            catch (Exception csvEx)
-            {
-                //Debug.WriteLine(csvEx.Message, "Error");
-                System.Windows.MessageBox.Show(csvEx.Message, "Error");
-                //csvErrorLbl.Text = csvEx.Message;
-                return;
-            }
-
-            ComboBoxListOfColumns = new ObservableCollection<string>(new List<string>());
-
-            await QueuedTask.Run(() =>
-            {
                 DataTableCSV = new DataTable();
+                System.Text.Encoding codex = System.Text.Encoding.UTF8;
+                //if (SelectedListFormats == "UTF-8") codex = ;
+
+                string csvPath = TextFilePlacement;
+
+                DataTable csvDataTbl;
 
 
-                DataColumn dataTableCsvColumn2 = new DataColumn();
-                dataTableCsvColumn2.ColumnName = Bestaan;
-                dataTableCsvColumn2.DefaultValue = "";
-                csvDataTbl.Columns.Add(dataTableCsvColumn2);
-
-
-                foreach (DataColumn column in csvDataTbl.Columns)
+                try
                 {
-                    DataColumn dataTableCsvColumn = new DataColumn();
-                    dataTableCsvColumn.ColumnName = column.ColumnName;
-                    DataTableCSV.Columns.Add(dataTableCsvColumn);
-                    if(column.ColumnName != Bestaan)
-                        ComboBoxListOfColumns.Add(column.ColumnName);
+                    int maxRowCount = 500;
+                    csvDataTbl = loadCSV2datatable(csvPath, SelectedSeparator, maxRowCount, codex);
 
+                    if (csvDataTbl.Rows.Count == maxRowCount)
+                    {
+                        string msg = String.Format(
+                          "Maximaal aantal van {0} rijen overschreden, enkel de eerste {0} rijen worden getoont.", maxRowCount);
+                        System.Windows.MessageBox.Show(msg, "Maximaal aantal rijen overschreden.");
+                        //csvErrorLbl.Text = msg;
+                    }
+                }
+                catch (Exception csvEx)
+                {
+                    //Debug.WriteLine(csvEx.Message, "Error");
+                    System.Windows.MessageBox.Show(csvEx.Message, "Error");
+                    //csvErrorLbl.Text = csvEx.Message;
+                    return;
                 }
 
-                foreach (DataRow row in csvDataTbl.Rows)
+                ComboBoxListOfColumns = new ObservableCollection<string>(new List<string>());
+
+                await QueuedTask.Run(() =>
                 {
-                    DataTableCSV.Rows.Add(row.ItemArray);
-                }
-            });
+                    DataTableCSV = new DataTable();
+
+
+                    DataColumn dataTableCsvColumn2 = new DataColumn();
+                    dataTableCsvColumn2.ColumnName = Bestaan;
+                    dataTableCsvColumn2.DefaultValue = "";
+                    dataTableCsvColumn2.ReadOnly = false;
+                    csvDataTbl.Columns.Add(dataTableCsvColumn2);
+
+
+                    foreach (DataColumn column in csvDataTbl.Columns)
+                    {
+                        DataColumn dataTableCsvColumn = new DataColumn();
+                        dataTableCsvColumn.ColumnName = column.ColumnName;
+                        DataTableCSV.Columns.Add(dataTableCsvColumn);
+                        if (column.ColumnName != Bestaan)
+                            ComboBoxListOfColumns.Add(column.ColumnName);
+
+                    }
+
+                    foreach (DataRow row in csvDataTbl.Rows)
+                    {
+                        DataTableCSV.Rows.Add(row.ItemArray);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + " : " + ex.StackTrace);
+            }
         }
 
-        private async void refreshDatGrid(DataTable csvDataTbl)
-        {
-            await QueuedTask.Run(() =>
-            {
-                DataTableCSV = new DataTable();
+        //private async void refreshDatGrid(DataTable csvDataTbl)
+        //{
+        //    await QueuedTask.Run(() =>
+        //    {
+        //        DataTableCSV = new DataTable();
 
-                foreach (DataColumn column in csvDataTbl.Columns)
-                {
-                    DataColumn dataTableCsvColumn = new DataColumn();
-                    dataTableCsvColumn.ColumnName = column.ColumnName;
-                    DataTableCSV.Columns.Add(dataTableCsvColumn);
-                }
+        //        foreach (DataColumn column in csvDataTbl.Columns)
+        //        {
+        //            DataColumn dataTableCsvColumn = new DataColumn();
+        //            dataTableCsvColumn.ColumnName = column.ColumnName;
+        //            DataTableCSV.Columns.Add(dataTableCsvColumn);
+        //        }
 
-                foreach (DataRow row in csvDataTbl.Rows)
-                {
-                    DataTableCSV.Rows.Add(row.ItemArray);
-                }
-            });
-        }
+        //        foreach (DataRow row in csvDataTbl.Rows)
+        //        {
+        //            DataTableCSV.Rows.Add(row.ItemArray);
+        //        }
+        //    });
+        //}
 
         public ICommand CmdZoom
         {
@@ -628,6 +650,7 @@ namespace GeoPunt.Dockpanes
                             }
                         }
                         // refreshDatGrid(csvDataTbl);
+                        SelectedDataRowChanged();
                     });
 
                 });
@@ -647,7 +670,6 @@ namespace GeoPunt.Dockpanes
                             System.Windows.MessageBox.Show("U moet de waarde van de kolommen kiezen", "Error");
                             return;
                         }
-
 
 
                         List<string> suggestions;
@@ -706,6 +728,7 @@ namespace GeoPunt.Dockpanes
                         SelectedDataCsvList = null;
 
                         // refreshDatGrid(csvDataTbl);
+                        SelectedDataRowChanged();
                     });
 
                 });
@@ -741,6 +764,7 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _heading, value, () => Heading);
             }
         }
+
     }
 
     /// <summary>

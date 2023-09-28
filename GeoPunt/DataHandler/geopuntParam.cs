@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ArcGIS.Core.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,24 @@ namespace GeoPunt.DataHandler
     public class geopuntParam
     {
         public CRS crs;
+    }
+
+
+    public enum gipodtype { workassignment, manifestation }
+
+    public enum gipodReferencedata { city, province, eventtype, owner }
+
+    public struct gipodParam
+    {
+        public gipodtype gipodType;
+        public string bbox;
+        public string city;
+        public string province;
+        public string owner;
+        public string eventtype;
+        public DateTime startdate;
+        public DateTime enddate;
+        public CRS crs;
+        public string shapePath;
     }
 }
