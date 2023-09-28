@@ -28,7 +28,7 @@ namespace GeoPunt.Dockpanes
         DataHandler.adresLocation adresLocation;
         MapPoint MapPointSelectedAddress = null;
 
-        string defaultPlaceHolder = "Nog geen bestand gekozen";
+        private const string defaultPlaceHolder = "Nog geen bestand gekozen";
 
         private const string _dockPaneID = "GeoPunt_Dockpanes_CSVfile";
         //BackgroundWorker validationWorker;
