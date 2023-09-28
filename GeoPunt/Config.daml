@@ -69,7 +69,7 @@
         <tool id="GeoPunt_PointMap" className="PointMap" caption="Plaats" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
           <tooltip heading="Prik een locatie op kaart">Klik op de kaart en verkrijg het dichtstbijzijnde adres en de afstand tussen beide punten</tooltip>
         </tool>
-        <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
+        <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVFile.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
           <tooltip heading="Bestand geocoderen">Laad een CSV-bestand met adressen op om vervolgens de adressen te geocoderen</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png">
@@ -110,8 +110,8 @@
         <dockPane id="GeoPunt_Dockpanes_SearchPerceel" caption="Zoek een perceel" className="GeoPunt.Dockpanes.SearchPerceelViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.SearchPerceelView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestanden geocoderen" className="GeoPunt.Dockpanes.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
-          <content className="GeoPunt.Dockpanes.CSVfileView" />
+        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestanden geocoderen" className="GeoPunt.Dockpanes.CSVFile.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.CSVFile.CSVfileView" />
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_Gipod" caption="Bevraag GIPOD" className="GeoPunt.Dockpanes.GipodViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.GipodView" />
