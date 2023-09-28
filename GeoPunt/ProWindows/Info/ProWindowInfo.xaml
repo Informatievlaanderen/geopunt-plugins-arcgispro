@@ -30,40 +30,40 @@
             <Hyperlink
                 RequestNavigate="Hyperlink_RequestNavigate"
                 NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-adres-in-arcgis">
-                 •   Zoek een Adres
+                 •   Adres
              </Hyperlink><LineBreak></LineBreak>
             <Hyperlink NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/prik-een-adres-op-kaart-in-arcgis">
-                 •   Prik een Adres op kaart
+                 •   Plaats
             </Hyperlink><LineBreak></LineBreak>
             <Hyperlink 
                 RequestNavigate="Hyperlink_RequestNavigate"
                 NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/csv-bestanden-geocoderen-in-arcgis">
-                 •   CSV-adresbestanden geocoderen 
+                 •   Bestand 
             </Hyperlink><LineBreak></LineBreak>
             <Hyperlink 
                 RequestNavigate="Hyperlink_RequestNavigate"
                 NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-interessante-plaats-in-arcgis">
-                 •   Zoek een Plaats - interesse punt
-            </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink 
-                RequestNavigate="Hyperlink_RequestNavigate"
-                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/gipod-data-gebruiken-in-arcgis">
-                 •   GIPOD
-            </Hyperlink><LineBreak></LineBreak>
-            <Hyperlink 
-                RequestNavigate="Hyperlink_RequestNavigate"
-                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/hoogteprofiel-gebruiken-in-arcgis">
-                 •   Hoogteprofiel  
+                 •   POI
             </Hyperlink><LineBreak></LineBreak>
             <Hyperlink 
                 RequestNavigate="Hyperlink_RequestNavigate"
                 NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-perceel-in-arcgis">
-                 •   Zoek een perceel 
+                 •   Perceel 
+            </Hyperlink><LineBreak></LineBreak>
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/gipod-data-gebruiken-in-arcgis">
+                 •   Gipod
+            </Hyperlink><LineBreak></LineBreak>
+            <Hyperlink 
+                RequestNavigate="Hyperlink_RequestNavigate"
+                NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/hoogteprofiel-gebruiken-in-arcgis">
+                    •   Hoogte  
             </Hyperlink><LineBreak></LineBreak>
             <Hyperlink 
                 RequestNavigate="Hyperlink_RequestNavigate"
                 NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">
-                 •   Geopunt catalogus
+                 •   Catalogus
             </Hyperlink><LineBreak></LineBreak>
            <LineBreak></LineBreak>
 
@@ -121,7 +121,7 @@
             <LineBreak></LineBreak>
             Kay Warrie, Dawid Sienkiewicz, Hélias Brénéol, Elie-Alban Lescout
             <LineBreak></LineBreak>
-        </TextBlock>
-    </ScrollViewer>
+            </TextBlock>
+        </ScrollViewer>
     </Grid>
 </controls:ProWindow>
