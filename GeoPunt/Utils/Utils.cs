@@ -6,7 +6,7 @@ using ArcGIS.Desktop.Mapping;
 using System.Collections.Generic;
 using GeoPunt.Dockpanes;
 using System.IO;
-using System.Drawing;
+
 using GeoPunt.GeoJSON;
 using static GeoPunt.GeoJSON.GeoJSONGeometry;
 using System.Linq;
@@ -17,11 +17,15 @@ using ArcGIS.Desktop.Internal.DesktopService;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using System.Windows.Documents;
+using System.Collections.ObjectModel;
+using ArcGIS.Core.CIM;
 
 namespace GeoPunt.Helpers
 {
     public class Utils
     {
+
+        private ObservableCollection<IDisposable> markDisposables = new ObservableCollection<IDisposable>();
         public Utils()
         {
         }
@@ -44,7 +48,6 @@ namespace GeoPunt.Helpers
             }
 
         }
-
 
         public void ZoomTo(MapPoint mapPoint, int distance = 500)
         {
@@ -135,7 +138,6 @@ namespace GeoPunt.Helpers
 
         }
 
-
         public Polygon CreatePolygon(IEnumerable<MapPoint> points, SpatialReference spatialReference)
         {
             Polygon polygon = PolygonBuilderEx.CreatePolygon(points, spatialReference);
@@ -150,6 +152,81 @@ namespace GeoPunt.Helpers
 
             return polygon;
         }
+
+        public void UpdateMarking(List<Geometry> geometries)
+        {
+            ClearMarking();
+
+            Geometry firstGeometry = geometries.FirstOrDefault();
+
+            if (firstGeometry != null)
+            {
+                switch (firstGeometry.GeometryType)
+                {
+                    case GeometryType.Point:
+                        UpdateMarking(geometries.Cast<MapPoint>().ToList());
+                        break;
+                    case GeometryType.Polygon:
+                        UpdateMarking(geometries.Cast<Polygon>().ToList());
+                        break;
+                    default:
+                        MessageBox.Show("This geometry is not supported for marking.");
+                        break;
+                }
+            }
+
+
+
+        }
+
+        public async void UpdateMarking(List<MapPoint> geometries)
+        {
+            ClearMarking();
+
+            await QueuedTask.Run(() =>
+            {
+                CIMPointSymbol symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreenRGB, 10.0, SimpleMarkerStyle.Diamond);
+
+                CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
+
+                foreach (MapPoint mapPoint in geometries)
+                {
+                    markDisposables.Add(MapView.Active.AddOverlay(mapPoint, symbolReference));
+                }
+
+            });
+        }
+
+        public async void UpdateMarking(List<Polygon> geometries)
+        {
+            ClearMarking();
+
+            await QueuedTask.Run(() =>
+            {
+
+                CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
+                CIMPolygonSymbol polygonSym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
+
+                foreach (Polygon polygon in geometries)
+                {
+                    markDisposables.Add(MapView.Active.AddOverlay(polygon, polygonSym.MakeSymbolReference()));
+                }
+
+            });
+        }
+
+        public void ClearMarking()
+        {
+            if (markDisposables != null)
+            {
+                foreach (IDisposable markDisposable in markDisposables)
+                {
+                    markDisposable.Dispose();
+                }
+                markDisposables = new ObservableCollection<System.IDisposable>();
+            }
+        }
+
 
         public void ExportToGeoJson(List<Graphic> graphics)
         {

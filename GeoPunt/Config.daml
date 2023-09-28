@@ -76,7 +76,7 @@
           <tooltip heading="Zoek een interessante plaats">Vul parameters in en zoek naar interessante plaatsen (POI: Points of Interest)</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png">
-          <tooltip heading="Zoek een perceel">Zoek een kadastraal perceel op via gemeente, department, sectie en perceelnummer</tooltip>
+          <tooltip heading="Zoek een perceel">Zoek via de parameters gemeente, afdeling, sectie en perceel een kadastraal perceel op</tooltip>
         </button>
         <button id="GeoPunt_GipodButton" caption="GIPOD" className="GeoPunt.Dockpanes.Gipod_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png">
           <tooltip heading="Bevraag GIPOD">Bevraag GIPOD ...</tooltip>
