@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GeoPunt.Dockpanes.CSVfileView"
+﻿<UserControl x:Class="GeoPunt.Dockpanes.CSVFile.CSVfileView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -115,25 +115,28 @@
 
 
                 <TextBlock Grid.Row="3" Text="Straat:" FontSize="13.5" Grid.Column="0"
-                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
                     Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ComboBox Grid.Row="3" Grid.Column="1" Height="20" Margin="5" Width="140"
+                          HorizontalAlignment="Right" HorizontalContentAlignment="Right"
                     ItemsSource="{Binding ComboBoxListOfColumns}"
                     SelectedValue="{Binding SelectedStraat}"
                     Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                 <TextBlock Grid.Row="4" Text="Huisnummer (optioneel):" FontSize="13.5"
-                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
                     Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ComboBox Grid.Row="4" Grid.Column="1" Height="20" Margin="5" Width="140"
+                          HorizontalAlignment="Right" HorizontalContentAlignment="Right"
                     ItemsSource="{Binding ComboBoxListOfColumns}"
                     SelectedValue="{Binding SelectedHuisnummer}"
                     Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                 <TextBlock Grid.Row="5" Text="Gemeente of postcode:" FontSize="13.5"
-                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    VerticalAlignment="Center" HorizontalAlignment="Left"
                     Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <ComboBox Grid.Row="5" Grid.Column="1" Height="20" Margin="5" Width="140"
+                          HorizontalAlignment="Right" HorizontalContentAlignment="Right"
                     ItemsSource="{Binding ComboBoxListOfColumns}"
                     SelectedValue="{Binding SelectedGemeente}"
                     Visibility="{Binding IsCheckedMeerdere, Converter={StaticResource BoolToVisibilityConverter}}" />

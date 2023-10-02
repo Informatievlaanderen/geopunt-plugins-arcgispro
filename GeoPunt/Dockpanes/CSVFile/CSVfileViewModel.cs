@@ -18,14 +18,14 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.CSVFile
 {
     internal class CSVfileViewModel : DockPane
     {
 
         private Helpers.Utils utils = new Helpers.Utils();
-        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
-        DataHandler.adresLocation adresLocation;
+        private SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+        adresLocation adresLocation;
         MapPoint MapPointSelectedAddress = null;
 
         private const string defaultPlaceHolder = "Nog geen bestand gekozen";
@@ -36,8 +36,8 @@ namespace GeoPunt.Dockpanes
         {
             //validationWorker = new System.ComponentModel.BackgroundWorker();
             //DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-            sug = new DataHandler.adresSuggestion(5000);
-            adresLocation = new DataHandler.adresLocation(5000);
+            sug = new adresSuggestion(5000);
+            adresLocation = new adresLocation(5000);
             TextMarkeer = "Markeer";
 
             ListSeparators = new ObservableCollection<string>(new List<string>() {
@@ -216,7 +216,7 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedDataCsvList, value);
                 Debug.WriteLine(_selectedDataCsvList);
                 SelectedDataRowChanged();
-                
+
             }
         }
 
@@ -317,13 +317,13 @@ namespace GeoPunt.Dockpanes
 
 
 
-        public static DataTable loadCSV2datatable(string csvPath, string separator, int maxRows, System.Text.Encoding codex)
+        public static DataTable loadCSV2datatable(string csvPath, string separator, int maxRows, Encoding codex)
         {
             FileInfo csv = new FileInfo(csvPath);
             string sep;
             DataTable tbl = new DataTable();
 
-            System.Text.Encoding textEncoding = System.Text.Encoding.Default;
+            Encoding textEncoding = Encoding.Default;
             if (codex != null) textEncoding = codex;
 
             textEncoding = Encoding.GetEncoding("iso-8859-1");
@@ -337,10 +337,10 @@ namespace GeoPunt.Dockpanes
 
             switch (separator)
             {
-                case "Comma":
+                case "Komma":
                     sep = ",";
                     break;
-                case "Puntcomma":
+                case "PuntKomma":
                     sep = ";";
                     break;
                 case "Spatie":
@@ -402,7 +402,7 @@ namespace GeoPunt.Dockpanes
             {
 
                 DataTableCSV = new DataTable();
-                System.Text.Encoding codex = System.Text.Encoding.UTF8;
+                Encoding codex = Encoding.UTF8;
                 //if (SelectedListFormats == "UTF-8") codex = ;
 
                 string csvPath = TextFilePlacement;
@@ -417,7 +417,7 @@ namespace GeoPunt.Dockpanes
 
                     if (csvDataTbl.Rows.Count == maxRowCount)
                     {
-                        string msg = String.Format(
+                        string msg = string.Format(
                           "Maximaal aantal van {0} rijen overschreden, enkel de eerste {0} rijen worden getoont.", maxRowCount);
                         System.Windows.MessageBox.Show(msg, "Maximaal aantal rijen overschreden.");
                         //csvErrorLbl.Text = msg;
@@ -563,7 +563,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        DataHandler.adresSuggestion sug;
+        adresSuggestion sug;
         int straatCol;
         int huisnrCol;
         int gemeenteCol;
