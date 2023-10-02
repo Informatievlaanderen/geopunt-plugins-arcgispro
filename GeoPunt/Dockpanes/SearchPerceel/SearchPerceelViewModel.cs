@@ -21,19 +21,19 @@ using System.Windows.Input;
 
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchPerceel
 {
     internal class SearchPerceelViewModel : DockPane, IMarkedGraphicDisplayer
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPerceel";
         private Helpers.Utils utils = new Helpers.Utils();
-        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+        private SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
-        List<datacontract.municipality> municipalities;
-        List<datacontract.department> departments;
-        List<datacontract.parcel> parcels;
-        datacontract.parcel perceel;
-        datacontract.parcel perceelToSave;
+        List<municipality> municipalities;
+        List<department> departments;
+        List<parcel> parcels;
+        parcel perceel;
+        parcel perceelToSave;
         Geometry TempGeometry = null;
 
         private ObservableCollection<MapPoint> LisPointsFromPolygones = new ObservableCollection<MapPoint>();
@@ -41,10 +41,10 @@ namespace GeoPunt.Dockpanes
         private ObservableCollection<ObservableCollection<MapPoint>> ListPolygonesToMarkeer = new ObservableCollection<ObservableCollection<MapPoint>>();
         private ObservableCollection<string> ListStringPercel = new ObservableCollection<string>();
 
-        DataHandler.capakey capakey;
+        capakey capakey;
         public SearchPerceelViewModel()
         {
-            capakey = new DataHandler.capakey(5000);
+            capakey = new capakey(5000);
             perceel = null;
             municipalities = capakey.getMunicipalities().municipalities;
             ListGemeente = new ObservableCollection<municipality>(municipalities);
@@ -296,7 +296,7 @@ namespace GeoPunt.Dockpanes
             if (niscode == "" || niscode == null) return;
             if (depCode == "" || depCode == null) return;
 
-            List<datacontract.section> secties = capakey.getSecties(int.Parse(niscode), int.Parse(depCode)).sections;
+            List<section> secties = capakey.getSecties(int.Parse(niscode), int.Parse(depCode)).sections;
             ListSecties = new ObservableCollection<section>(secties);
         }
 
@@ -349,7 +349,7 @@ namespace GeoPunt.Dockpanes
                 int.Parse(department2code(graphic.Attributes["Department"].ToString())),
                 graphic.Attributes["Sectie"].ToString(),
                 graphic.Attributes["Perceel"].ToString(),
-                DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                CRS.Lambert72, capakeyGeometryType.full);
         }
 
         public void parcelSelectionChange()
@@ -372,7 +372,7 @@ namespace GeoPunt.Dockpanes
             ActiveButtonSave = true;
 
             perceel = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
-                                                   DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+                                                   CRS.Lambert72, capakeyGeometryType.full);
 
 
         }
@@ -381,28 +381,28 @@ namespace GeoPunt.Dockpanes
         {
             if (muniName == null || muniName == "") return "";
 
-            var niscodes = (
+            var niscodes = 
                 from n in municipalities
                 where n.municipalityName == muniName
-                select n.municipalityCode);
+                select n.municipalityCode;
 
             if (niscodes.Count() == 0) return "";
 
-            return niscodes.First<string>();
+            return niscodes.First();
         }
 
         private string department2code(string depName)
         {
             if (depName == null || depName == "") return "";
 
-            var depcodes = (
+            var depcodes = 
                 from n in departments
                 where n.departmentName == depName
-                select n.departmentCode);
+                select n.departmentCode;
 
             if (depcodes.Count() == 0) return "";
 
-            return depcodes.First<string>();
+            return depcodes.First();
         }
 
 
@@ -415,7 +415,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private CIMPointSymbol CreatePoinSymbol(System.Drawing.Color color, double size)
+        private CIMPointSymbol CreatePoinSymbol(Color color, double size)
         {
             var pointSymbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.CreateColor(color), size, SimpleMarkerStyle.Square);
             pointSymbol.UseRealWorldSymbolSizes = true;
@@ -433,12 +433,12 @@ namespace GeoPunt.Dockpanes
                 {
                     overlay.Dispose();
                 }
-                _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
+                _overlayObjectPerceel = new ObservableCollection<IDisposable>();
             }
         }
 
-        private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
-        private static ObservableCollection<System.IDisposable> _overlayObjectPerceelToMarkeer = new ObservableCollection<System.IDisposable>();
+        private static ObservableCollection<IDisposable> _overlayObjectPerceel = new ObservableCollection<IDisposable>();
+        private static ObservableCollection<IDisposable> _overlayObjectPerceelToMarkeer = new ObservableCollection<IDisposable>();
 
 
         private Polygon CreateParcelPolygon(string capakeyResponse, geojson Geom)
@@ -448,10 +448,10 @@ namespace GeoPunt.Dockpanes
             if (Geom.type == "MultiPolygon")
             {
 
-                datacontract.geojsonMultiPolygon muniPolygons =
-                                  JsonConvert.DeserializeObject<datacontract.geojsonMultiPolygon>(capakeyResponse);
+                geojsonMultiPolygon muniPolygons =
+                                  JsonConvert.DeserializeObject<geojsonMultiPolygon>(capakeyResponse);
 
-                foreach (datacontract.geojsonPolygon poly in muniPolygons.toPolygonList())
+                foreach (geojsonPolygon poly in muniPolygons.toPolygonList())
                 {
                     MessageBox.Show($@"Multipolygones :: {poly}");
 
@@ -460,8 +460,8 @@ namespace GeoPunt.Dockpanes
             }
             else if (Geom.type == "Polygon")
             {
-                datacontract.geojsonPolygon municipalityPolygon =
-                            JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(capakeyResponse);
+                geojsonPolygon municipalityPolygon =
+                            JsonConvert.DeserializeObject<geojsonPolygon>(capakeyResponse);
                 MapPoint MapPointFromPolygone = null;
                 LisPointsFromPolygones.Clear();
 
@@ -498,7 +498,7 @@ namespace GeoPunt.Dockpanes
 
                     if (perceel != null)
                     {
-                        
+
                         geojson geojson = JsonConvert.DeserializeObject<geojson>(perceel.geometry.shape);
                         Polygon polygon = CreateParcelPolygon(perceel.geometry.shape, geojson);
                         utils.ZoomTo(polygon);

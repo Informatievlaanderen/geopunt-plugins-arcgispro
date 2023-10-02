@@ -28,14 +28,14 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Xml.Linq;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchPlace
 {
     internal class SearchPlaceViewModel : DockPane, IMarkedGraphicDisplayer
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPlace";
         private Helpers.Utils utils = new Helpers.Utils();
 
-        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+        private SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
         poi poiDH;
         municipalityList municipalities;
@@ -77,18 +77,18 @@ namespace GeoPunt.Dockpanes
 
         private void populateFilters()
         {
-            ThemeListString = (from n in ThemeList orderby n.value select n.value).ToList<string>();
+            ThemeListString = (from n in ThemeList orderby n.value select n.value).ToList();
             ThemeListString.Insert(0, "");
 
             if (CategoriesList.Count > 0)
             {
-                CategoriesListString = (from n in CategoriesList orderby n.value select n.value).ToList<string>();
+                CategoriesListString = (from n in CategoriesList orderby n.value select n.value).ToList();
                 CategoriesListString.Insert(0, "");
             }
 
             if (TypesList.Count > 0)
             {
-                TypesListString = (from n in TypesList orderby n select n).ToList<string>();
+                TypesListString = (from n in TypesList orderby n select n).ToList();
                 TypesListString.Insert(0, "");
             }
 
@@ -278,7 +278,7 @@ namespace GeoPunt.Dockpanes
             {
                 SetProperty(ref _selectedGemeenteList, value);
                 ThemeListString = new List<string>();
-                ThemeListString = (from n in ThemeList orderby n.value select n.value).ToList<string>();
+                ThemeListString = (from n in ThemeList orderby n.value select n.value).ToList();
                 ThemeListString.Insert(0, "");
                 CategoriesListString = new List<string>();
                 TypesListString = new List<string>();
@@ -320,7 +320,7 @@ namespace GeoPunt.Dockpanes
                 SetProperty(ref _selectedThemeListString, value);
                 CategoriesList = poiDH.listCategories(_selectedThemeListString).categories;
                 CategoriesListString = new List<string>();
-                CategoriesListString = (from n in CategoriesList orderby n.value select n.value).ToList<string>();
+                CategoriesListString = (from n in CategoriesList orderby n.value select n.value).ToList();
                 CategoriesListString.Insert(0, "");
                 TypesListString = new List<string>();
                 KeyWordString = "";
@@ -339,7 +339,7 @@ namespace GeoPunt.Dockpanes
                 string catCode = cat2code(SelectedCategoriesListString);
 
                 poiCategories qry = poiDH.listPOItypes(themeCode, catCode);
-                List<string> poiTypeList = (from n in qry.categories orderby n.value select n.value).ToList<string>();
+                List<string> poiTypeList = (from n in qry.categories orderby n.value select n.value).ToList();
                 poiTypeList.Insert(0, "");
 
                 KeyWordString = "";
@@ -488,50 +488,50 @@ namespace GeoPunt.Dockpanes
         {
             if (muniName == null || muniName == "") return "";
 
-            var niscodes = (
+            var niscodes = 
                 from n in municipalities.municipalities
                 where n.municipalityName == muniName
-                select n.municipalityCode);
+                select n.municipalityCode;
 
             if (niscodes.Count() == 0) return "";
 
-            return niscodes.First<string>();
+            return niscodes.First();
         }
 
         private string theme2code(string theme)
         {
             if (theme == null || theme == "") return "";
 
-            var themeCodes = (from n in ThemeList
+            var themeCodes = from n in ThemeList
                               where n.value == theme
-                              select n.term);
+                              select n.term;
             if (themeCodes.Count() == 0) return "";
 
-            return themeCodes.First<string>();
+            return themeCodes.First();
         }
 
         private string cat2code(string cat)
         {
             if (cat == null || cat == "") return "";
 
-            var catCodes = (from n in poiDH.listCategories().categories
+            var catCodes = from n in poiDH.listCategories().categories
                             where n.value == cat
-                            select n.term);
+                            select n.term;
             if (catCodes.Count() == 0) return "";
 
-            return catCodes.First<string>();
+            return catCodes.First();
         }
 
         private string poitype2code(string poiType)
         {
             if (poiType == null || poiType == "") return "";
 
-            var typeCodes = (from n in poiDH.listPOItypes().categories
+            var typeCodes = from n in poiDH.listPOItypes().categories
                              where n.value == poiType
-                             select n.term);
+                             select n.term;
             if (typeCodes.Count() == 0) return "";
 
-            return typeCodes.First<string>();
+            return typeCodes.First();
         }
 
         public void updatePOIMarkeer()
@@ -683,7 +683,7 @@ namespace GeoPunt.Dockpanes
                     Graphic graphic = GraphicsList.Where(graphic => graphic.Attributes["Straat"] + ", " + graphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]).FirstOrDefault();
 
                     if (graphic != null)
-                    { 
+                    {
                         GraphicsList.Remove(graphic);
                     }
 

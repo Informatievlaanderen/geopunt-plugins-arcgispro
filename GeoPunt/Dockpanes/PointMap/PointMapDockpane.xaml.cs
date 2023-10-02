@@ -15,19 +15,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.PointMap
 {
     /// <summary>
-    /// Interaction logic for GipodView.xaml
+    /// Interaction logic for PointMapDockpaneView.xaml
     /// </summary>
-    public partial class GipodView : UserControl
+    public partial class PointMapDockpaneView : UserControl
     {
-        public GipodView()
+        public PointMapDockpaneView()
         {
             InitializeComponent();
         }
 
-        private void DataGridHyperlinkColumn_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
         }

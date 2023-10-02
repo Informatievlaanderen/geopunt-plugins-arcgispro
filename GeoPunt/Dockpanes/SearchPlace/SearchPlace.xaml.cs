@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchPlace
 {
     /// <summary>
     /// Interaction logic for SearchPlaceView.xaml
