@@ -681,13 +681,13 @@ namespace GeoPunt.Dockpanes.SearchPlace
                 {
 
                     Graphic graphic = GraphicsList.Where(graphic => graphic.Attributes["Straat"] + ", " + graphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]).FirstOrDefault();
+                    Graphic graphicMarked = MarkedGraphicsList.Where(markedGraphic => markedGraphic.Attributes["Straat"] + ", " + markedGraphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]).FirstOrDefault();
 
                     if (graphic != null)
                     {
                         GraphicsList.Remove(graphic);
                     }
 
-                    Graphic graphicMarked = MarkedGraphicsList.Where(markedGraphic => markedGraphic.Attributes["Straat"] + ", " + markedGraphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]).FirstOrDefault();
                     if (graphicMarked != null)
                     {
                         MarkedGraphicsList.Remove(graphicMarked);
