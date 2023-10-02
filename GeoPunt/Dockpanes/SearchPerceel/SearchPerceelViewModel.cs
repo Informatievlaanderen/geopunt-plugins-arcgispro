@@ -529,7 +529,7 @@ namespace GeoPunt.Dockpanes.SearchPerceel
                 return new RelayCommand(async () =>
                 {
 
-                    utils.ZoomTo(TempGeometry);
+                    utils.ZoomTo(SelectedGraphic.Geometry);
                 });
             }
         }
