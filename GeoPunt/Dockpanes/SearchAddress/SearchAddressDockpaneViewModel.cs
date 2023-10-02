@@ -17,11 +17,11 @@ using ArcGIS.Desktop.Layouts;
 using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using System.Collections;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchAddress
 {
     internal class SearchAddressDockpaneViewModel : DockPane
     {
-        private const string _dockPaneID = "GeoPunt_Dockpanes_SearchAddressDockpane";
+        private const string _dockPaneID = "GeoPunt_Dockpanes_SearchAddress_SearchAddressDockpane";
 
         private adresSuggestion adresSuggestion;
         private adresLocation adresLocation;
@@ -390,16 +390,27 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedCity, value);
+
+                SearchAddressSearcher.City = SelectedCity;
                 QueuedTask.Run(() =>
                 {
 
                     ListStreets.Clear();
                     updateSuggestions();
-                    SearchFilter = null;
                 });
             }
         }
 
+        
+        private string _searchStringCityPart;
+        public string SearchStringCityPart
+        {
+            get { return _searchStringCityPart; }
+            set
+            {
+                SetProperty(ref _searchStringCityPart, value);            
+            }
+        }
 
 
         //private bool _isSelectedFavouriteList;
@@ -462,7 +473,7 @@ namespace GeoPunt.Dockpanes
                     // isRemoveMarkeer = false;
                     // IsSelectedFavouriteList = true;
 
-                    SearchFilter = SelectedStreet;
+                    SearchFilter = _selectedStreet.Split($@", ")[0];
 
                 }
             }
@@ -547,8 +558,14 @@ namespace GeoPunt.Dockpanes
         private void updateSuggestions()
         {
             adresSuggestion = new adresSuggestion(sugCallback, 5000);
-            string searchString = SearchFilter != null ? SearchFilter : SelectedCity;
+            
+            string searchString = @$"{SearchAddressSearcher.Address}, {SearchAddressSearcher.City}";
             adresSuggestion.getAdresSuggestionAsync(searchString, 80);
+
+            //adresSuggestion = new DataHandler.adresSuggestion(sugCallback, 5000);
+
+            //string searchString = SearchFilter + ", " + SelectedCity;
+            //adresSuggestion.getAdresSuggestionAsync(searchString, 80);
         }
 
 
@@ -665,6 +682,17 @@ namespace GeoPunt.Dockpanes
 
 
 
+        private SearchAddressSearcher _searchAddressSearcher = new SearchAddressSearcher();
+        public SearchAddressSearcher SearchAddressSearcher
+        {
+            get { return _searchAddressSearcher; }
+            set
+            {
+                SetProperty(ref _searchAddressSearcher, value);
+                updateSuggestions();
+            }
+        }
+
         private string _searchFilter;
         public string SearchFilter
         {
@@ -672,6 +700,7 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _searchFilter, value);
+                SearchAddressSearcher.Address = _searchFilter;
                 updateSuggestions();
             }
         }
