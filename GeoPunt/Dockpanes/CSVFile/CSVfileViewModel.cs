@@ -340,7 +340,7 @@ namespace GeoPunt.Dockpanes.CSVFile
                 case "Komma":
                     sep = ",";
                     break;
-                case "PuntKomma":
+                case "Puntkomma":
                     sep = ";";
                     break;
                 case "Spatie":
