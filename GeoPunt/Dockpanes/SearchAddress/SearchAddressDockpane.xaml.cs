@@ -14,16 +14,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchAddress
 {
     /// <summary>
-    /// Interaction logic for PointMapDockpaneView.xaml
+    /// Interaction logic for SearchAddressDockpaneView.xaml
     /// </summary>
-    public partial class PointMapDockpaneView : UserControl
+    public partial class SearchAddressDockpaneView : UserControl
     {
-        public PointMapDockpaneView()
+        public SearchAddressDockpaneView()
         {
             InitializeComponent();
+            comboboxCities.IsDropDownOpen = true;
         }
+
+   
     }
 }

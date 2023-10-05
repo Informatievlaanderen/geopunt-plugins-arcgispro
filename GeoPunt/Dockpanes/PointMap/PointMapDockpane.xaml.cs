@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +8,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -15,24 +15,21 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.PointMap
 {
     /// <summary>
-    /// Interaction logic for CSVfileView.xaml
+    /// Interaction logic for PointMapDockpaneView.xaml
     /// </summary>
-    public partial class CSVfileView : System.Windows.Controls.UserControl
+    public partial class PointMapDockpaneView : UserControl
     {
-        public CSVfileView()
+        public PointMapDockpaneView()
         {
             InitializeComponent();
-
-            //DataGridTextColumn textColumn = new DataGridTextColumn();
-            //textColumn.Header = "First Name";
-            //textColumn.Binding = new System.Windows.Data.Binding("FirstName");
-            //csvDataGridColumn.Columns.Add(textColumn);
-
-            
         }
 
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        }
     }
 }

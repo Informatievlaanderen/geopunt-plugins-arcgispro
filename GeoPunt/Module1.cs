@@ -13,6 +13,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.Dockpanes;
+using GeoPunt.Dockpanes.PointMap;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -101,10 +101,12 @@ namespace GeoPunt.Dockpanes
             });
         }
 
-        public static async void AddToMapOverlayMapPerceel(ArcGIS.Core.Geometry.Polygon polygon, CIMPolygonSymbol polygonSym)
+        public static async void AddToMapOverlayMapPerceel(ArcGIS.Core.Geometry.Polygon polygon)
         {
             await QueuedTask.Run(() =>
             {
+                CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.BlueRGB, 2.0, SimpleLineStyle.Solid);
+                CIMPolygonSymbol polygonSym = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.BlueRGB, SimpleFillStyle.ForwardDiagonal, outline);
                 _overlayObjectPerceel.Add(MapView.Active.AddOverlay(polygon, polygonSym.MakeSymbolReference()));
             });
         }

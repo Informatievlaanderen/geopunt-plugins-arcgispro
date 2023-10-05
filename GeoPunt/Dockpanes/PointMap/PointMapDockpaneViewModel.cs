@@ -24,7 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.PointMap
 {
     internal class PointMapDockpaneViewModel : DockPane
     {

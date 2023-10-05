@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace GeoPunt
+namespace GeoPunt.Dockpanes.PointMap
 {
     internal class PointMap : MapTool
     {

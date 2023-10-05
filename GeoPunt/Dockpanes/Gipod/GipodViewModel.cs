@@ -30,7 +30,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.Gipod
 {
     internal class GipodViewModel : DockPane
     {
@@ -132,14 +132,14 @@ namespace GeoPunt.Dockpanes
 
 
             Dictionary<string, string> mapProvincie = new Dictionary<string, string>() {
-                { "Antwerpen", "1" }, 
-                { "Limburg", "7" }, 
-                { "Vlaams-Brabant", "2" }, 
-                { "Oost-Vlaanderen", "4" }, 
+                { "Antwerpen", "1" },
+                { "Limburg", "7" },
+                { "Vlaams-Brabant", "2" },
+                { "Oost-Vlaanderen", "4" },
                 { "West-Vlaanderen", "3" } };
-                
 
-            if(!mapProvincie.ContainsKey(SelectedProvincie))
+
+            if (!mapProvincie.ContainsKey(SelectedProvincie))
             {
                 cities = (from municipality t in municipality.municipalities
                           select t.municipalityName).ToList();
@@ -382,9 +382,6 @@ namespace GeoPunt.Dockpanes
             DateTime enddate = param.enddate;
 
             string bbox = param.bbox;
-
-            Debug.WriteLine(bbox);
-            Console.WriteLine(bbox.ToString());
 
             CRS crs = param.crs;
 

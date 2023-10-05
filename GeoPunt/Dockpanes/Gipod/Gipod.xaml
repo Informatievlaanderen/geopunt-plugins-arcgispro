@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GeoPunt.Dockpanes.GipodView"
+﻿<UserControl x:Class="GeoPunt.Dockpanes.Gipod.GipodView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -81,7 +81,7 @@
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="2" Text="Gemeente:"/>
             <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListGemeente}" SelectedItem="{Binding SelectedGemeente}" Grid.Row="2" Grid.Column="1" />
 
-            <TextBlock FontSize="13.5" Margin="5" Grid.Row="3" Text="Eigenaar:"/>
+            <TextBlock FontSize="13.5" Margin="5" Grid.Row="3" Text="Eigenaar (optioneel):"/>
             <ComboBox FontSize="13" Margin="5" IsEditable="True" ItemsSource="{Binding ListEigenaar}" SelectedItem="{Binding SelectedEigenaar}" Grid.Row="3" Grid.Column="1" />
 
             <TextBlock FontSize="13.5" Margin="5" Grid.Row="4" Text="Type manifestatie:"/>
