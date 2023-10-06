@@ -33,7 +33,7 @@ namespace GeoPunt.Dockpanes
 
         private int LastHighlightedIndex = -1;
 
-        Dictionary<int, CRS> mapCrs = new Dictionary<int, CRS>() {
+        private Dictionary<int, CRS> mapCrs = new Dictionary<int, CRS>() {
                 { 31370, CRS.Lambert72 },
                 { 4326, CRS.WGS84 },
                 { 3857, CRS.WEBMERCATOR },
@@ -57,32 +57,7 @@ namespace GeoPunt.Dockpanes
 
         }
 
-        private void PlotControl_MouseMove(object sender, MouseEventArgs e)
-        {
 
-            if (ScatterPlot != null && HighlightPlot != null)
-            {
-                // determine point nearest the cursor
-                (double mouseCoordX, double mouseCoordY) = PlotControl.GetMouseCoordinates();
-                double xyRatio = PlotControl.Plot.XAxis.Dims.PxPerUnit / PlotControl.Plot.YAxis.Dims.PxPerUnit;
-                (double pointX, double pointY, int pointIndex) = ScatterPlot.GetPointNearest(mouseCoordX, mouseCoordY, xyRatio);
-
-
-
-
-                // place the highlight over the point of interest
-                HighlightPlot.X = pointX;
-                HighlightPlot.Y = pointY;
-                HighlightPlot.IsVisible = true;
-
-                // render if the highlighted point chnaged
-                if (LastHighlightedIndex != pointIndex)
-                {
-                    LastHighlightedIndex = pointIndex;
-                    PlotControl.Render();
-                }
-            }
-        }
 
         public ICommand CmdActiveDraw
         {
@@ -416,6 +391,22 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        public ICommand CmdSaveDiagram
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    if (PlotControl != null)
+                    {
+                        PlotControl.SaveAsImage();
+                    }
+
+                });
+            }
+        }
+
+
         public ICommand CmdClose
         {
             get
@@ -429,6 +420,33 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+        #region Events
+
+        private void PlotControl_MouseMove(object sender, MouseEventArgs e)
+        {
+
+            if (ScatterPlot != null && HighlightPlot != null)
+            {
+                // determine point nearest the cursor
+                (double mouseCoordX, double mouseCoordY) = PlotControl.GetMouseCoordinates();
+                double xyRatio = PlotControl.Plot.XAxis.Dims.PxPerUnit / PlotControl.Plot.YAxis.Dims.PxPerUnit;
+                (double pointX, double pointY, int pointIndex) = ScatterPlot.GetPointNearest(mouseCoordX, mouseCoordY, xyRatio);
+
+                // place the highlight over the point of interest
+                HighlightPlot.X = pointX;
+                HighlightPlot.Y = pointY;
+                HighlightPlot.IsVisible = true;
+
+                // render if the highlighted point chnaged
+                if (LastHighlightedIndex != pointIndex)
+                {
+                    LastHighlightedIndex = pointIndex;
+                    PlotControl.Render();
+                }
+            }
+        }
+
+        #endregion
 
 
         /// <summary>
