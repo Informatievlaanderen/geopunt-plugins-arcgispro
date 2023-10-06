@@ -1,37 +1,35 @@
 ﻿using ArcGIS.Core.CIM;
-using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.Raster;
-using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using ArcGIS.Desktop.Internal.GeoProcessing;
+using ArcGIS.Desktop.Internal.Catalog;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
+using GeoPunt.Helpers;
 using geopunt4Arcgis;
 using ScottPlot;
 using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Security.Cryptography;
+using System.Net;
+using System.Reflection;
 // using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using static System.Net.WebRequestMethods;
+using System.Windows.Markup;
+using System.Windows.Media.Media3D;
 
 namespace GeoPunt.Dockpanes
 {
     internal class ElevationProfileViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_ElevationProfile";
-        private IDisposable _profileLineDisposable;
         private dhm dhm;
+        private Helpers.Utils utils = new Helpers.Utils();
 
         private int LastHighlightedIndex = -1;
 
@@ -93,7 +91,8 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
 
-                    ClearDisposable();
+
+                    utils.ClearMarking();
 
                     ICommand ccmd = FrameworkApplication.GetPlugInWrapper("GeoPunt_DrawTools_Drawline") as ICommand;
                     if ((ccmd != null) && ccmd.CanExecute(null)) // --> CanExecute results to false
@@ -117,11 +116,11 @@ namespace GeoPunt.Dockpanes
 
                     QueuedTask.Run(() =>
                     {
-                        ClearDisposable();
-                        DisplayDisposable(_profileLine);
+                        utils.UpdateMarking(new List<Polyline>() { ProfileLine });
                     });
 
-                    UpdatePlot(_profileLine);
+
+                    GetElevationData(_profileLine);
 
                 }
             }
@@ -137,44 +136,89 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private void DisplayDisposable(Polyline profileLine)
+
+        private List<Graphic> _elevationData;
+        public List<Graphic> ElevationData
         {
-            //Set symbolology, create and add element to layout
-            // CIMStroke outlineMulti = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.GreenRGB, 2.0, SimpleLineStyle.Solid);
-            CIMLineSymbol lineSymbol = SymbolFactory.Instance.ConstructLineSymbol(ColorFactory.Instance.GreenRGB, 2);
-            _profileLineDisposable = MapView.Active.AddOverlay(profileLine, lineSymbol.MakeSymbolReference());
+            get { return _elevationData; }
+            set
+            {
+                SetProperty(ref _elevationData, value);
+                if (_elevationData != null)
+                {
+                    UpdatePlot();
+                }
+            }
         }
 
-        private void UpdatePlot(Polyline profileLine)
+        private void GetElevationData(Polyline profileLine)
         {
 
 
             List<List<double>> data;
+            CRS usedCrs;
 
             if (!mapCrs.ContainsKey(profileLine.SpatialReference.Wkid))
             {
 
                 Polyline polylineLambert = GeometryEngine.Instance.Project(profileLine, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Polyline;
-                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, CRS.Lambert72);
+                usedCrs = CRS.Lambert72;
+                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, usedCrs);
+
             }
             else
             {
-                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, mapCrs[profileLine.SpatialReference.Wkid]);
+                usedCrs = mapCrs[profileLine.SpatialReference.Wkid];
+                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, usedCrs);
             }
 
 
-            double maxH = data.Select(c => c[3]).Max();
-            double minH = data.Where(c => c[3] > -999).Select(c => c[3]).Min();
-            double maxD = data.Select(c => c[0]).Max();
+            List<Graphic> graphics = new List<Graphic>();
+            if (data != null && data.Count > 0)
+            {
 
-            double[] dataY = (from records in data select records[3]).ToArray();
-            double[] dataX = (from records in data select records[0]).ToArray();
+                SpatialReference usedSpatialReference = SpatialReferenceBuilder.CreateSpatialReference((int)usedCrs);
+                foreach (List<double> points in data)
+                {
 
-            PlotControl.Plot.Clear();
-            PlotControl.Plot.SetAxisLimits(yMin: minH, yMax: maxH, xMax: maxD);
-            ScatterPlot = PlotControl.Plot.AddScatter(dataX, dataY);
-            AddHighlightPlot();
-            PlotControl.Refresh();
+
+                    double meters = points[0];
+                    double x = points[1];
+                    double y = points[2];
+                    double h = points[3];
+
+                    graphics.Add(new Graphic(new Dictionary<string, object>
+                                {
+                                    {"Meters", meters},
+                                    {"Height", h},
+                                }, utils.CreateMapPoint(x, y, usedSpatialReference)));
+
+
+                }
+            }
+
+
+            ElevationData = graphics;
+
+        }
+
+        private void UpdatePlot()
+        {
+            if (ElevationData != null)
+            {
+                double maxH = ElevationData.Select(c => ((IConvertible)c.Attributes["Height"]).ToDouble(null)).Max();
+                double minH = ElevationData.Where(c => ((IConvertible)c.Attributes["Height"]).ToDouble(null) > -999).Select(c => ((IConvertible)c.Attributes["Height"]).ToDouble(null)).Min();
+                double maxD = ElevationData.Select(c => ((IConvertible)c.Attributes["Meters"]).ToDouble(null)).Max();
+
+                double[] dataY = (from records in ElevationData select ((IConvertible)records.Attributes["Height"]).ToDouble(null)).ToArray();
+                double[] dataX = (from records in ElevationData select ((IConvertible)records.Attributes["Meters"]).ToDouble(null)).ToArray();
+
+                PlotControl.Plot.Clear();
+                PlotControl.Plot.SetAxisLimits(yMin: minH, yMax: maxH, xMax: maxD);
+                ScatterPlot = PlotControl.Plot.AddScatter(dataX, dataY);
+                AddHighlightPlot();
+                PlotControl.Refresh();
+            }
         }
 
 
@@ -323,64 +367,55 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        //public void IdentifyPixelValue(RasterLayer rasterlayer, string xMap, string yMap)
-        //{
-
-        //    bool isLongitudeDouble = double.TryParse(xMap, out double longitude);
-        //    bool isLatitudeDouble = double.TryParse(yMap, out double latitude);
-
-        //    if (isLongitudeDouble && isLatitudeDouble && rasterlayer != null && MapView.Active != null)
-        //    {
-        //        QueuedTask.Run(() =>
-        //        {
-        //            try
-        //            {
-        //                Raster raster = rasterlayer.GetRaster();
-
-        //                var pixels = raster.MapToPixel(longitude, latitude);
-
-        //                var objPixelValue = raster.GetPixelValue(0, pixels.Item1, pixels.Item2);
-
-        //                if (objPixelValue != null)
-        //                {
-        //                    bool isDouble = double.TryParse(objPixelValue.ToString(), out double pixelValue);
-
-        //                    if (isDouble)
-        //                    {
-        //                        DNGAltitude = pixelValue.ToString();
-        //                    }
-        //                    else
-        //                    {
-        //                        DNGAltitude = "0";
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    DNGAltitude = "0";
-        //                }
-
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                throw new Exception(ex.ToString());
-        //            }
-
-        //        });
-        //    }
-        //    else
-        //    {
-        //        DNGAltitude = "";
-        //    }
-        //}
 
 
 
-        private void ClearDisposable()
+
+        public ICommand CmdSavePoints
         {
-            if (_profileLineDisposable != null)
-                _profileLineDisposable.Dispose();
+            get
+            {
+                return new RelayCommand(async () =>
+                {
 
+                    if (ElevationData != null)
+                    {
+                        utils.ExportToGeoJson(ElevationData);
+                    }
+
+                });
+            }
         }
+
+        public ICommand CmdSaveLine
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    if (ProfileLine != null)
+                    {
+                        List<Graphic> graphicList = new List<Graphic> { new Graphic(new Dictionary<string, object>(), ProfileLine) };
+                        utils.ExportToGeoJson(graphicList);
+                    }
+
+                });
+            }
+        }
+
+        public ICommand CmdClose
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
+                    FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
+                    pane.Hide();
+                });
+            }
+        }
+
 
 
         /// <summary>
