@@ -7,16 +7,22 @@ using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.GeoProcessing;
 using ArcGIS.Desktop.Mapping;
+using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
+using geopunt4Arcgis;
 using ScottPlot;
+using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography;
 // using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media;
 using static System.Net.WebRequestMethods;
 
 namespace GeoPunt.Dockpanes
@@ -27,6 +33,16 @@ namespace GeoPunt.Dockpanes
         private IDisposable _profileLineDisposable;
         private dhm dhm;
 
+        private int LastHighlightedIndex = -1;
+
+        Dictionary<int, CRS> mapCrs = new Dictionary<int, CRS>() {
+                { 31370, CRS.Lambert72 },
+                { 4326, CRS.WGS84 },
+                { 3857, CRS.WEBMERCATOR },
+                { 4258, CRS.ETRS89 },
+                { 32631, CRS.WGS84UTM31N } };
+
+
 
         protected ElevationProfileViewModel()
         {
@@ -35,11 +51,39 @@ namespace GeoPunt.Dockpanes
             dhm = new dhm(timeout: 8000);
 
             PlotControl = new WpfPlot();
-            PlotControl.Plot.XLabel("Hoogte (m)");
-            PlotControl.Plot.YLabel("Afstand (m)");
-            PlotControl.Refresh();
+            PlotControl.Plot.XLabel("Afstand (m)");
+            PlotControl.Plot.YLabel("Hoogte (m)");
             PlotControl.Plot.Title("Hoogte profiel");
+            PlotControl.MouseMove += PlotControl_MouseMove;
+            PlotControl.Refresh();
 
+        }
+
+        private void PlotControl_MouseMove(object sender, MouseEventArgs e)
+        {
+
+            if (ScatterPlot != null && HighlightPlot != null)
+            {
+                // determine point nearest the cursor
+                (double mouseCoordX, double mouseCoordY) = PlotControl.GetMouseCoordinates();
+                double xyRatio = PlotControl.Plot.XAxis.Dims.PxPerUnit / PlotControl.Plot.YAxis.Dims.PxPerUnit;
+                (double pointX, double pointY, int pointIndex) = ScatterPlot.GetPointNearest(mouseCoordX, mouseCoordY, xyRatio);
+
+
+
+
+                // place the highlight over the point of interest
+                HighlightPlot.X = pointX;
+                HighlightPlot.Y = pointY;
+                HighlightPlot.IsVisible = true;
+
+                // render if the highlighted point chnaged
+                if (LastHighlightedIndex != pointIndex)
+                {
+                    LastHighlightedIndex = pointIndex;
+                    PlotControl.Render();
+                }
+            }
         }
 
         public ICommand CmdActiveDraw
@@ -77,11 +121,7 @@ namespace GeoPunt.Dockpanes
                         DisplayDisposable(_profileLine);
                     });
 
-
-
                     UpdatePlot(_profileLine);
-
-
 
                 }
             }
@@ -94,13 +134,8 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _hoogteWMS, value);
-
-
             }
         }
-
-
-
 
         private void DisplayDisposable(Polyline profileLine)
         {
@@ -112,27 +147,46 @@ namespace GeoPunt.Dockpanes
 
         private void UpdatePlot(Polyline profileLine)
         {
-            ReadOnlyPointCollection lineVertices = profileLine.Points;
-            double baseNumber = GeometryEngine.Instance.GeodesicLength(profileLine, LinearUnit.Meters) / lineVertices.Count;
 
-            // to make work
-            //dhm.getDataAlongLine((List<List<double>>)profileLine.Copy2DCoordinatesToList()));
 
-            double[] dataX = new double[lineVertices.Count];
-            // Populate the array with multiples
-            for (int i = 0; i < lineVertices.Count; i++)
+            List<List<double>> data;
+
+            if (!mapCrs.ContainsKey(profileLine.SpatialReference.Wkid))
             {
-                dataX[i] = (i) * baseNumber;
+
+                Polyline polylineLambert = GeometryEngine.Instance.Project(profileLine, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Polyline;
+                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, CRS.Lambert72);
+            }
+            else
+            {
+                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, mapCrs[profileLine.SpatialReference.Wkid]);
             }
 
-            double[] dataY = (from lineVertex in lineVertices select lineVertex.Z).ToArray();
 
+            double maxH = data.Select(c => c[3]).Max();
+            double minH = data.Where(c => c[3] > -999).Select(c => c[3]).Min();
+            double maxD = data.Select(c => c[0]).Max();
 
+            double[] dataY = (from records in data select records[3]).ToArray();
+            double[] dataX = (from records in data select records[0]).ToArray();
 
             PlotControl.Plot.Clear();
-            // PlotControl.Plot.SetAxisLimits(yMin: 0);
-            PlotControl.Plot.AddScatter(dataX, dataY);
+            PlotControl.Plot.SetAxisLimits(yMin: minH, yMax: maxH, xMax: maxD);
+            ScatterPlot = PlotControl.Plot.AddScatter(dataX, dataY);
+            AddHighlightPlot();
             PlotControl.Refresh();
+        }
+
+
+
+        // Need to occur if we clear the Plot
+        private void AddHighlightPlot()
+        {
+            HighlightPlot = PlotControl.Plot.AddPoint(0, 0);
+            HighlightPlot.Color = System.Drawing.Color.Red;
+            HighlightPlot.MarkerSize = 10;
+            HighlightPlot.MarkerShape = MarkerShape.openCircle;
+            HighlightPlot.IsVisible = false;
         }
 
         private WpfPlot _plotControl;
@@ -142,6 +196,27 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _plotControl, value);
+            }
+        }
+
+
+        private ScatterPlot _scatterPlot;
+        public ScatterPlot ScatterPlot
+        {
+            get { return _scatterPlot; }
+            set
+            {
+                SetProperty(ref _scatterPlot, value);
+            }
+        }
+
+        private MarkerPlot _highlightPlot;
+        public MarkerPlot HighlightPlot
+        {
+            get { return _highlightPlot; }
+            set
+            {
+                SetProperty(ref _highlightPlot, value);
             }
         }
 
