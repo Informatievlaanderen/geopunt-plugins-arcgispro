@@ -163,13 +163,13 @@ namespace GeoPunt.Dockpanes
 
                 Polyline polylineLambert = GeometryEngine.Instance.Project(profileLine, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Polyline;
                 usedCrs = CRS.Lambert72;
-                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, usedCrs);
+                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
 
             }
             else
             {
                 usedCrs = mapCrs[profileLine.SpatialReference.Wkid];
-                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), 50, usedCrs);
+                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
             }
 
 
@@ -264,6 +264,22 @@ namespace GeoPunt.Dockpanes
             }
         }
 
+
+
+        private int _numberProfilePoints = 50;
+        public int NumberProfilePoints
+        {
+            get { return _numberProfilePoints; }
+            set
+            {
+                SetProperty(ref _numberProfilePoints, value);
+
+                if (_numberProfilePoints != null && _numberProfilePoints > 0 && _profileLine != null)
+                {
+                    GetElevationData(_profileLine);
+                }
+            }
+        }
 
 
         public ICommand CmdAddLayer
@@ -366,9 +382,6 @@ namespace GeoPunt.Dockpanes
                 });
             }
         }
-
-
-
 
 
         public ICommand CmdSavePoints

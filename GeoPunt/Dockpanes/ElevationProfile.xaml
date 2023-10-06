@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"   
              xmlns:ui="clr-namespace:GeoPunt.Dockpanes"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
-             xmlns:ScottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
+             xmlns:ScottPlot="clr-namespace:ScottPlot;assembly=ScottPlot.WPF" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{Binding Path=ui.ElevationProfileViewModel}">
@@ -47,8 +48,20 @@
 
 
         <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <ContentControl Content="{Binding PlotControl}" />
-
+            <Grid Grid.Row="1" HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" FontSize="13.5" Margin="5" Text="Aantal profielpunten:"/>
+                <xctk:IntegerUpDown  Grid.Column="1" Text="{Binding NumberProfilePoints}" />
+            </Grid>
+           
 
             <!--<ScottPlot  x:Name="EvelationProfilePlot"/>-->
         </Grid>
