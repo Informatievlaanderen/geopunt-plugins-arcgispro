@@ -12,7 +12,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
-using GeoPunt.Dockpanes;
+using GeoPunt.Dockpanes.ElevationProfile;
 using GeoPunt.Dockpanes.PointMap;
 using System;
 using System.Collections.Generic;

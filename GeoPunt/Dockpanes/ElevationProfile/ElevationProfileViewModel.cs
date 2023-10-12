@@ -23,7 +23,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media.Media3D;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.ElevationProfile
 {
     internal class ElevationProfileViewModel : DockPane
     {
