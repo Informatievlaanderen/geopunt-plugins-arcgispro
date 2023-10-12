@@ -12,7 +12,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
-using GeoPunt.Dockpanes;
+using GeoPunt.Dockpanes.ElevationProfile;
 using GeoPunt.Dockpanes.PointMap;
 using System;
 using System.Collections.Generic;
@@ -35,6 +35,7 @@ namespace GeoPunt
         public static Module1 Current => _this ??= (Module1)FrameworkApplication.FindModule("GeoPunt_Module");
 
         public static PointMapDockpaneViewModel vmSearchPlace { get; set; }
+        public static ElevationProfileViewModel ElevationProfileViewModel { get; set; }
 
         public Module1()
         {
