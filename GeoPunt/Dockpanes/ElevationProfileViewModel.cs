@@ -33,6 +33,8 @@ namespace GeoPunt.Dockpanes
 
         private int LastHighlightedIndex = -1;
 
+        private List<IDisposable> highLightDisposables = new List<IDisposable>();
+
         private Dictionary<int, CRS> mapCrs = new Dictionary<int, CRS>() {
                 { 31370, CRS.Lambert72 },
                 { 4326, CRS.WGS84 },
@@ -58,6 +60,17 @@ namespace GeoPunt.Dockpanes
         }
 
 
+        public void ClearDisposables()
+        {
+            if (highLightDisposables != null)
+            {
+                foreach (IDisposable markDisposable in highLightDisposables)
+                {
+                    markDisposable.Dispose();
+                }
+                highLightDisposables = new List<IDisposable>();
+            }
+        }
 
         public ICommand CmdActiveDraw
         {
@@ -68,6 +81,7 @@ namespace GeoPunt.Dockpanes
 
 
                     utils.ClearMarking();
+                    ClearDisposables();
 
                     ICommand ccmd = FrameworkApplication.GetPlugInWrapper("GeoPunt_DrawTools_Drawline") as ICommand;
                     if ((ccmd != null) && ccmd.CanExecute(null)) // --> CanExecute results to false
@@ -441,9 +455,31 @@ namespace GeoPunt.Dockpanes
                 if (LastHighlightedIndex != pointIndex)
                 {
                     LastHighlightedIndex = pointIndex;
+                    HighLightDisposable(LastHighlightedIndex);
                     PlotControl.Render();
                 }
             }
+        }
+
+        private void HighLightDisposable(int index)
+        {
+            
+            QueuedTask.Run(() =>
+            {
+                ClearDisposables();
+
+                Graphic graphicToHighligh = ElevationData[index];
+
+
+                ArcGIS.Core.Geometry.Polygon buffer = GeometryEngine.Instance.Buffer(graphicToHighligh.Geometry, 10) as ArcGIS.Core.Geometry.Polygon;
+
+                CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 2.0, SimpleLineStyle.Solid);
+                CIMPolygonSymbol polygonSym = SymbolFactory.Instance.ConstructPolygonSymbol(CIMColor.NoColor() , SimpleFillStyle.ForwardDiagonal, outline);
+
+                highLightDisposables.Add(MapView.Active.AddOverlay(buffer, polygonSym.MakeSymbolReference()));
+
+            });
+
         }
 
         #endregion
