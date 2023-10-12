@@ -57,9 +57,16 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" FontSize="13.5" Margin="5" Text="Aantal profielpunten:"/>
-                <xctk:IntegerUpDown  Grid.Column="1" Margin="5" Text="{Binding NumberProfilePoints}" />
+
+
+                <TextBlock Grid.Column="0" FontSize="13.5" Margin="5" Text="Marker:"/>
+                <ComboBox Grid.Column="1" Margin="5" IsEditable="True" ItemsSource="{Binding ListMarkerShape}" SelectedItem="{Binding SelectedMarkerShape}"  />
+
+                <TextBlock Grid.Column="2" FontSize="13.5" Margin="5" Text="Aantal profielpunten:"/>
+                <xctk:IntegerUpDown  Grid.Column="3" Margin="5" Text="{Binding NumberProfilePoints}" />
             </Grid>
            
 

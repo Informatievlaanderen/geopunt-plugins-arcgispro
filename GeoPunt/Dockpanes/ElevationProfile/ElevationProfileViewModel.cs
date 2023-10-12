@@ -205,11 +205,40 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 PlotControl.Plot.Clear();
                 PlotControl.Plot.SetAxisLimits(yMin: minH, yMax: maxH, xMax: maxD);
                 ScatterPlot = PlotControl.Plot.AddScatter(dataX, dataY);
+                ScatterPlot.MarkerShape = SelectedMarkerShape;
                 AddHighlightPlot();
                 PlotControl.Refresh();
             }
         }
 
+
+        private ObservableCollection<MarkerShape> _listMarkerShape = new ObservableCollection<MarkerShape>(Enum.GetValues(typeof(MarkerShape)).Cast<MarkerShape>().ToList());
+        public ObservableCollection<MarkerShape> ListMarkerShape
+        {
+            get { return _listMarkerShape; }
+            set
+            {
+                SetProperty(ref _listMarkerShape, value);
+            }
+        }
+
+        
+
+
+        private MarkerShape _selectedMarkerShape = MarkerShape.filledCircle;
+        public MarkerShape SelectedMarkerShape
+        {
+            get { return _selectedMarkerShape; }
+            set
+            {
+                SetProperty(ref _selectedMarkerShape, value);
+                if(SelectedMarkerShape != null && ScatterPlot != null )
+                {
+                    ScatterPlot.MarkerShape = SelectedMarkerShape;
+                    PlotControl.Refresh();
+                }
+            }
+        }
 
 
         // Need to occur if we clear the Plot
