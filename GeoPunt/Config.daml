@@ -53,6 +53,7 @@
           <button refID="GeoPunt_Dockpanes_CatalogueButton" size="large" />
           <button refID="GeoPunt_ProWindowInfo" size="large" />
           <!--<tool refID="GeoPunt_DrawTools_Drawline" size="large" />-->
+          
         </group>
         <!--Others Group-->
         <group id="GeoPunt_Group_Others" caption="Others" appearsOnAddInTab="false">
@@ -85,8 +86,8 @@
         <button id="GeoPunt_ElevationProfileButton" caption="Hoogte" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png">
           <tooltip heading="HoogteProfiel">HoogteProfiel ...</tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_CatalogueButton" className="CatalogueButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png" condition="DisableButton">
-          <tooltip heading="Catalogus">Feature not yet developed</tooltip>
+        <button id="GeoPunt_Dockpanes_CatalogueButton" className="GeoPunt.Dockpanes.Catalogus.Catalogus_ShowButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png">
+          <tooltip heading="Catalogus">Blader catalogus</tooltip>
         </button>
         <button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Instellingen" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png" condition="DisableButton">
           <tooltip heading="Instellingen">Feature not yet developed</tooltip>
@@ -97,6 +98,7 @@
         <tool id="GeoPunt_DrawTools_Drawline" caption="HoogteProfielTool" className="GeoPunt.DrawTools.Drawline" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png" condition="esri_mapping_mapPane">
           <tooltip heading="HoogteProfiel tool">HoogteProfiel tool ...</tooltip>
         </tool>
+       
       </controls>
       <dockPanes>
         <dockPane id="GeoPunt_Dockpanes_StartDockpane" caption="Welcome in Geopunt plug-in" className="GeoPunt.Dockpanes.StartDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
@@ -122,6 +124,9 @@
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_ElevationProfile" caption="HoogteProfiel" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfileView" />
+        </dockPane>
+        <dockPane id="GeoPunt_Dockpanes_Catalogus_Catalogus" caption="Catalogus" className="GeoPunt.Dockpanes.Catalogus.CatalogusViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.Catalogus.CatalogusView" />
         </dockPane>
       </dockPanes>
     </insertModule>
