@@ -1,6 +1,9 @@
-﻿using ArcGIS.Desktop.Framework;
+﻿using ActiproSoftware.Windows.Input;
+using ArcGIS.Core.CIM;
+using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Core.CommonControls;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.DataHandler;
@@ -23,7 +26,7 @@ namespace GeoPunt.Dockpanes.Catalogus
         private const string _dockPaneID = "GeoPunt_Dockpanes_Catalogus_Catalogus";
         private catalog clg;
         private datacontract.metadataResponse metaList = null;
-        
+
 
         protected CatalogusViewModel()
         {
@@ -45,8 +48,12 @@ namespace GeoPunt.Dockpanes.Catalogus
 
             ListGDIThema.Insert(0, "");
 
+
+            List<string> organisationNames = clg.getOrganisations();
+            organisationNames.Sort();
+
             ListOrganisationName = new ObservableCollection<string>(
-                clg.getOrganisations()
+                organisationNames
                 );
             ListOrganisationName.Insert(0, "");
 
@@ -223,6 +230,8 @@ namespace GeoPunt.Dockpanes.Catalogus
 
                 ButtonDownloadIsEnable = false;
                 ButtonWMSIsEnable = false;
+                ButtonNavigateResultIsEnabled = false;
+                LinkFiche = "";
 
                 if (_selectedResultSearch != null)
                 {
@@ -247,9 +256,32 @@ namespace GeoPunt.Dockpanes.Catalogus
 
 
 
-  
+        private bool _buttonNavigateResultIsEnabled = false;
+        public bool ButtonNavigateResultIsEnabled
+        {
+            get { return _buttonNavigateResultIsEnabled; }
+            set
+            {
+                SetProperty(ref _buttonNavigateResultIsEnabled, value);
+            }
+        }
 
-        
+        private string _linkFiche = "";
+
+        public string LinkFiche
+        {
+            get { return _linkFiche; }
+            set
+            {
+                SetProperty(ref _linkFiche, value);
+                ButtonNavigateResultIsEnabled = false;
+
+                if (_linkFiche != null && _linkFiche != "")
+                {
+                    ButtonNavigateResultIsEnabled = true;
+                }
+            }
+        }
 
 
         private ObservableCollection<string> _listFilter = new ObservableCollection<string>();
@@ -445,6 +477,10 @@ namespace GeoPunt.Dockpanes.Catalogus
                 "<div><a target='_blank' href='https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/{0}'>Ga naar fiche in metadata center</a></div>",
                                           metaObj.geonet.uuid);
 
+                ButtonNavigateResultIsEnabled = true;
+                LinkFiche = $@"https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/{metaObj.geonet.uuid}";
+
+
                 if (metaObj.links != null && metaObj.links.Count() > 0)
                 {
                     infoMsg += "<br/><ul>";
@@ -454,14 +490,14 @@ namespace GeoPunt.Dockpanes.Catalogus
                         if (links[3].ToUpper().Contains("DOWNLOAD"))
                         {
                             string url = links[2];
-                            string name = (String.IsNullOrEmpty(links[0])) ? links[1] : links[0];
+                            string name = (string.IsNullOrEmpty(links[0])) ? links[1] : links[0];
                             infoMsg += string.Format("<li><a target='_blank' href='{1}'>{0}</a></li>", name, url);
                         }
                     }
                     infoMsg += "</ul>";
                 }
                 WebBrowserControl.NavigateToString(infoMsg);
-                
+
 
             }
         }
@@ -491,53 +527,56 @@ namespace GeoPunt.Dockpanes.Catalogus
 
         private void addWMS()
         {
-            //string selVal = searchResultsList.Text;
-            //List<ESRI.ArcGIS.GISClient.IWMSLayerDescription> lyrDescripts;
-            //string lyrDlgName; string lyrName; string wmsUrl;
-            //layerSelectionForm lyrDlg;
+            string selVal = SelectedResultSearch;
 
-            //bool hasWms = metaList.geturl(selVal, "OGC:WMS", out wmsUrl, out lyrName);
-            //if (hasWms)
-            //{
-            //    wmsUrl = wmsUrl.Split('?')[0] + "?";
+            string lyrName; string wmsUrl;
 
-            //    if (geopuntHelper.websiteExists(wmsUrl, true) == false)
-            //    {
-            //        MessageBox.Show("Kan geen connectie maken met de Service.", "Connection timed out");
-            //        return;
-            //    }
-            //    try
-            //    {
-            //        lyrDescripts = geopuntHelper.listWMSlayers(wmsUrl);
-            //        if (lyrDescripts.Count <= 2)
-            //        {
-            //            geopuntHelper.addWMS2map(ArcMap.Document.FocusMap, wmsUrl);
-            //            return;
-            //        }
+            bool hasWms = metaList.geturl(selVal, "OGC:WMS", out wmsUrl, out lyrName);
+            if (hasWms)
+            {
+                wmsUrl = wmsUrl.Split('?')[0] + "?";
 
-            //        lyrDlg = new layerSelectionForm(lyrDescripts, lyrName);
-            //        lyrDlg.ShowDialog(this);
+                if (geopuntHelper.websiteExists(wmsUrl, true) == false)
+                {
+                    MessageBox.Show("Kan geen connectie maken met de Service.", "Connection timed out");
+                    return;
+                }
+                try
+                {
 
-            //        lyrDlgName = lyrDlg.selectedLayerName;
+                    if (MapView.Active == null)
+                    {
+                        MessageBox.Show("No map view active.");
+                        return;
+                    }
 
-            //        if (lyrDlgName != null)
-            //        {
-            //            ILayer lyr = geopuntHelper.getWMSLayerByName(wmsUrl, lyrDlgName);
-            //            if (lyr != null)
-            //            {
-            //                ArcMap.Document.FocusMap.AddLayer(lyr);
-            //            }
-            //            else
-            //            {
-            //                geopuntHelper.addWMS2map(ArcMap.Document.FocusMap, wmsUrl);
-            //            }
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
-            //    }
-            //}
+                    // TODO change below part to make able to select which layer to add
+
+                    var serverConnection = new CIMInternetServerConnection { URL = wmsUrl };
+                    var connection = new CIMWMSServiceConnection { ServerConnection = serverConnection };
+
+                    // Add a new layer to the map
+                    var layerParams = new LayerCreationParams(connection);
+
+
+                    QueuedTask.Run(() =>
+                    {
+
+                        try
+                        {
+                            LayerFactory.Instance.CreateLayer<WMSLayer>(layerParams, MapView.Active.Map);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, $@"Error trying to add layer");
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
+                }
+            }
         }
 
 
