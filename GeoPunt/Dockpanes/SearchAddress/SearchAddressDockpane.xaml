@@ -87,8 +87,8 @@
             HorizontalAlignment="Center" VerticalAlignment="Center"
             FontWeight="SemiBold" Margin="0,2.5" />
 
-        <ListBox ItemsSource="{Binding ListSaveGraphic}"
-            SelectedItem="{Binding SelectedSaveGraphic}" Grid.Row="5"
+        <ListBox ItemsSource="{Binding GraphicsList}"
+            SelectedItem="{Binding SelectedGraphic}" Grid.Row="5"
             ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
             BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" Margin="2.5,0"
         >

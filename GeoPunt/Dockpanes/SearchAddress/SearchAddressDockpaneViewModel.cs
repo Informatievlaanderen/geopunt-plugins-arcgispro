@@ -19,7 +19,7 @@ using System.Collections;
 
 namespace GeoPunt.Dockpanes.SearchAddress
 {
-    internal class SearchAddressDockpaneViewModel : DockPane
+    internal class SearchAddressDockpaneViewModel : DockPane, IMarkedGraphicDisplayer
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchAddress_SearchAddressDockpane";
 
@@ -37,8 +37,6 @@ namespace GeoPunt.Dockpanes.SearchAddress
             adresSuggestion = new adresSuggestion(sugCallback, 5000);
             adresLocation = new adresLocation(5000);
         }
-
-
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
              "",
             "Aalst",
@@ -400,19 +398,15 @@ namespace GeoPunt.Dockpanes.SearchAddress
                 });
             }
         }
-
-        
         private string _searchStringCityPart;
         public string SearchStringCityPart
         {
             get { return _searchStringCityPart; }
             set
             {
-                SetProperty(ref _searchStringCityPart, value);            
+                SetProperty(ref _searchStringCityPart, value);
             }
         }
-
-
         //private bool _isSelectedFavouriteList;
         // public bool IsSelectedFavouriteList
         // {
@@ -451,9 +445,6 @@ namespace GeoPunt.Dockpanes.SearchAddress
             set
             {
                 SetProperty(ref _selectedStreet, value);
-                //updateCurrentMapPoint(_selectedStreet, 1);
-
-
                 MapPointSelectedAddressSimple = null;
 
                 if (_selectedStreet != null)
@@ -478,30 +469,26 @@ namespace GeoPunt.Dockpanes.SearchAddress
                 }
             }
         }
-
-
-        private ObservableCollection<Graphic> _listSaveGraphic = new ObservableCollection<Graphic>();
-        public ObservableCollection<Graphic> ListSaveGraphic
+        private ObservableCollection<Graphic> _graphicsList = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> GraphicsList
         {
-            get { return _listSaveGraphic; }
+            get { return _graphicsList; }
             set
             {
-                SetProperty(ref _listSaveGraphic, value);
+                SetProperty(ref _graphicsList, value);
             }
         }
-
-
-        private Graphic _selectedSaveGraphic;
-        public Graphic SelectedSaveGraphic
+        private Graphic _selectedGraphic;
+        public Graphic SelectedGraphic
         {
 
-            get { return _selectedSaveGraphic; }
+            get { return _selectedGraphic; }
             set
             {
-                SetProperty(ref _selectedSaveGraphic, value);
-                if (_selectedSaveGraphic != null)
+                SetProperty(ref _selectedGraphic, value);
+                if (_selectedGraphic != null)
                 {
-                    if (ListSaveGraphicMarked.Any(saveGraphic => saveGraphic.Attributes["adres"].ToString() == _selectedSaveGraphic.Attributes["adres"].ToString()))
+                    if (MarkedGraphicsList.Any(saveGraphic => saveGraphic.Attributes["adres"].ToString() == _selectedGraphic.Attributes["adres"].ToString()))
                     {
 
                         TextMarkeer = "Verwijder markering";
@@ -520,17 +507,15 @@ namespace GeoPunt.Dockpanes.SearchAddress
             }
         }
 
-        private ObservableCollection<Graphic> _listSaveGraphicMarked = new ObservableCollection<Graphic>();
-        public ObservableCollection<Graphic> ListSaveGraphicMarked
+        private ObservableCollection<Graphic> _markedGraphicsList = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> MarkedGraphicsList
         {
-            get { return _listSaveGraphicMarked; }
+            get { return _markedGraphicsList; }
             set
             {
-                SetProperty(ref _listSaveGraphicMarked, value);
+                SetProperty(ref _markedGraphicsList, value);
             }
         }
-
-
         private void sugCallback(object sender, DownloadStringCompletedEventArgs e)
         {
             if (!e.Cancelled && e.Error == null)
@@ -546,19 +531,14 @@ namespace GeoPunt.Dockpanes.SearchAddress
                 }
             }
         }
-
-
         MapPoint MapPointSelectedAddressSimple = null;
 
-        public void updateCurrentMapPoint(string query, int count)
-        {
-
-        }
+       
 
         private void updateSuggestions()
         {
             adresSuggestion = new adresSuggestion(sugCallback, 5000);
-            
+
             string searchString = @$"{SearchAddressSearcher.Address}, {SearchAddressSearcher.City}";
             adresSuggestion.getAdresSuggestionAsync(searchString, 80);
 
@@ -568,7 +548,56 @@ namespace GeoPunt.Dockpanes.SearchAddress
             //adresSuggestion.getAdresSuggestionAsync(searchString, 80);
         }
 
+        public void updateListBoxMarkeer()
+        {
 
+            utils.UpdateMarking((from markedGraphic in MarkedGraphicsList select markedGraphic.Geometry).ToList());
+
+        }
+
+        public void MarkGraphic(Graphic SelectedGraphic)
+        {
+
+            if (!MarkedGraphicsList.Any(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]))
+            {
+                MarkedGraphicsList.Add(SelectedGraphic);
+                updateListBoxMarkeer();
+                TextMarkeer = "Verwijder markering";
+            }
+            else
+            {
+
+                Graphic pointToDelete = MarkedGraphicsList.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).First();
+                MarkedGraphicsList.Remove(pointToDelete);
+                updateListBoxMarkeer();
+                TextMarkeer = "Markeer";
+            }
+
+        }
+        private SearchAddressSearcher _searchAddressSearcher = new SearchAddressSearcher();
+        public SearchAddressSearcher SearchAddressSearcher
+        {
+            get { return _searchAddressSearcher; }
+            set
+            {
+                SetProperty(ref _searchAddressSearcher, value);
+                updateSuggestions();
+            }
+        }
+
+        private string _searchFilter;
+        public string SearchFilter
+        {
+            get { return _searchFilter; }
+            set
+            {
+                SetProperty(ref _searchFilter, value);
+                SearchAddressSearcher.Address = _searchFilter;
+                updateSuggestions();
+            }
+        }
+
+        #region Command
 
         public ICommand CmdZoom
         {
@@ -598,11 +627,11 @@ namespace GeoPunt.Dockpanes.SearchAddress
             {
                 return new RelayCommand(async () =>
                 {
-                    Graphic graphic = ListSaveGraphic.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedSaveGraphic.Attributes["adres"]).First();
-                    Graphic graphicMarked = ListSaveGraphicMarked.Where(saveGraphicMarked => saveGraphicMarked.Attributes["adres"] == SelectedSaveGraphic.Attributes["adres"]).First();
+                    Graphic graphic = GraphicsList.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).First();
+                    Graphic graphicMarked = MarkedGraphicsList.Where(saveGraphicMarked => saveGraphicMarked.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).First();
 
-                    ListSaveGraphic.Remove(graphic);
-                    ListSaveGraphicMarked.Remove(graphicMarked);
+                    GraphicsList.Remove(graphic);
+                    MarkedGraphicsList.Remove(graphicMarked);
                     GeocodeUtils.UpdateMapOverlayMarkeer(graphicMarked.Geometry as MapPoint, MapView.Active, true, true);
 
                     updateListBoxMarkeer();
@@ -610,42 +639,19 @@ namespace GeoPunt.Dockpanes.SearchAddress
             }
         }
 
-        public void updateListBoxMarkeer()
-        {
-            foreach (Graphic saveGraphicMarked in ListSaveGraphicMarked)
-            {
-                GeocodeUtils.UpdateMapOverlayMarkeer(saveGraphicMarked.Geometry as MapPoint, MapView.Active, false);
-            }
-        }
-
-
-
         public ICommand CmdMark
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-
-                    if (!ListSaveGraphicMarked.Any(saveGraphic => saveGraphic.Attributes["adres"] == SelectedSaveGraphic.Attributes["adres"]))
+                    if (SelectedGraphic != null)
                     {
-                        ListSaveGraphicMarked.Add(SelectedSaveGraphic);
-                        updateListBoxMarkeer();
-                        TextMarkeer = "Verwijder markering";
-                    }
-                    else
-                    {
-
-                        Graphic pointToDelete = ListSaveGraphicMarked.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedSaveGraphic.Attributes["adres"]).First();
-                        ListSaveGraphicMarked.Remove(pointToDelete);
-                        GeocodeUtils.UpdateMapOverlayMarkeer(pointToDelete.Geometry as MapPoint, MapView.Active, true, true);
-                        updateListBoxMarkeer();
-                        TextMarkeer = "Markeer";
+                        MarkGraphic(SelectedGraphic);
                     }
                 });
             }
         }
-
         public ICommand CmdSave
         {
             get
@@ -653,12 +659,10 @@ namespace GeoPunt.Dockpanes.SearchAddress
                 return new RelayCommand(async () =>
                 {
 
-
-
-                    if (!ListSaveGraphic.Any(saveGraphic => saveGraphic.Attributes["adres"].ToString() == SelectedStreet))
+                    if (!GraphicsList.Any(saveGraphic => saveGraphic.Attributes["adres"].ToString() == SelectedStreet))
                     {
 
-                        ListSaveGraphic.Add(new Graphic(new Dictionary<string, object>
+                        GraphicsList.Add(new Graphic(new Dictionary<string, object>
                                 {
                                     {"adres", SelectedStreet},
                                 }, MapPointSelectedAddressSimple));
@@ -673,40 +677,12 @@ namespace GeoPunt.Dockpanes.SearchAddress
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.ExportToGeoJson(ListSaveGraphic.ToList());
+                    utils.ExportToGeoJson(GraphicsList.ToList());
                 });
             }
         }
 
-
-
-
-
-        private SearchAddressSearcher _searchAddressSearcher = new SearchAddressSearcher();
-        public SearchAddressSearcher SearchAddressSearcher
-        {
-            get { return _searchAddressSearcher; }
-            set
-            {
-                SetProperty(ref _searchAddressSearcher, value);
-                updateSuggestions();
-            }
-        }
-
-        private string _searchFilter;
-        public string SearchFilter
-        {
-            get { return _searchFilter; }
-            set
-            {
-                SetProperty(ref _searchFilter, value);
-                SearchAddressSearcher.Address = _searchFilter;
-                updateSuggestions();
-            }
-        }
-
-
-
+        #endregion
 
         internal static void Show()
         {
@@ -716,16 +692,6 @@ namespace GeoPunt.Dockpanes.SearchAddress
 
             FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
             pane.Activate();
-        }
-
-        private string _heading = "My DockPane";
-        public string Heading
-        {
-            get { return _heading; }
-            set
-            {
-                SetProperty(ref _heading, value, () => Heading);
-            }
         }
     }
 
