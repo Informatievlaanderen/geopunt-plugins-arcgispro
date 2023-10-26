@@ -87,7 +87,7 @@
           <tooltip heading="HoogteProfiel">HoogteProfiel ...</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_CatalogueButton" className="GeoPunt.Dockpanes.Catalogus.Catalogus_ShowButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png">
-          <tooltip heading="Catalogus">Blader catalogus</tooltip>
+          <tooltip heading="Catalogus">Zoek in de Geopunt-catalogus datasets en services op en voeg ze toe</tooltip>
         </button>
         <button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Instellingen" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png" condition="DisableButton">
           <tooltip heading="Instellingen">Feature not yet developed</tooltip>
