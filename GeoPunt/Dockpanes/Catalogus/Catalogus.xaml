@@ -55,19 +55,19 @@
                     <ColumnDefinition Width="2*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" FontSize="13" Margin="5"  Text="GDI-thema"  />
+                <TextBlock Grid.Column="0" FontSize="13" Margin="5"  Text="GDI-thema:"  />
                 <ComboBox Grid.Column="1" Margin="5" IsEditable="True" ItemsSource="{Binding ListGDIThema}" SelectedItem="{Binding SelectedGDIThema}" />
 
-                <TextBlock Grid.Row="1" Grid.Column="0" FontSize="13" Margin="5"  Text="Organisatie naam"  />
+                <TextBlock Grid.Row="1" Grid.Column="0" FontSize="13" Margin="5"  Text="Organisatie naam:"  />
                 <ComboBox Grid.Row="1" Grid.Column="1" Margin="5" IsEditable="True" ItemsSource="{Binding ListOrganisationName}" SelectedItem="{Binding SelectedOrganisationName}" />
 
                 <!--<TextBlock Grid.Row="2" Grid.Column="0" FontSize="13" Margin="5"  Text="Bron catalogus"  />
                 <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" IsEditable="True" ItemsSource="{Binding ListDataSource}" SelectedItem="{Binding SelectedDataSource}" SelectedValuePath="Key" DisplayMemberPath="Value" />-->
 
-                <TextBlock Grid.Row="3" Grid.Column="0" FontSize="13" Margin="5"  Text="Type"  />
+                <TextBlock Grid.Row="3" Grid.Column="0" FontSize="13" Margin="5"  Text="Type:"  />
                 <ComboBox Grid.Row="3" Grid.Column="1" Margin="5" IsEditable="True" ItemsSource="{Binding ListType}" SelectedItem="{Binding SelectedType}" SelectedValuePath="Key" DisplayMemberPath="Value" />
 
-                <TextBlock Grid.Row="4" Grid.Column="0" FontSize="13" Margin="5"  Text="INSPIRE-thema"  />
+                <TextBlock Grid.Row="4" Grid.Column="0" FontSize="13" Margin="5"  Text="INSPIRE-thema:"  />
                 <ComboBox Grid.Row="4" Grid.Column="1" Margin="5" IsEditable="True"   ItemsSource="{Binding ListInspireThema}" SelectedItem="{Binding SelectedInspireThema}" />
 
 
@@ -125,7 +125,7 @@
             <ComboBox Grid.Column="0" Margin="5" IsEditable="True" ItemsSource="{Binding ListFilter}" SelectedItem="{Binding SelectedFilter}"  />
 
 
-            <Button Grid.Column="2" Style="{DynamicResource Esri_Button}"  Content="WMS-toevoegen" Margin="5" IsEnabled="{Binding ButtonWMSIsEnable}" Command="{Binding CmdAddWms}"/>
+            <Button Grid.Column="2" Style="{DynamicResource Esri_Button}"  Content="WMS toevoegen" Margin="5" IsEnabled="{Binding ButtonWMSIsEnable}" Command="{Binding CmdAddWms}"/>
             <Button Grid.Column="3" Style="{DynamicResource Esri_Button}"  Content="ArcGIS service toevoegen" Margin="5" IsEnabled="{Binding ButtonDownloadIsEnable}" Command="{Binding CmdDownload}"/>
 
 
