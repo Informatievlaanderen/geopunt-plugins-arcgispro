@@ -81,10 +81,10 @@
           <tooltip heading="Zoek een perceel">Zoek via de parameters gemeente, afdeling, sectie en perceel een kadastraal perceel op</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_GipodButton" caption="GIPOD" className="GeoPunt.Dockpanes.Gipod.Gipod_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png">
-          <tooltip heading="Bevraag GIPOD">Bevraag GIPOD ...</tooltip>
+          <tooltip heading="Bevraag GIPOD">Haal GIPOD-data op met betrekking tot geplande werkzaamheden of manifestaties</tooltip>
         </button>
         <button id="GeoPunt_ElevationProfileButton" caption="Hoogte" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png">
-          <tooltip heading="HoogteProfiel">HoogteProfiel ...</tooltip>
+          <tooltip heading="Hoogteprofiel">Haal hoogte-informatie van het ‘Digitaal Hoogtemodel Vlaanderen (DHMV) II, DTM, raster, 1 m’ uitgezet in een profiellijn op</tooltip>
         </button>
         <button id="GeoPunt_Dockpanes_CatalogueButton" className="GeoPunt.Dockpanes.Catalogus.Catalogus_ShowButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png">
           <tooltip heading="Catalogus">Zoek in de Geopunt-catalogus datasets en services op en voeg ze toe</tooltip>
@@ -116,13 +116,13 @@
         <dockPane id="GeoPunt_Dockpanes_SearchPerceel" caption="Zoek een perceel" className="GeoPunt.Dockpanes.SearchPerceel.SearchPerceelViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.SearchPerceel.SearchPerceelView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestanden geocoderen" className="GeoPunt.Dockpanes.CSVFile.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
+        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestand geocoderen" className="GeoPunt.Dockpanes.CSVFile.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.CSVFile.CSVfileView" />
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_Gipod" caption="Bevraag GIPOD" className="GeoPunt.Dockpanes.Gipod.GipodViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.Gipod.GipodView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_ElevationProfile" caption="HoogteProfiel" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
+        <dockPane id="GeoPunt_Dockpanes_ElevationProfile" caption="Hoogteprofiel" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfileView" />
         </dockPane>
         <dockPane id="GeoPunt_Dockpanes_Catalogus_Catalogus" caption="Catalogus" className="GeoPunt.Dockpanes.Catalogus.CatalogusViewModel" dock="group" dockWith="esri_core_projectDockPane">

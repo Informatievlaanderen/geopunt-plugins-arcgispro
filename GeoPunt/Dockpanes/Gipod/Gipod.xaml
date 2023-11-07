@@ -136,15 +136,15 @@
 
                 <DataGrid.Columns>
                     <!--<DataGridTextColumn Binding="{Binding Attributes[initiator]}" Header="Initiator" />-->
-                    <DataGridTextColumn Binding="{Binding Attributes[eventType]}" Header="EventType"  MaxWidth="150"/>
+                    <DataGridTextColumn Binding="{Binding Attributes[eventType]}" Header="EventType"  />
                     <!--<DataGridTextColumn Binding="{Binding Attributes[recurrencePattern]}" Header="RecurrencePattern" />-->
-                    <DataGridTextColumn Binding="{Binding Attributes[gipodId]}" Header="GipodId" MaxWidth="150"/>
-                    <DataGridTextColumn Binding="{Binding Attributes[owner]}" Header="Owner" MaxWidth="150"/>
-                    <DataGridTextColumn Binding="{Binding Attributes[description]}" Header="Description"  MaxWidth="150"/>
-                    <DataGridTextColumn Binding="{Binding Attributes[startDateTime]}" Header="StartDateTime" MaxWidth="150"/>
-                    <DataGridTextColumn Binding="{Binding Attributes[endDateTime]}" Header="EndDateTime" MaxWidth="150"/>
-                    <DataGridTextColumn Binding="{Binding Attributes[importantHindrance]}" Header="ImportantHindrance" MaxWidth="150"/>
-                    <DataGridHyperlinkColumn Binding="{Binding Attributes[detail]}" Header="Detail" MaxWidth="150" >
+                    <DataGridTextColumn Binding="{Binding Attributes[gipodId]}" Header="GipodId" />
+                    <DataGridTextColumn Binding="{Binding Attributes[owner]}" Header="Owner" />
+                    <DataGridTextColumn Binding="{Binding Attributes[description]}" Header="Description"   />
+                    <DataGridTextColumn Binding="{Binding Attributes[startDateTime]}" Header="StartDateTime" />
+                    <DataGridTextColumn Binding="{Binding Attributes[endDateTime]}" Header="EndDateTime" />
+                    <DataGridTextColumn Binding="{Binding Attributes[importantHindrance]}" Header="ImportantHindrance" />
+                    <DataGridHyperlinkColumn Binding="{Binding Attributes[detail]}" Header="Detail"  >
                         <DataGridHyperlinkColumn.ElementStyle>
                             <Style>
                                 <EventSetter Event="Hyperlink.RequestNavigate" Handler="DataGridHyperlinkColumn_RequestNavigate"/>

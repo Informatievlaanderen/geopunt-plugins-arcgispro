@@ -36,7 +36,7 @@ namespace GeoPunt.Dockpanes.PointMap
         DataHandler.adresSuggestion adresSuggestion;
         DataHandler.adresLocation adresLocation;
 
-        private string _address;
+        private string _address = "Klik op de kaart";
         public string Address
         {
             get { return _address; }

@@ -43,7 +43,7 @@
             </Grid.ColumnDefinitions>
 
             <Button x:Name="test" Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdActiveDraw}"  Content="Teken de profiellijn"/>
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdAddLayer}"  Content="Voeg hoogtemodel toe als laag"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdAddLayer}"  Content="Voeg DHMVII, DTM, 1m toe als laag"/>
         </Grid>
 
 
@@ -84,7 +84,7 @@
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdSavePoints}"  Content="Profielpunten opslaan"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Height="20" Command="{Binding CmdSaveLine}"  Content="Profiellijn opslaan"/>
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdSaveDiagram}"  Content="Diagram opslaan"/>
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdSaveDiagram}"  Content="Hoogteprofiel opslaan"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="4"  Height="20" Command="{Binding CmdClose}"  Content="Sluiten"/>
         </Grid>
     </Grid>

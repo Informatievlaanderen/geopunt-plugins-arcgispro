@@ -270,6 +270,21 @@ namespace GeoPunt.Dockpanes.SearchPlace
             }
         }
 
+
+
+
+
+
+        private List<string> _gemeenteList = new List<string>();
+        public List<string> GemeenteList
+        {
+            get { return _gemeenteList; }
+            set
+            {
+                SetProperty(ref _gemeenteList, value);
+            }
+        }
+
         private string _selectedGemeenteList;
         public string SelectedGemeenteList
         {
@@ -287,19 +302,16 @@ namespace GeoPunt.Dockpanes.SearchPlace
             }
         }
 
-
-
-
-
-        private List<string> _gemeenteList = new List<string>();
-        public List<string> GemeenteList
+        private string _gemeenteText;
+        public string GemeenteText
         {
-            get { return _gemeenteList; }
+            get { return _gemeenteText; }
             set
             {
-                SetProperty(ref _gemeenteList, value);
+                SetProperty(ref _gemeenteText, value);
             }
         }
+
 
         private List<poiValueGroup> _themeList = new List<poiValueGroup>();
         public List<poiValueGroup> ThemeList
@@ -328,6 +340,18 @@ namespace GeoPunt.Dockpanes.SearchPlace
             }
         }
 
+        private string _themeText;
+        public string ThemeText
+        {
+            get { return _themeText; }
+            set
+            {
+                SetProperty(ref _themeText, value);
+            }
+        }
+
+
+
         private string _selectedCategoriesListString;
         public string SelectedCategoriesListString
         {
@@ -350,6 +374,16 @@ namespace GeoPunt.Dockpanes.SearchPlace
             }
         }
 
+        private string _categoryText;
+        public string CategoryText
+        {
+            get { return _categoryText; }
+            set
+            {
+                SetProperty(ref _categoryText, value);
+            }
+        }
+
         private string _selectedTypesListString;
         public string SelectedTypesListString
         {
@@ -361,6 +395,17 @@ namespace GeoPunt.Dockpanes.SearchPlace
                 ButtonFreeze();
             }
         }
+
+        private string _typeText;
+        public string TypeText
+        {
+            get { return _typeText; }
+            set
+            {
+                SetProperty(ref _typeText, value);
+            }
+        }
+
 
         private List<string> _themeListString = new List<string>();
         public List<string> ThemeListString
@@ -488,7 +533,7 @@ namespace GeoPunt.Dockpanes.SearchPlace
         {
             if (muniName == null || muniName == "") return "";
 
-            var niscodes = 
+            var niscodes =
                 from n in municipalities.municipalities
                 where n.municipalityName == muniName
                 select n.municipalityCode;
@@ -503,8 +548,8 @@ namespace GeoPunt.Dockpanes.SearchPlace
             if (theme == null || theme == "") return "";
 
             var themeCodes = from n in ThemeList
-                              where n.value == theme
-                              select n.term;
+                             where n.value == theme
+                             select n.term;
             if (themeCodes.Count() == 0) return "";
 
             return themeCodes.First();
@@ -515,8 +560,8 @@ namespace GeoPunt.Dockpanes.SearchPlace
             if (cat == null || cat == "") return "";
 
             var catCodes = from n in poiDH.listCategories().categories
-                            where n.value == cat
-                            select n.term;
+                           where n.value == cat
+                           select n.term;
             if (catCodes.Count() == 0) return "";
 
             return catCodes.First();
@@ -527,8 +572,8 @@ namespace GeoPunt.Dockpanes.SearchPlace
             if (poiType == null || poiType == "") return "";
 
             var typeCodes = from n in poiDH.listPOItypes().categories
-                             where n.value == poiType
-                             select n.term;
+                            where n.value == poiType
+                            select n.term;
             if (typeCodes.Count() == 0) return "";
 
             return typeCodes.First();
@@ -575,6 +620,16 @@ namespace GeoPunt.Dockpanes.SearchPlace
             }
         }
 
+        public bool CheckTextWithSelected(string text, string selected)
+        {
+            if (text != selected)
+            {
+                MessageBox.Show($@"{text} is ongeldig");
+                return false;
+            }
+            return true;
+        }
+
 
         public ICommand CmdSaveIcon
         {
@@ -596,6 +651,13 @@ namespace GeoPunt.Dockpanes.SearchPlace
 
                     poiMaxResponse poiData = null;
                     InteressantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
+
+
+                    if (!CheckTextWithSelected(GemeenteText, SelectedGemeenteList)) return;
+                    if (!CheckTextWithSelected(ThemeText, SelectedThemeListString)) return;
+                    if (!CheckTextWithSelected(CategoryText, SelectedCategoriesListString)) return;
+                    if (!CheckTextWithSelected(TypeText, SelectedTypesListString)) return;
+
 
                     //input
                     string themeCode = theme2code(SelectedThemeListString);

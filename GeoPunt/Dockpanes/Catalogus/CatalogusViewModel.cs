@@ -13,10 +13,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-
 using System.Windows.Input;
 
 namespace GeoPunt.Dockpanes.Catalogus
@@ -83,6 +83,7 @@ namespace GeoPunt.Dockpanes.Catalogus
 
 
             WebBrowserControl = new System.Windows.Controls.WebBrowser();
+            StackPanelControl = new System.Windows.Controls.StackPanel();
         }
 
 
@@ -254,6 +255,16 @@ namespace GeoPunt.Dockpanes.Catalogus
             }
         }
 
+        private System.Windows.Controls.StackPanel _stackPanelControl;
+        public System.Windows.Controls.StackPanel StackPanelControl
+        {
+            get { return _stackPanelControl; }
+            set
+            {
+                SetProperty(ref _stackPanelControl, value);
+            }
+        }
+
 
 
         private bool _buttonNavigateResultIsEnabled = false;
@@ -373,13 +384,12 @@ namespace GeoPunt.Dockpanes.Catalogus
             ListResultSearch = new ObservableCollection<string>();
             TextStatus = "";
             WebBrowserControl.Navigate("about:blank");
+            StackPanelControl.Children.Clear();
 
             try
             {
 
-                string selectedType = SelectedType.Key == "None" ? "" : SelectedType.Key;
-                // string selectedDataSource = SelectedDataSource.Key == "None" ? "" : SelectedDataSource.Key;
-
+                string selectedType = SelectedType.Key == "None" || SelectedType.Key == null ? "" : SelectedType.Key;
 
                 metaList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
 
@@ -463,27 +473,44 @@ namespace GeoPunt.Dockpanes.Catalogus
 
         private void updateInfo()
         {
-            
 
+            StackPanelControl.Children.Clear();
             string selVal = SelectedResultSearch;
             List<datacontract.metadata> metaObjs = (from n in metaList.metadataRecords
                                                     where n.title == selVal
                                                     select n).ToList();
             if (metaObjs.Count > 0)
             {
+
+
+
+
+
                 datacontract.metadata metaObj = metaObjs[0];
-                string infoMsg = string.Format("<h2>{0}</h2><br/><div>{1}</div>", metaObj.title, metaObj.description);
-                infoMsg += string.Format(
-                "<div><a target='_blank' href='https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/{0}'>Ga naar fiche in metadata center</a></div>",
-                                          metaObj.geonet.uuid);
+
+                System.Windows.Controls.TextBlock titleTextBlock = new System.Windows.Controls.TextBlock();
+                titleTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
+                titleTextBlock.Margin = new System.Windows.Thickness(2);
+                StackPanelControl.Children.Add(titleTextBlock);
+                titleTextBlock.Inlines.Add(new System.Windows.Documents.Run(metaObj.title) { FontWeight = System.Windows.FontWeights.Bold, FontSize = 24 });
+
+
+                System.Windows.Controls.TextBlock descriptionTextBlock = new System.Windows.Controls.TextBlock();
+                descriptionTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
+                descriptionTextBlock.Margin = new System.Windows.Thickness(2);
+                StackPanelControl.Children.Add(descriptionTextBlock);
+                descriptionTextBlock.Inlines.Add(new System.Windows.Documents.Run(metaObj.description));
+
 
                 ButtonNavigateResultIsEnabled = true;
                 LinkFiche = $@"https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/{metaObj.geonet.uuid}";
 
 
+                System.Windows.Controls.Grid linkContainer = new System.Windows.Controls.Grid();
+                StackPanelControl.Children.Add(linkContainer);
                 if (metaObj.links != null && metaObj.links.Count() > 0)
                 {
-                    infoMsg += "<br/><ul>";
+
                     foreach (string link in metaObj.links)
                     {
                         string[] links = link.Split('|');
@@ -491,18 +518,32 @@ namespace GeoPunt.Dockpanes.Catalogus
                         {
                             string url = links[2];
                             string name = (string.IsNullOrEmpty(links[0])) ? links[1] : links[0];
-                            infoMsg += string.Format("<li><a target='_blank' href='{1}'>{0}</a></li>", name, url);
+
+                            //bulleted[i] = "\u2022" + unbulleted[i];
+                            System.Windows.Documents.Hyperlink hyperlink = new System.Windows.Documents.Hyperlink();
+                            string linkName = $@"   •   {name}";
+                            hyperlink.Inlines.Add(linkName);
+                            hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
+                            hyperlink.NavigateUri = new Uri(url);
+
+                            System.Windows.Controls.TextBlock hyperlinkTextBlock = new System.Windows.Controls.TextBlock();
+                            hyperlinkTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
+                            hyperlinkTextBlock.Margin = new System.Windows.Thickness(2,0,2,0);
+                            hyperlinkTextBlock.Inlines.Add(hyperlink);
+
+
+                            linkContainer.Children.Add(hyperlinkTextBlock);
                         }
                     }
-                    infoMsg += "</ul>";
                 }
-                WebBrowserControl.NavigateToString(infoMsg);
-
 
             }
         }
 
-
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        }
 
         private void loadArcgis()
         {

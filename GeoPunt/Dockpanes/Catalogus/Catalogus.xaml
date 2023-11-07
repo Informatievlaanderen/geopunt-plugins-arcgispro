@@ -30,9 +30,7 @@
                 <ColumnDefinition  Width="*"/>
                 <ColumnDefinition  Width="Auto"/>
             </Grid.ColumnDefinitions>
-
-
-            <controls:AutoCompleteBox Grid.Column="0"  FontSize="13" Margin="5"  ItemsSource="{Binding ListKeyword}" Text="{Binding SelectedKeyword}" />
+            <controls:AutoCompleteBox Grid.Column="0" FontSize="13" Margin="5"  ItemsSource="{Binding ListKeyword}" Text="{Binding SelectedKeyword, Mode=TwoWay}"  />
             <Button Grid.Column="1" Style="{DynamicResource Esri_Button}"  Content="Zoek" Margin="5" Command="{Binding CmdSearch}"   />
         </Grid>
 
@@ -96,7 +94,7 @@
                 <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
 
 
-                    <ContentControl Margin="2" Content="{Binding WebBrowserControl}" />
+                    <ContentControl Margin="2" Content="{Binding StackPanelControl}" />
                 </ScrollViewer>
 
 
