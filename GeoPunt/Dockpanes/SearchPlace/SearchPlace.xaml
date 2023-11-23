@@ -20,8 +20,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="190px"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -108,21 +110,18 @@
 
         </Grid>
 
-        <Grid Grid.Row="4" >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-
+        <Grid Grid.Row="4">
             <TextBlock Grid.Row="0" FontWeight="SemiBold" Text="Favorietenlijst" Style="{DynamicResource Esri_TextBlockDockPaneHeader}" Margin="5" />
+        </Grid>
 
+        <Grid Grid.Row="5" >
             <DataGrid Grid.Row="1" IsReadOnly="true"  ItemsSource="{Binding GraphicsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedGraphic}" 
                       Style="{DynamicResource Esri_DataGrid}"
                       ScrollViewer.CanContentScroll="True"      
                       AutoGenerateColumns="False"
                       HorizontalAlignment="Stretch"
                       HeadersVisibility="Column"
+                      VerticalAlignment="Stretch"
                       >
                 <DataGrid.Columns>
 
@@ -142,7 +141,14 @@
 
             </DataGrid>
 
-            <Grid Grid.Row="2" HorizontalAlignment="Center" >
+
+        </Grid>
+
+
+        <Grid Grid.Row="6" >
+
+
+            <Grid HorizontalAlignment="Center" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -156,10 +162,9 @@
                 <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Exporteer"  Width="90" Height="20" Command="{Binding CmdSaveIcon}" Margin="0,0,0,0"  />
                 <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Verwijderen" Visibility="{Binding ActiveRemoveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdRemove}" />-->
 
+
             </Grid>
         </Grid>
-
-
 
 
         <!--<DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
