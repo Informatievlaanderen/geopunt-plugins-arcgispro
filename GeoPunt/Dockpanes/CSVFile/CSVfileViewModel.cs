@@ -425,9 +425,10 @@ namespace GeoPunt.Dockpanes.CSVFile
                 }
                 catch (Exception csvEx)
                 {
-                    //Debug.WriteLine(csvEx.Message, "Error");
-                    System.Windows.MessageBox.Show(csvEx.Message, "Error");
-                    //csvErrorLbl.Text = csvEx.Message;
+
+                    string message = "Er is een fout opgetreden bij het verwerken van het CSV-bestand. Controleer of het CSV-bestand geldig is en probeer het opnieuw.";
+                    System.Windows.MessageBox.Show(message, "Error");
+
                     return;
                 }
 
@@ -463,7 +464,9 @@ namespace GeoPunt.Dockpanes.CSVFile
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message + " : " + ex.StackTrace);
+                string message = "Er is een fout opgetreden bij het verwerken van het CSV-bestand. Controleer of het CSV-bestand geldig is en probeer het opnieuw.";
+                System.Windows.MessageBox.Show(message, "Error");
+
             }
         }
 
