@@ -33,10 +33,11 @@ namespace GeoPunt.Dockpanes.SearchAddress
         protected SearchAddressDockpaneViewModel()
         {
             // IsSelectedFavouriteList = true;
-            TextMarkeer = "Markeer";
             adresSuggestion = new adresSuggestion(sugCallback, 5000);
             adresLocation = new adresLocation(5000);
         }
+
+        #region City search
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
              "",
             "Aalst",
@@ -407,26 +408,7 @@ namespace GeoPunt.Dockpanes.SearchAddress
                 SetProperty(ref _searchStringCityPart, value);
             }
         }
-        //private bool _isSelectedFavouriteList;
-        // public bool IsSelectedFavouriteList
-        // {
-        // get { return _isSelectedFavouriteList; }
-        // set
-        // {
-        // SetProperty(ref _isSelectedFavouriteList, value);
-        // IsInverseSelectedFavouriteList = !_isSelectedFavouriteList;
-        // }
-        // }
-
-        private string _textMarkeer;
-        public string TextMarkeer
-        {
-            get { return _textMarkeer; }
-            set
-            {
-                SetProperty(ref _textMarkeer, value);
-            }
-        }
+        
 
         private List<string> _listStreets = new List<string>();
         public List<string> ListStreets
@@ -438,6 +420,8 @@ namespace GeoPunt.Dockpanes.SearchAddress
             }
         }
 
+
+       
         private string _selectedStreet;
         public string SelectedStreet
         {
@@ -445,10 +429,13 @@ namespace GeoPunt.Dockpanes.SearchAddress
             set
             {
                 SetProperty(ref _selectedStreet, value);
-                MapPointSelectedAddressSimple = null;
+                SelectedStreetMapPoint = null;
+
+                
 
                 if (_selectedStreet != null)
                 {
+                    SelectedStreetIsSelected = true;
                     double x = 0;
                     double y = 0;
 
@@ -459,16 +446,70 @@ namespace GeoPunt.Dockpanes.SearchAddress
                         y = item.Location.Y_Lambert72;
 
                     }
-                    MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
+                    SelectedStreetMapPoint = utils.CreateMapPoint(x, y, lambertSpatialReference);
+
 
                     // isRemoveMarkeer = false;
                     // IsSelectedFavouriteList = true;
 
                     SearchFilter = _selectedStreet.Split($@", ")[0];
 
+
+                }
+                else
+                {
+                    SelectedStreetIsSelected = false;
                 }
             }
         }
+
+
+       
+
+        private bool _selectedStreetIsSelected = false;
+        public bool SelectedStreetIsSelected
+        {
+            get { return _selectedStreetIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedStreetIsSelected, value);
+            }
+        }
+
+        private MapPoint _selectedStreetMapPoint;
+        public MapPoint SelectedStreetMapPoint
+        {
+            get { return _selectedStreetMapPoint; }
+            set
+            {
+                SetProperty(ref _selectedStreetMapPoint, value);
+                if (_selectedStreetMapPoint != null)
+                {
+                    SelectedStreetMapPointExist = true;
+                }
+                else
+                {
+                    SelectedStreetMapPointExist = false;
+                }
+            }
+        }
+
+
+        private bool _selectedStreetMapPointExist = false;
+        public bool SelectedStreetMapPointExist
+        {
+            get { return _selectedStreetMapPointExist; }
+            set
+            {
+                SetProperty(ref _selectedStreetMapPointExist, value);
+            }
+        }
+
+        #endregion
+
+
+        #region Favorite list
+
         private ObservableCollection<Graphic> _graphicsList = new ObservableCollection<Graphic>();
         public ObservableCollection<Graphic> GraphicsList
         {
@@ -497,13 +538,26 @@ namespace GeoPunt.Dockpanes.SearchAddress
                     {
                         TextMarkeer = "Markeer";
                     }
+
+                    SelectedGraphicIsSelected = true;
                 }
                 else
                 {
                     TextMarkeer = "Markeer";
+                    SelectedGraphicIsSelected = false;
                 }
                 // isRemoveMarkeer = false;
                 // IsSelectedFavouriteList = false;
+            }
+        }
+
+        private bool _selectedGraphicIsSelected = false;
+        public bool SelectedGraphicIsSelected
+        {
+            get { return _selectedGraphicIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedGraphicIsSelected, value);
             }
         }
 
@@ -516,6 +570,30 @@ namespace GeoPunt.Dockpanes.SearchAddress
                 SetProperty(ref _markedGraphicsList, value);
             }
         }
+
+
+        //private bool _isSelectedFavouriteList;
+        // public bool IsSelectedFavouriteList
+        // {
+        // get { return _isSelectedFavouriteList; }
+        // set
+        // {
+        // SetProperty(ref _isSelectedFavouriteList, value);
+        // IsInverseSelectedFavouriteList = !_isSelectedFavouriteList;
+        // }
+        // }
+
+        private string _textMarkeer = "Markeer";
+        public string TextMarkeer
+        {
+            get { return _textMarkeer; }
+            set
+            {
+                SetProperty(ref _textMarkeer, value);
+            }
+        }
+
+        #endregion
         private void sugCallback(object sender, DownloadStringCompletedEventArgs e)
         {
             if (!e.Cancelled && e.Error == null)
@@ -531,7 +609,7 @@ namespace GeoPunt.Dockpanes.SearchAddress
                 }
             }
         }
-        MapPoint MapPointSelectedAddressSimple = null;
+        
 
        
 
@@ -605,7 +683,7 @@ namespace GeoPunt.Dockpanes.SearchAddress
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.ZoomTo(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(SelectedStreetMapPoint);
                 });
             }
         }
@@ -616,7 +694,7 @@ namespace GeoPunt.Dockpanes.SearchAddress
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.ZoomTo(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(SelectedGraphic.Geometry);
                 });
             }
         }
@@ -665,7 +743,7 @@ namespace GeoPunt.Dockpanes.SearchAddress
                         GraphicsList.Add(new Graphic(new Dictionary<string, object>
                                 {
                                     {"adres", SelectedStreet},
-                                }, MapPointSelectedAddressSimple));
+                                }, SelectedStreetMapPoint));
                     }
                 });
             }
