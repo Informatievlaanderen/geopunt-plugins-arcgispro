@@ -21,6 +21,8 @@ namespace GeoPunt.Dockpanes.SearchAddress
 {
     internal class SearchAddressDockpaneViewModel : DockPane, IMarkedGraphicDisplayer
     {
+
+        
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchAddress_SearchAddressDockpane";
 
         private adresSuggestion adresSuggestion;
@@ -762,6 +764,10 @@ namespace GeoPunt.Dockpanes.SearchAddress
 
         #endregion
 
+
+
+        
+
         internal static void Show()
         {
             DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
@@ -771,6 +777,7 @@ namespace GeoPunt.Dockpanes.SearchAddress
             FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
             pane.Activate();
         }
+
     }
 
     internal class SearchAddressDockpane_ShowButton : Button
@@ -780,4 +787,6 @@ namespace GeoPunt.Dockpanes.SearchAddress
             SearchAddressDockpaneViewModel.Show();
         }
     }
+
+
 }

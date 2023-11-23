@@ -17,6 +17,7 @@ using GeoPunt.DataHandler;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -35,6 +36,23 @@ namespace GeoPunt.Dockpanes.PointMap
 
         DataHandler.adresSuggestion adresSuggestion;
         DataHandler.adresLocation adresLocation;
+
+        public PointMapDockpaneViewModel()
+        {
+            Module1.PointMapDockpaneViewModel = this;
+            TextMarkeer = "Markeer";
+        }
+
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                GeocodeUtils.RemoveFromMapOverlayTemp();
+
+                if(FrameworkApplication.ActiveTool.ID == "GeoPunt_PointMap")
+                FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
+            }
+        }
 
         private string _address = "Klik op de kaart";
         public string Address
@@ -178,6 +196,8 @@ namespace GeoPunt.Dockpanes.PointMap
         }
 
         private ObservableCollection<Graphic> ListSaveMapPoint = new ObservableCollection<Graphic>();
+
+        #region Command
         public ICommand CmdSaveIcon
         {
             get
@@ -283,11 +303,8 @@ namespace GeoPunt.Dockpanes.PointMap
             }
         }
 
-        public PointMapDockpaneViewModel()
-        {
-            Module1.vmSearchPlace = this;
-            TextMarkeer = "Markeer";
-        }
+        #endregion
+
 
         /// <summary>
         /// Show the DockPane.
@@ -302,23 +319,17 @@ namespace GeoPunt.Dockpanes.PointMap
             pane.Activate();
         }
 
-        public void Showw()
+
+        
+
+        public void ShowDockPane()
         {
             Show();
         }
 
-        /// <summary>
-        /// Text shown near the top of the DockPane.
-        /// </summary>
-        private string _heading = "My DockPane";
-        public string Heading
-        {
-            get { return _heading; }
-            set
-            {
-                SetProperty(ref _heading, value, () => Heading);
-            }
-        }
+
+
+        
     }
 
     /// <summary>
