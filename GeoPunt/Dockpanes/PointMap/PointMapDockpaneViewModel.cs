@@ -12,6 +12,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Mapping;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using System;
@@ -27,7 +28,7 @@ using System.Windows.Input;
 
 namespace GeoPunt.Dockpanes.PointMap
 {
-    internal class PointMapDockpaneViewModel : DockPane
+    internal class PointMapDockpaneViewModel : DockPane, IMarkedGraphicDisplayer
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_PointMapDockpane";
         private Helpers.Utils utils = new Helpers.Utils();
@@ -41,7 +42,40 @@ namespace GeoPunt.Dockpanes.PointMap
         {
             Module1.PointMapDockpaneViewModel = this;
             TextMarkeer = "Markeer";
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
         }
+
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
 
         protected override void OnShow(bool isVisible)
         {
@@ -49,7 +83,8 @@ namespace GeoPunt.Dockpanes.PointMap
             {
                 GeocodeUtils.RemoveFromMapOverlayTemp();
 
-                if(FrameworkApplication.ActiveTool.ID == "GeoPunt_PointMap")
+                if(FrameworkApplication.ActiveTool != null && 
+                    FrameworkApplication.ActiveTool.ID == "GeoPunt_PointMap")
                 FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
             }
         }
@@ -122,42 +157,41 @@ namespace GeoPunt.Dockpanes.PointMap
         }
 
 
-        private ObservableCollection<MapPoint> _listStreetsFavouritePoint = new ObservableCollection<MapPoint>();
-        public ObservableCollection<MapPoint> ListStreetsFavouritePoint
+        
+
+        private Graphic _graphicSelectedAddress;
+        public Graphic GraphicSelectedAddress
         {
-            get { return _listStreetsFavouritePoint; }
+
+            get { return _graphicSelectedAddress; }
             set
             {
-                SetProperty(ref _listStreetsFavouritePoint, value);
+                SetProperty(ref _graphicSelectedAddress, value);
+                if (_graphicSelectedAddress != null)
+                {
+                    GraphicSelectedAddressIsSelected = true;
+                }
+                else
+                {
+                    
+                    GraphicSelectedAddressIsSelected = false;
+                }
             }
         }
 
-        private ObservableCollection<string> _listStreetsFavouriteStringPoint = new ObservableCollection<string>();
-        public ObservableCollection<string> ListStreetsFavouriteStringPoint
+        private bool _graphicSelectedAddressIsSelected = false;
+        public bool GraphicSelectedAddressIsSelected
         {
-            get { return _listStreetsFavouriteStringPoint; }
+            get { return _graphicSelectedAddressIsSelected; }
             set
             {
-                SetProperty(ref _listStreetsFavouriteStringPoint, value);
+                SetProperty(ref _graphicSelectedAddressIsSelected, value);
             }
         }
 
-        private string _selectedStreetFavouritePoint;
-        public string SelectedStreetFavouritePoint
-        {
-            get { return _selectedStreetFavouritePoint; }
-            set
-            {
-                SetProperty(ref _selectedStreetFavouritePoint, value);
-                updateCurrentMapPoint(_selectedStreetFavouritePoint, 1);
-                IsSelectedFavouriteList = true;
-            }
-        }
-
-        MapPoint MapPointSelectedAddress = null;
-        MapPoint MapPointSelectedAddressSimple = null;
         public void updateCurrentMapPoint(string query, int count, bool isSimple = false)
         {
+            GraphicSelectedAddress = null;
             adresLocation = new DataHandler.adresLocation(5000);
             double x = 0;
             double y = 0;
@@ -171,40 +205,127 @@ namespace GeoPunt.Dockpanes.PointMap
 
             if (isSimple)
             {
-                MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
+                GraphicSelectedAddress = new Graphic(new Dictionary<string, object>
+                                {
+                                    {"adres", query},
+                                }, utils.CreateMapPoint(x, y, lambertSpatialReference));
+
                 return;
             }
 
-            MapPointSelectedAddress = utils.CreateMapPoint(x, y, lambertSpatialReference);
 
-            if (ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) != null)
+           
+        }
+
+        //public void updateListBoxFavouritePoint()
+        //{
+        //    foreach (MapPoint mapPoint in ListStreetsFavouritePoint)
+        //    {
+        //        GeocodeUtils.UpdateMapOverlayMapPoint(mapPoint, MapView.Active, true);
+        //    }
+        //}
+
+
+
+
+        private ObservableCollection<Graphic> _markedGraphicsList = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> MarkedGraphicsList
+        {
+            get { return _markedGraphicsList; }
+            set
             {
+                SetProperty(ref _markedGraphicsList, value);
+            }
+        }
+
+        private ObservableCollection<Graphic> _graphicsList = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> GraphicsList
+        {
+            get { return _graphicsList; }
+            set
+            {
+                SetProperty(ref _graphicsList, value);
+            }
+        }
+
+
+        private Graphic _selectedGraphic;
+        public Graphic SelectedGraphic
+        {
+
+            get { return _selectedGraphic; }
+            set
+            {
+                SetProperty(ref _selectedGraphic, value);
+                if (_selectedGraphic != null)
+                {
+                    if (MarkedGraphicsList.Any(saveGraphic => saveGraphic.Attributes["adres"].ToString() == _selectedGraphic.Attributes["adres"].ToString()))
+                    {
+
+                        TextMarkeer = "Verwijder markering";
+                    }
+                    else
+                    {
+                        TextMarkeer = "Markeer";
+                    }
+
+                    SelectedGraphicIsSelected = true;
+                }
+                else
+                {
+                    TextMarkeer = "Markeer";
+                    SelectedGraphicIsSelected = false;
+                }
+                // isRemoveMarkeer = false;
+                // IsSelectedFavouriteList = false;
+            }
+        }
+
+        private bool _selectedGraphicIsSelected = false;
+        public bool SelectedGraphicIsSelected
+        {
+            get { return _selectedGraphicIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedGraphicIsSelected, value);
+            }
+        }
+
+
+        public void MarkGraphic(Graphic SelectedGraphic)
+        {
+            if (!MarkedGraphicsList.Any(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]))
+            {
+                MarkedGraphicsList.Add(SelectedGraphic);
+                updateListBoxMarkeer();
                 TextMarkeer = "Verwijder markering";
             }
             else
             {
+
+                Graphic pointToDelete = MarkedGraphicsList.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).First();
+                MarkedGraphicsList.Remove(pointToDelete);
+                updateListBoxMarkeer();
                 TextMarkeer = "Markeer";
             }
         }
 
-        public void updateListBoxFavouritePoint()
+        public void updateListBoxMarkeer()
         {
-            foreach (MapPoint mapPoint in ListStreetsFavouritePoint)
-            {
-                GeocodeUtils.UpdateMapOverlayMapPoint(mapPoint, MapView.Active, true);
-            }
+
+            utils.UpdateMarking((from markedGraphic in MarkedGraphicsList select markedGraphic.Geometry).ToList());
+
         }
 
-        private ObservableCollection<Graphic> ListSaveMapPoint = new ObservableCollection<Graphic>();
 
         #region Command
-        public ICommand CmdSaveIcon
+        public ICommand CmdExport
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                        utils.ExportToGeoJson(ListSaveMapPoint.ToList());
+                        utils.ExportToGeoJson(GraphicsList.ToList());
                 });
             }
         }
@@ -221,20 +342,29 @@ namespace GeoPunt.Dockpanes.PointMap
             }
         }
 
-        public ICommand CmdRemoveFavourite
+        public ICommand CmdRemove
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    MapPoint pointToDelete = ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                    Graphic savePointToDelete = ListSaveMapPoint.FirstOrDefault(m => (m.Geometry as MapPoint).X == MapPointSelectedAddress.X && (m.Geometry as MapPoint).Y == MapPointSelectedAddress.Y);
-                    ListStreetsFavouriteStringPoint.Remove(SelectedStreetFavouritePoint);
-                    ListSaveMapPoint.Remove(savePointToDelete);
-                    ListStreetsFavouritePoint.Remove(pointToDelete);
-                    GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
+                  
+                    Graphic graphic = GraphicsList.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).FirstOrDefault();
+                    Graphic graphicMarked = MarkedGraphicsList.Where(saveGraphicMarked => saveGraphicMarked.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).FirstOrDefault();
 
-                    updateListBoxFavouritePoint();
+                    if (graphic != null)
+                    {
+                        GraphicsList.Remove(graphic);
+                    }
+
+                    if (graphicMarked != null)
+                    {
+                        MarkedGraphicsList.Remove(graphicMarked);
+                           GeocodeUtils.UpdateMapOverlayMarkeer(graphicMarked.Geometry as MapPoint, MapView.Active, true, true);
+
+                    }
+
+                    updateListBoxMarkeer();
                 });
             }
         }
@@ -245,7 +375,7 @@ namespace GeoPunt.Dockpanes.PointMap
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.ZoomTo(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(GraphicSelectedAddress.Geometry);
                 });
             }
         }
@@ -256,30 +386,20 @@ namespace GeoPunt.Dockpanes.PointMap
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.ZoomTo(MapPointSelectedAddress);
+                    utils.ZoomTo(SelectedGraphic.Geometry);
                 });
             }
         }
 
-        public ICommand CmdPoint
+        public ICommand CmdMark
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    if (ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y) == null)
+                    if (SelectedGraphic != null)
                     {
-                        ListStreetsFavouritePoint.Add(MapPointSelectedAddress);
-                        updateListBoxFavouritePoint();
-                        TextMarkeer = "Verwijder markering";
-                    }
-                    else
-                    {
-                        TextMarkeer = "Markeer";
-                        MapPoint pointToDelete = ListStreetsFavouritePoint.FirstOrDefault(m => m.X == MapPointSelectedAddress.X && m.Y == MapPointSelectedAddress.Y);
-                        ListStreetsFavouritePoint.Remove(pointToDelete);
-                        GeocodeUtils.UpdateMapOverlayMapPoint(pointToDelete, MapView.Active, true, true);
-                        updateListBoxFavouritePoint();
+                        MarkGraphic(SelectedGraphic);
                     }
                 });
             }
@@ -291,17 +411,16 @@ namespace GeoPunt.Dockpanes.PointMap
             {
                 return new RelayCommand(async () =>
                 {
-                    if (!ListStreetsFavouriteStringPoint.Contains(Address))
+                    if (!GraphicsList.Any(saveGraphic => saveGraphic.Attributes["adres"].ToString() == GraphicSelectedAddress.Attributes["adres"].ToString()))
                     {
-                        ListStreetsFavouriteStringPoint.Add(Address);
-                        ListSaveMapPoint.Add(new Graphic(new Dictionary<string, object>
-                                {
-                                    {"adres", Address},
-                                }, MapPointSelectedAddressSimple));
+
+                        GraphicsList.Add(GraphicSelectedAddress);
                     }
                 });
             }
         }
+
+
 
         #endregion
 
@@ -327,9 +446,6 @@ namespace GeoPunt.Dockpanes.PointMap
             Show();
         }
 
-
-
-        
     }
 
     /// <summary>
