@@ -11,11 +11,9 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using GeoPunt.DataHandler;
 using Newtonsoft.Json;
-using System.IO;
 using GeoPunt.Helpers;
-using ArcGIS.Desktop.Layouts;
-using ArcGIS.Core.Data.UtilityNetwork.Trace;
-using System.Collections;
+using ArcGIS.Desktop.Editing;
+using ArcGIS.Desktop.Mapping.Events;
 
 namespace GeoPunt.Dockpanes.SearchAddress
 {
@@ -37,7 +35,59 @@ namespace GeoPunt.Dockpanes.SearchAddress
             // IsSelectedFavouriteList = true;
             adresSuggestion = new adresSuggestion(sugCallback, 5000);
             adresLocation = new adresLocation(5000);
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
         }
+
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+           
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
+
+
+
+        // when pane is closed reset (Need to work)
+        //protected override void OnShow(bool isVisible)
+        //{
+
+        //    if (!isVisible)
+        //    {
+
+        //        adresSuggestion = new adresSuggestion(sugCallback, 5000);
+        //        adresLocation = new adresLocation(5000);
+        //        SelectedCity = ListCities.FirstOrDefault();
+        //        SearchStringCityPart = null;
+        //        GraphicsList = new ObservableCollection<Graphic>();
+        //        MarkedGraphicsList = new ObservableCollection<Graphic>();
+        //        updateListBoxMarkeer();
+        //    }
+        //}
 
         #region City search
         private ObservableCollection<string> _listCities = new ObservableCollection<string>(new List<string>() {
@@ -707,12 +757,23 @@ namespace GeoPunt.Dockpanes.SearchAddress
             {
                 return new RelayCommand(async () =>
                 {
-                    Graphic graphic = GraphicsList.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).First();
-                    Graphic graphicMarked = MarkedGraphicsList.Where(saveGraphicMarked => saveGraphicMarked.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).First();
 
-                    GraphicsList.Remove(graphic);
-                    MarkedGraphicsList.Remove(graphicMarked);
-                    GeocodeUtils.UpdateMapOverlayMarkeer(graphicMarked.Geometry as MapPoint, MapView.Active, true, true);
+
+                    Graphic graphic = GraphicsList.Where(saveGraphic => saveGraphic.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).FirstOrDefault();
+                    Graphic graphicMarked = MarkedGraphicsList.Where(saveGraphicMarked => saveGraphicMarked.Attributes["adres"] == SelectedGraphic.Attributes["adres"]).FirstOrDefault();
+
+
+                    if (graphic != null)
+                    {
+                        GraphicsList.Remove(graphic);
+                    }
+
+                    if (graphicMarked != null)
+                    {
+                        MarkedGraphicsList.Remove(graphicMarked);
+                        GeocodeUtils.UpdateMapOverlayMarkeer(graphicMarked.Geometry as MapPoint, MapView.Active, true, true);
+
+                    }
 
                     updateListBoxMarkeer();
                 });

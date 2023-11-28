@@ -22,7 +22,7 @@
     </UserControl.Resources>
 
 
-    <Grid>
+    <Grid IsEnabled="{Binding MapViewIsActive}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
