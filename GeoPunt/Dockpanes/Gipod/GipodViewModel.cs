@@ -321,10 +321,11 @@ namespace GeoPunt.Dockpanes.Gipod
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.Message + " : " + ex.StackTrace);
+                            // MessageBox.Show(ex.Message + " : " + ex.StackTrace);
+                            MessageBox.Show("Er is een fout opgetreden bij het zoeken naar Gipod-gegevens.Probeer het opnieuw of controleer de ingestelde parameters.");
+                            
                         }
                     });
-
                 });
             }
         }
