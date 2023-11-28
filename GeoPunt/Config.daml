@@ -62,31 +62,31 @@
         </group>
       </groups>
       <controls>
-        <button id="GeoPunt_Buttons_StartButton" caption="Start" className="GeoPunt.Buttons.StartButton" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+        <button id="GeoPunt_Buttons_StartButton" caption="Start" className="GeoPunt.Buttons.StartButton" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png" condition="esri_mapping_mapPane">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_SearchAddress_ShowButton" caption="Adres" className="GeoPunt.Dockpanes.SearchAddress.SearchAddressDockpane_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Adres.png">
+        <button id="GeoPunt_Dockpanes_SearchAddress_ShowButton" caption="Adres" className="GeoPunt.Dockpanes.SearchAddress.SearchAddressDockpane_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Adres.png" condition="esri_mapping_mapPane">
           <tooltip heading="Zoek een adres">Zoek een adres op en markeer dit adres op de kaart</tooltip>
         </button>
         <tool id="GeoPunt_PointMap" className="GeoPunt.Dockpanes.PointMap.PointMap" caption="Plaats" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
           <tooltip heading="Prik een locatie op kaart">Klik op de kaart en verkrijg het dichtstbijzijnde adres en de afstand tussen beide punten</tooltip>
         </tool>
-        <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVFile.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
+        <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVFile.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png" condition="esri_mapping_mapPane">
           <tooltip heading="Bestand geocoderen">Laad een CSV-bestand met adressen op om vervolgens de adressen te geocoderen</tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace.SearchPlace_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png">
+        <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace.SearchPlace_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png" condition="esri_mapping_mapPane">
           <tooltip heading="Zoek een interessante plaats">Vul parameters in en zoek naar interessante plaatsen (POI: Points of Interest)</tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel.SearchPerceel_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png">
+        <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel.SearchPerceel_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png" condition="esri_mapping_mapPane">
           <tooltip heading="Zoek een perceel">Zoek via de parameters gemeente, afdeling, sectie en perceel een kadastraal perceel op</tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_GipodButton" caption="GIPOD" className="GeoPunt.Dockpanes.Gipod.Gipod_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png">
+        <button id="GeoPunt_Dockpanes_GipodButton" caption="GIPOD" className="GeoPunt.Dockpanes.Gipod.Gipod_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png" condition="esri_mapping_mapPane">
           <tooltip heading="Bevraag GIPOD">Haal GIPOD-data op met betrekking tot geplande werkzaamheden of manifestaties</tooltip>
         </button>
-        <button id="GeoPunt_ElevationProfileButton" caption="Hoogte" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png">
+        <button id="GeoPunt_ElevationProfileButton" caption="Hoogte" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png" condition="esri_mapping_mapPane">
           <tooltip heading="Hoogteprofiel">Haal hoogte-informatie van het ‘Digitaal Hoogtemodel Vlaanderen (DHMV) II, DTM, raster, 1 m’ uitgezet in een profiellijn op</tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_CatalogueButton" className="GeoPunt.Dockpanes.Catalogus.Catalogus_ShowButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png">
+        <button id="GeoPunt_Dockpanes_CatalogueButton" className="GeoPunt.Dockpanes.Catalogus.Catalogus_ShowButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png" condition="esri_mapping_mapPane">
           <tooltip heading="Catalogus">Zoek in de Geopunt-catalogus datasets en services op en voeg ze toe</tooltip>
         </button>
         <button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Instellingen" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png" condition="DisableButton">
