@@ -1,5 +1,12 @@
 ﻿using ArcGIS.Core.CIM;
+using ArcGIS.Core.Data;
+using ArcGIS.Core.Data.Raster;
+using ArcGIS.Core.Data.UtilityNetwork.Trace;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Core.Geometry.Exceptions;
+using ArcGIS.Core.Internal.Geometry;
+using ArcGIS.Desktop.Core.Utilities;
+using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
@@ -10,18 +17,29 @@ using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using GeoPunt.Helpers;
 using geopunt4Arcgis;
+using Newtonsoft.Json.Linq;
 using ScottPlot;
+using ScottPlot.Drawing.Colormaps;
 using ScottPlot.Plottable;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Security.Policy;
+using System.Threading.Tasks;
 // using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media.Media3D;
+using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Net.WebRequestMethods;
+using static System.Windows.Forms.DataFormats;
 
 namespace GeoPunt.Dockpanes.ElevationProfile
 {
@@ -53,7 +71,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             PlotControl = new WpfPlot();
             PlotControl.Plot.XLabel("Afstand (m)");
             PlotControl.Plot.YLabel("Hoogte (m)");
-            PlotControl.Plot.Title("Hoogte profiel");
+            PlotControl.Plot.Title("Hoogteprofiel");
             PlotControl.MouseMove += PlotControl_MouseMove;
             PlotControl.Refresh();
 
@@ -109,7 +127,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                     });
 
 
-                    GetElevationData(_profileLine);
+                    GetElevationDataAsync(_profileLine);
 
                 }
             }
@@ -122,6 +140,17 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             set
             {
                 SetProperty(ref _hoogteWMS, value);
+            }
+        }
+
+
+        private RasterLayer _selectedWCSRaster;
+        public RasterLayer SelectedWCSRaster
+        {
+            get { return _selectedWCSRaster; }
+            set
+            {
+                SetProperty(ref _selectedWCSRaster, value);
             }
         }
 
@@ -140,56 +169,169 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             }
         }
 
-        private void GetElevationData(Polyline profileLine)
+
+
+
+        private async Task GetElevationDataAsync(Polyline profileLine)
         {
 
+            //get geometry and length
+            var origPolyLine = profileLine;
+            var origLength = GeometryEngine.Instance.Length(origPolyLine);
 
-            List<List<double>> data;
-            CRS usedCrs;
+            //List of mappoint geometries for the split
+            var splitPoints = new List<MapPoint>();
 
-            if (!mapCrs.ContainsKey(profileLine.SpatialReference.Wkid))
-            {
-
-                Polyline polylineLambert = GeometryEngine.Instance.Project(profileLine, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Polyline;
-                usedCrs = CRS.Lambert72;
-                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
-
-            }
-            else
-            {
-                usedCrs = mapCrs[profileLine.SpatialReference.Wkid];
-                data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
-            }
-
+            double test = NumberProfilePoints - 1;
+            double enteredValue = origLength / test;
+            double splitAtDistance = 0; // to include first point
+            double baseNumber = GeometryEngine.Instance.GeodesicLength(profileLine, LinearUnit.Meters) / test;
+            double length = baseNumber;
 
             List<Graphic> graphics = new List<Graphic>();
-            if (data != null && data.Count > 0)
+
+            await QueuedTask.Run(() =>
             {
 
-                SpatialReference usedSpatialReference = SpatialReferenceBuilder.CreateSpatialReference((int)usedCrs);
-                foreach (List<double> points in data)
+              
+                Raster raster = SelectedWCSRaster.GetRaster();
+                raster.SetSpatialReference(MapView.Active.Map.SpatialReference);
+
+
+                while (splitAtDistance <= origLength)
                 {
+                    //create a mapPoint at splitDistance and add to splitpoint list
+                    MapPoint pt = null;
+                    
+                    pt = GeometryEngine.Instance.MovePointAlongLine(origPolyLine, splitAtDistance, false, 0, SegmentExtensionType.ExtendTangents);
+                    
+                    if (pt != null)
+                    {
+                        splitPoints.Add(pt);
 
 
-                    double meters = points[0];
-                    double x = points[1];
-                    double y = points[2];
-                    double h = points[3];
 
-                    graphics.Add(new Graphic(new Dictionary<string, object>
-                                {
-                                    {"Meters", meters},
-                                    {"Height", h},
-                                }, utils.CreateMapPoint(x, y, usedSpatialReference)));
+                        var pixels = raster.MapToPixel(pt.X, pt.Y);
+
+                        var objPixelValue = raster.GetPixelValue(0, pixels.Item1, pixels.Item2);
+
+                        if (objPixelValue != null)
+                        {
+                            bool isDouble = double.TryParse(objPixelValue.ToString(), out double pixelValue);
+
+                            if (isDouble)
+                            {
+                                graphics.Add(new Graphic(new Dictionary<string, object>
+                            {
+                                    {"Meters", splitAtDistance},
+                                    {"Height", pixelValue},
+                                }, pt));
+                            }
+                            else
+                            {
+                                graphics.Add(new Graphic(new Dictionary<string, object>
+                            {
+                                    {"Meters", splitAtDistance},
+                                    {"Height", 0},
+                                }, pt));
+                            }
+                        }
+                        else
+                        {
+                            graphics.Add(new Graphic(new Dictionary<string, object>
+                            {
+                                    {"Meters", splitAtDistance},
+                                    {"Height", 0},
+                                }, pt));
+                        }
 
 
+                        
+
+                    }
+                    splitAtDistance += enteredValue;
                 }
-            }
 
+                Debug.Write(splitPoints);
+            });
 
             ElevationData = graphics;
 
+
+
+            //List<List<double>> data;
+            //CRS usedCrs;
+
+            //if (!mapCrs.ContainsKey(profileLine.SpatialReference.Wkid))
+            //{
+
+            //    Polyline polylineLambert = GeometryEngine.Instance.Project(profileLine, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Polyline;
+            //    usedCrs = CRS.Lambert72;
+            //    data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
+
+            //}
+            //else
+            //{
+            //    usedCrs = mapCrs[profileLine.SpatialReference.Wkid];
+            //    data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
+            //}
+
+
+            //List<Graphic> graphics = new List<Graphic>();
+            //if (data != null && data.Count > 0)
+            //{
+
+            //    SpatialReference usedSpatialReference = SpatialReferenceBuilder.CreateSpatialReference((int)usedCrs);
+            //    foreach (List<double> points in data)
+            //    {
+
+
+            //        double meters = points[0];
+            //        double x = points[1];
+            //        double y = points[2];
+            //        double h = points[3];
+
+            //        graphics.Add(new Graphic(new Dictionary<string, object>
+            //                    {
+            //                        {"Meters", meters},
+            //                        {"Height", h},
+            //                    }, utils.CreateMapPoint(x, y, usedSpatialReference)));
+
+
+            //    }
+            //}
+
+
+            //ElevationData = graphics;
+
         }
+
+
+        private void UpdatePlot(Polyline profileLine)
+        {
+            ReadOnlyPointCollection lineVertices = profileLine.Points;
+            double baseNumber = GeometryEngine.Instance.GeodesicLength(profileLine, LinearUnit.Meters) / lineVertices.Count;
+
+            // to make work
+            //dhm.getDataAlongLine((List<List<double>>)profileLine.Copy2DCoordinatesToList()));
+
+            double[] dataX = new double[lineVertices.Count];
+            // Populate the array with multiples
+            for (int i = 0; i < lineVertices.Count; i++)
+            {
+                dataX[i] = (i) * baseNumber;
+            }
+
+            double[] dataY = (from lineVertex in lineVertices select lineVertex.Z).ToArray();
+
+
+
+            PlotControl.Plot.Clear();
+            // PlotControl.Plot.SetAxisLimits(yMin: 0);
+            PlotControl.Plot.AddScatter(dataX, dataY);
+            PlotControl.Refresh();
+        }
+
 
         private void UpdatePlot()
         {
@@ -222,7 +364,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             }
         }
 
-        
+
 
 
         private MarkerShape _selectedMarkerShape = MarkerShape.filledCircle;
@@ -232,7 +374,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             set
             {
                 SetProperty(ref _selectedMarkerShape, value);
-                if(SelectedMarkerShape != null && ScatterPlot != null )
+                if (SelectedMarkerShape != null && ScatterPlot != null)
                 {
                     ScatterPlot.MarkerShape = SelectedMarkerShape;
                     PlotControl.Refresh();
@@ -294,8 +436,75 @@ namespace GeoPunt.Dockpanes.ElevationProfile
 
                 if (_numberProfilePoints != null && _numberProfilePoints > 0 && _profileLine != null)
                 {
-                    GetElevationData(_profileLine);
+                    GetElevationDataAsync(_profileLine);
                 }
+            }
+        }
+
+
+
+
+
+
+
+        #region Command
+
+
+        public ICommand CmdAddWCSRaster
+        {
+            get
+            {
+                return new RelayCommand(() =>
+                {
+
+
+                    if (MapView.Active == null)
+                    {
+                        MessageBox.Show("No map view active.");
+                        return;
+                    }
+
+
+                    string dtm_url = "https://geo.api.vlaanderen.be/el-dtm/wcs";
+                    CIMInternetServerConnection serverConnection = new CIMInternetServerConnection
+                    {
+                        URL = dtm_url
+                    };
+
+                    CIMWCSServiceConnection serviceConnection = new CIMWCSServiceConnection
+                    {
+                        CoverageName = "EL.GridCoverage.DTM",
+                        Version = "2.0.1",
+                        ServerConnection = serverConnection,
+                    };
+
+                    RasterLayerCreationParams rasterLyrCreationParams = new RasterLayerCreationParams(serviceConnection);
+                    rasterLyrCreationParams.Name = "Test";
+
+                    QueuedTask.Run(() =>
+                    {
+
+
+                        if (SelectedWCSRaster != null)
+                        {
+                            MapView.Active.Map.RemoveLayer(SelectedWCSRaster);
+                            SelectedWCSRaster = null;
+
+
+                        }
+
+                        try
+                        {
+                            SelectedWCSRaster = LayerFactory.Instance.CreateLayer<RasterLayer>(rasterLyrCreationParams, MapView.Active.Map);
+                            SelectedWCSRaster.SetTransparency(40);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, $@"Error trying to add raster layer");
+                        }
+                    });
+                });
             }
         }
 
@@ -313,49 +522,16 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                         return;
                     }
 
-                    // Create a connection to the WMS server
-                    // todo change with this: https://geo.api.vlaanderen.be/el-dtm/wcs?SERVICE=WCS&REQUEST=GetCoverage&VERSION=2.0.1&COVERAGEID=EL.GridCoverage.DTM&SUBSET=x%282.4612179129281961,2.4612453886097638%29&SUBSET=y%2851.559456774845174,51.559484250526744%29
-
-
-                    // I was unable to use it so i use this one: https://geo.api.vlaanderen.be/el/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&layers=EL.GridCoverage.DTM&STYLES=default&CRS=EPSG:31370&WIDTH=975&HEIGHT=563&BBOX=15700,126936,265300,271064
-                    // Found here: https://www.geopunt.be/?service=https%3A%2F%2Fgeo.api.vlaanderen.be%2Fel%2Fwms%3Flayers%3DEL.GridCoverage.DTM
-
-                    // var serverConnection = new CIMInternetServerConnection { URL = "https://geo.api.vlaanderen.be/DHMV/wms" };
-                    // var serverConnection = new CIMInternetServerConnection { URL = "https://geo.api.vlaanderen.be/el-dtm/wcs" };
-
-
-
-                    //? SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&layers=EL.GridCoverage.DTM&STYLES=default&CRS=EPSG:31370&WIDTH=1131&HEIGHT=563&BBOX=-4251.083386067883,134599.08338606794,285284.9166139321,278727.08338606794
-                    //var test = new CIMWCSServiceConnection
-                    //{
-                    //    ServerConnection = serverConnection,
-                    //    Version = "2.0.1",
-                    //    CapabilitiesParameters = new Dictionary<string, object>
-                    //    {
-                    //         {"REQUEST","GetCoverage"},
-                    //        {"VERSION","2.0.1"},
-                    //        {"COVERAGEID","EL.GridCoverage.DTM"},
-
-                    //        {"REQUEST","GetCoverage"},
-                    //        {"VERSION","2.0.1"},
-                    //        {"COVERAGEID","EL.GridCoverage.DTM"},
-                    //        {"SUBSET","x(2.4612179129281961,2.4612453886097638)y(51.559456774845174,51.559484250526744)"},
-
-                    //    }
-                    //};
-
 
                     var serverConnection = new CIMInternetServerConnection { URL = "https://geo.api.vlaanderen.be/el/wms" };
                     var connection = new CIMWMSServiceConnection { ServerConnection = serverConnection, LayerName = "EL.GridCoverage.DTM" };
 
-
-
                     // Add a new layer to the map
                     var layerParams = new LayerCreationParams(connection);
 
-
                     await QueuedTask.Run(() =>
                     {
+
 
                         if (HoogteWMS != null)
                         {
@@ -369,27 +545,6 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                         {
                             HoogteWMS = LayerFactory.Instance.CreateLayer<WMSLayer>(layerParams, MapView.Active.Map);
                             HoogteWMS.SetTransparency(40);
-
-                            //Debug.WriteLine(HoogteWMS);
-                            //Debug.WriteLine(HoogteWMS.DisplayCacheType);
-                            //Debug.WriteLine(HoogteWMS.MapLayerType);
-                            //Debug.WriteLine(HoogteWMS.SceneLayerType);
-                            //Debug.WriteLine(HoogteWMS.GetType());
-                            //Debug.WriteLine(HoogteWMS.Layers);
-                            //foreach (var layer in HoogteWMS.Layers)
-                            //{
-                            //    Debug.WriteLine($@"Layer: {layer.Name}, Layer type: {layer.GetType()}");
-
-                            //}
-
-                            //if (HoogteWMS.Layers.Count > 0)
-                            //{
-                            //    var firstLayer = HoogteWMS.Layers[0];
-                            //    Debug.WriteLine(firstLayer.GetType());
-
-                            //    WMSSubLayer wMSSubLayer = firstLayer as WMSSubLayer;
-                            //    Debug.WriteLine(wMSSubLayer);
-                            //}
 
                         }
                         catch (Exception ex)
@@ -463,6 +618,8 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             }
         }
 
+        #endregion
+
         #region Events
 
         private void PlotControl_MouseMove(object sender, MouseEventArgs e)
@@ -492,7 +649,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
 
         private void HighLightDisposable(int index)
         {
-            
+
             QueuedTask.Run(() =>
             {
                 ClearDisposables();
@@ -503,7 +660,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 ArcGIS.Core.Geometry.Polygon buffer = GeometryEngine.Instance.Buffer(graphicToHighligh.Geometry, 10) as ArcGIS.Core.Geometry.Polygon;
 
                 CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 2.0, SimpleLineStyle.Solid);
-                CIMPolygonSymbol polygonSym = SymbolFactory.Instance.ConstructPolygonSymbol(CIMColor.NoColor() , SimpleFillStyle.ForwardDiagonal, outline);
+                CIMPolygonSymbol polygonSym = SymbolFactory.Instance.ConstructPolygonSymbol(CIMColor.NoColor(), SimpleFillStyle.ForwardDiagonal, outline);
 
                 highLightDisposables.Add(MapView.Active.AddOverlay(buffer, polygonSym.MakeSymbolReference()));
 
