@@ -6,6 +6,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Core.CommonControls;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.DataHandler;
 using geopunt4Arcgis;
 using ScottPlot;
@@ -32,9 +33,44 @@ namespace GeoPunt.Dockpanes.Catalogus
         {
 
             initGui();
+
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
         }
 
-        public void initGui()
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
+
+
+    public void initGui()
         {
             clg = new catalog(timeout: 8000);
 
@@ -82,7 +118,6 @@ namespace GeoPunt.Dockpanes.Catalogus
             SelectedFilter = ListFilter.First();
 
 
-            WebBrowserControl = new System.Windows.Controls.WebBrowser();
             StackPanelControl = new System.Windows.Controls.StackPanel();
         }
 
@@ -245,15 +280,6 @@ namespace GeoPunt.Dockpanes.Catalogus
         }
 
 
-        private System.Windows.Controls.WebBrowser _webBrowserControl;
-        public System.Windows.Controls.WebBrowser WebBrowserControl
-        {
-            get { return _webBrowserControl; }
-            set
-            {
-                SetProperty(ref _webBrowserControl, value);
-            }
-        }
 
         private System.Windows.Controls.StackPanel _stackPanelControl;
         public System.Windows.Controls.StackPanel StackPanelControl
@@ -276,6 +302,20 @@ namespace GeoPunt.Dockpanes.Catalogus
                 SetProperty(ref _buttonNavigateResultIsEnabled, value);
             }
         }
+
+
+        private bool _searchIsNotBusy = true;
+        public bool SearchIsNotBusy
+        {
+            get { return _searchIsNotBusy; }
+            set
+            {
+                SetProperty(ref _searchIsNotBusy, value);
+            }
+        }
+
+
+        
 
         private string _linkFiche = "";
 
@@ -383,12 +423,13 @@ namespace GeoPunt.Dockpanes.Catalogus
         {
             ListResultSearch = new ObservableCollection<string>();
             TextStatus = "";
-            WebBrowserControl.Navigate("about:blank");
+            
             StackPanelControl.Children.Clear();
-
+            SearchIsNotBusy = false;
             try
             {
 
+                
                 string selectedType = SelectedType.Key == "None" || SelectedType.Key == null ? "" : SelectedType.Key;
 
                 metaList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
@@ -422,6 +463,10 @@ namespace GeoPunt.Dockpanes.Catalogus
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
+            }
+            finally
+            {
+                SearchIsNotBusy = true;
             }
         }
 

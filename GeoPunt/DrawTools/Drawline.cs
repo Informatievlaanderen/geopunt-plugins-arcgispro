@@ -43,8 +43,10 @@ namespace GeoPunt.DrawTools
         {
             if (ActivateVM())
             {
+                FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
                 Polyline polyline = geometry as Polyline;
                 Module1.ElevationProfileViewModel.ProfileLine = polyline;
+                
             }
             return base.OnSketchCompleteAsync(geometry);
         }

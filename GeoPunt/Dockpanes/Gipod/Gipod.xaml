@@ -17,7 +17,7 @@
     </UserControl.Resources>
 
 
-    <Grid>
+    <Grid IsEnabled="{Binding MapViewIsActive}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -125,7 +125,7 @@
 
 
 
-            <DataGrid Grid.Row="1" x:Name="DataGridPlace" ItemsSource="{Binding ListGIPODData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedGIPODData}" 
+            <DataGrid Grid.Row="1" x:Name="DataGridPlace" ItemsSource="{Binding GraphicsList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedGraphic}" 
                       Style="{DynamicResource Esri_DataGrid}"
                        
                       ScrollViewer.CanContentScroll="True"      
@@ -171,10 +171,10 @@
 
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoom}" IsEnabled="{Binding GIPODDataIsSelected}" Content="Zoom"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdMarkeer}" IsEnabled="{Binding GIPODDataIsSelected}" Content="Markeer"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdMarkeerAll}" IsEnabled="{Binding ListGIPODHaveData}" Content="Markeer alles"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Width="80" Height="20" Command="{Binding CmdExport}" IsEnabled="{Binding ListGIPODHaveData}" Content="Exporteer"  />
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoom}" IsEnabled="{Binding SelectedGraphicIsSelected}" Content="Zoom"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdMark}" IsEnabled="{Binding SelectedGraphicIsSelected}" Content="{Binding TextMarkeer}"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdMarkeerAll}" IsEnabled="{Binding GraphicsList.Count}" Content="{Binding TextMarkeerAlles}"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Width="80" Height="20" Command="{Binding CmdExport}" IsEnabled="{Binding GraphicsList.Count}" Content="Exporteer"  />
             </Grid>
 
         </Grid>

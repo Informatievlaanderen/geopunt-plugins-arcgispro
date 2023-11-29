@@ -13,6 +13,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Catalog;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using GeoPunt.Helpers;
@@ -75,6 +76,38 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             PlotControl.MouseMove += PlotControl_MouseMove;
             PlotControl.Refresh();
 
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
+        }
+
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
         }
 
 
@@ -164,6 +197,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 SetProperty(ref _elevationData, value);
                 if (_elevationData != null)
                 {
+                    
                     UpdatePlot();
                 }
             }
@@ -174,135 +208,110 @@ namespace GeoPunt.Dockpanes.ElevationProfile
 
         private async Task GetElevationDataAsync(Polyline profileLine)
         {
-
-            //get geometry and length
-            var origPolyLine = profileLine;
-            var origLength = GeometryEngine.Instance.Length(origPolyLine);
-
-            //List of mappoint geometries for the split
-            var splitPoints = new List<MapPoint>();
-
-            double test = NumberProfilePoints - 1;
-            double enteredValue = origLength / test;
-            double splitAtDistance = 0; // to include first point
-            double baseNumber = GeometryEngine.Instance.GeodesicLength(profileLine, LinearUnit.Meters) / test;
-            double length = baseNumber;
-
-            List<Graphic> graphics = new List<Graphic>();
-
-            await QueuedTask.Run(() =>
+            try
             {
 
-              
-                Raster raster = SelectedWCSRaster.GetRaster();
-                raster.SetSpatialReference(MapView.Active.Map.SpatialReference);
 
-
-                while (splitAtDistance <= origLength)
+                if (SelectedWCSRaster == null || !MapView.Active.Map.Layers.Contains(SelectedWCSRaster))
                 {
-                    //create a mapPoint at splitDistance and add to splitpoint list
-                    MapPoint pt = null;
-                    
-                    pt = GeometryEngine.Instance.MovePointAlongLine(origPolyLine, splitAtDistance, false, 0, SegmentExtensionType.ExtendTangents);
-                    
-                    if (pt != null)
+                    await AddWCSRasterAsync();
+                }
+
+                if (SelectedWCSRaster == null || !MapView.Active.Map.Layers.Contains(SelectedWCSRaster) )
+                {
+                    MessageBox.Show("WCS raster niet gevonden.", "Error raster");
+                    return;
+                }
+
+                //get geometry and length
+                var origPolyLine = profileLine;
+                var origLength = GeometryEngine.Instance.Length(origPolyLine);
+
+                //List of mappoint geometries for the split
+                var splitPoints = new List<MapPoint>();
+
+                double profilePointsMinusOne = NumberProfilePoints - 1;
+                double enteredValue = origLength / profilePointsMinusOne;
+                double splitAtDistance = 0; // to include first point
+                double baseNumber = GeometryEngine.Instance.GeodesicLength(profileLine, LinearUnit.Meters) / profilePointsMinusOne;
+                double length = baseNumber;
+
+                List<Graphic> graphics = new List<Graphic>();
+
+                await QueuedTask.Run(() =>
+                {
+
+
+                    Raster raster = SelectedWCSRaster.GetRaster();
+                    raster.SetSpatialReference(MapView.Active.Map.SpatialReference);
+
+
+                    while (splitAtDistance <= origLength)
                     {
-                        splitPoints.Add(pt);
+                        //create a mapPoint at splitDistance and add to splitpoint list
+                        MapPoint pt = null;
 
+                        pt = GeometryEngine.Instance.MovePointAlongLine(origPolyLine, splitAtDistance, false, 0, SegmentExtensionType.ExtendTangents);
 
-
-                        var pixels = raster.MapToPixel(pt.X, pt.Y);
-
-                        var objPixelValue = raster.GetPixelValue(0, pixels.Item1, pixels.Item2);
-
-                        if (objPixelValue != null)
+                        if (pt != null)
                         {
-                            bool isDouble = double.TryParse(objPixelValue.ToString(), out double pixelValue);
+                            splitPoints.Add(pt);
 
-                            if (isDouble)
+
+
+                            var pixels = raster.MapToPixel(pt.X, pt.Y);
+
+                            var objPixelValue = raster.GetPixelValue(0, pixels.Item1, pixels.Item2);
+
+                            if (objPixelValue != null)
                             {
-                                graphics.Add(new Graphic(new Dictionary<string, object>
-                            {
+                                bool isDouble = double.TryParse(objPixelValue.ToString(), out double pixelValue);
+
+                                if (isDouble)
+                                {
+                                    graphics.Add(new Graphic(new Dictionary<string, object>
+                                {
                                     {"Meters", splitAtDistance},
                                     {"Height", pixelValue},
-                                }, pt));
+                                    }, pt));
+                                }
+                                else
+                                {
+                                    graphics.Add(new Graphic(new Dictionary<string, object>
+                                {
+                                    {"Meters", splitAtDistance},
+                                    {"Height", 0},
+                                    }, pt));
+                                }
                             }
                             else
                             {
                                 graphics.Add(new Graphic(new Dictionary<string, object>
-                            {
+                                {
                                     {"Meters", splitAtDistance},
                                     {"Height", 0},
-                                }, pt));
+                                    }, pt));
                             }
+
+
+
+
                         }
-                        else
-                        {
-                            graphics.Add(new Graphic(new Dictionary<string, object>
-                            {
-                                    {"Meters", splitAtDistance},
-                                    {"Height", 0},
-                                }, pt));
-                        }
-
-
-                        
-
+                        splitAtDistance += enteredValue;
                     }
-                    splitAtDistance += enteredValue;
-                }
 
-                Debug.Write(splitPoints);
-            });
+                    Debug.Write(splitPoints);
+                });
 
-            ElevationData = graphics;
+                ElevationData = graphics;
 
 
+            }
+            catch (Exception ex)
+            {
 
-            //List<List<double>> data;
-            //CRS usedCrs;
-
-            //if (!mapCrs.ContainsKey(profileLine.SpatialReference.Wkid))
-            //{
-
-            //    Polyline polylineLambert = GeometryEngine.Instance.Project(profileLine, SpatialReferenceBuilder.CreateSpatialReference((int)CRS.Lambert72)) as Polyline;
-            //    usedCrs = CRS.Lambert72;
-            //    data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
-
-            //}
-            //else
-            //{
-            //    usedCrs = mapCrs[profileLine.SpatialReference.Wkid];
-            //    data = dhm.getDataAlongLine(geopuntHelper.esri2geojsonLine(profileLine), NumberProfilePoints, usedCrs);
-            //}
-
-
-            //List<Graphic> graphics = new List<Graphic>();
-            //if (data != null && data.Count > 0)
-            //{
-
-            //    SpatialReference usedSpatialReference = SpatialReferenceBuilder.CreateSpatialReference((int)usedCrs);
-            //    foreach (List<double> points in data)
-            //    {
-
-
-            //        double meters = points[0];
-            //        double x = points[1];
-            //        double y = points[2];
-            //        double h = points[3];
-
-            //        graphics.Add(new Graphic(new Dictionary<string, object>
-            //                    {
-            //                        {"Meters", meters},
-            //                        {"Height", h},
-            //                    }, utils.CreateMapPoint(x, y, usedSpatialReference)));
-
-
-            //    }
-            //}
-
-
-            //ElevationData = graphics;
+                MessageBox.Show("Er is een fout opgetreden tijdens de berekening van het hoogteprofiel:" + ex.Message, "Error elevation calculation");
+            }
 
         }
 
@@ -442,6 +451,56 @@ namespace GeoPunt.Dockpanes.ElevationProfile
         }
 
 
+        private async Task AddWCSRasterAsync()
+        {
+            if (MapView.Active == null)
+            {
+                MessageBox.Show("No map view active.");
+                return;
+            }
+
+
+
+            string dtm_url = "https://geo.api.vlaanderen.be/el-dtm/wcs";
+            CIMInternetServerConnection serverConnection = new CIMInternetServerConnection
+            {
+                URL = dtm_url
+            };
+
+            CIMWCSServiceConnection serviceConnection = new CIMWCSServiceConnection
+            {
+                CoverageName = "EL.GridCoverage.DTM",
+                Version = "2.0.1",
+                ServerConnection = serverConnection,
+            };
+
+            RasterLayerCreationParams rasterLyrCreationParams = new RasterLayerCreationParams(serviceConnection);
+            // rasterLyrCreationParams.Name = "Test";
+
+            await QueuedTask.Run(() =>
+            {
+
+
+                if (SelectedWCSRaster != null)
+                {
+                    MapView.Active.Map.RemoveLayer(SelectedWCSRaster);
+                    SelectedWCSRaster = null;
+
+
+                }
+
+                try
+                {
+                    SelectedWCSRaster = LayerFactory.Instance.CreateLayer<RasterLayer>(rasterLyrCreationParams, MapView.Active.Map);
+                    SelectedWCSRaster.SetTransparency(40);
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, $@"Error trying to add raster layer");
+                }
+            });
+        }
 
 
 
@@ -457,53 +516,9 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 return new RelayCommand(() =>
                 {
 
-
-                    if (MapView.Active == null)
-                    {
-                        MessageBox.Show("No map view active.");
-                        return;
-                    }
+                    AddWCSRasterAsync();
 
 
-                    string dtm_url = "https://geo.api.vlaanderen.be/el-dtm/wcs";
-                    CIMInternetServerConnection serverConnection = new CIMInternetServerConnection
-                    {
-                        URL = dtm_url
-                    };
-
-                    CIMWCSServiceConnection serviceConnection = new CIMWCSServiceConnection
-                    {
-                        CoverageName = "EL.GridCoverage.DTM",
-                        Version = "2.0.1",
-                        ServerConnection = serverConnection,
-                    };
-
-                    RasterLayerCreationParams rasterLyrCreationParams = new RasterLayerCreationParams(serviceConnection);
-                    rasterLyrCreationParams.Name = "Test";
-
-                    QueuedTask.Run(() =>
-                    {
-
-
-                        if (SelectedWCSRaster != null)
-                        {
-                            MapView.Active.Map.RemoveLayer(SelectedWCSRaster);
-                            SelectedWCSRaster = null;
-
-
-                        }
-
-                        try
-                        {
-                            SelectedWCSRaster = LayerFactory.Instance.CreateLayer<RasterLayer>(rasterLyrCreationParams, MapView.Active.Map);
-                            SelectedWCSRaster.SetTransparency(40);
-
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message, $@"Error trying to add raster layer");
-                        }
-                    });
                 });
             }
         }
