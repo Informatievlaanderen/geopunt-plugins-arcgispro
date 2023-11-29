@@ -426,6 +426,7 @@ namespace GeoPunt.Dockpanes.Catalogus
             
             StackPanelControl.Children.Clear();
             SearchIsNotBusy = false;
+            
             try
             {
 
