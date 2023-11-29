@@ -13,6 +13,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Mapping;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using System;
@@ -46,10 +47,44 @@ namespace GeoPunt.Dockpanes.SearchPlace
             poiDH = new poi(5000);
             adresLocation = new adresLocation(5000);
             initGui();
-            ActiveRemoveButton = false;
+            
             TextMarkeer = "Markeer";
             //LoadCollectionData();
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
         }
+
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
+
 
         public void initGui()
         {
@@ -153,25 +188,7 @@ namespace GeoPunt.Dockpanes.SearchPlace
             IsEnableButtonZoek = true;
         }
 
-        private bool _activeRemoveButton;
-        public bool ActiveRemoveButton
-        {
-            get { return _activeRemoveButton; }
-            set
-            {
-                SetProperty(ref _activeRemoveButton, value);
-            }
-        }
 
-        private bool _activeSaveButton = true;
-        public bool ActiveSaveButton
-        {
-            get { return _activeSaveButton; }
-            set
-            {
-                SetProperty(ref _activeSaveButton, value);
-            }
-        }
 
         private ObservableCollection<Graphic> _graphicsList = new ObservableCollection<Graphic>();
         public ObservableCollection<Graphic> GraphicsList
@@ -190,13 +207,11 @@ namespace GeoPunt.Dockpanes.SearchPlace
             set
             {
                 SetProperty(ref _selectedGraphic, value);
-                ActiveRemoveButton = true;
-                ActiveSaveButton = false;
 
                 if (_selectedGraphic != null)
                 {
 
-                    if (MarkedGraphicsList.Any(markedGraphic => markedGraphic.Attributes["Straat"] + ", " + markedGraphic.Attributes["Gemeente"] == _selectedGraphic.Attributes["Straat"] + ", " + _selectedGraphic.Attributes["Gemeente"]))
+                    if (MarkedGraphicsList.Any(markedGraphic => ComparasionString(markedGraphic) == ComparasionString(_selectedGraphic)))
                     {
 
                         TextMarkeer = "Verwijder markering";
@@ -205,12 +220,27 @@ namespace GeoPunt.Dockpanes.SearchPlace
                     {
                         TextMarkeer = "Markeer";
                     }
+                    SelectedGraphicIsSelected = true;
                 }
-
+                else
+                {
+                    TextMarkeer = "Markeer";
+                    SelectedGraphicIsSelected = false;
+                }
             }
         }
 
-        MapPoint MapPointSelectedAddressSimple = null;
+        private bool _selectedGraphicIsSelected = false;
+        public bool SelectedGraphicIsSelected
+        {
+            get { return _selectedGraphicIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedGraphicIsSelected, value);
+            }
+        }
+
+        Graphic GraphicSelectedAddress = null;
         private ObservableCollection<DataRowSearchPlaats> _interessantePlaatsList = new ObservableCollection<DataRowSearchPlaats>();
         public ObservableCollection<DataRowSearchPlaats> InteressantePlaatsList
         {
@@ -229,22 +259,57 @@ namespace GeoPunt.Dockpanes.SearchPlace
             {
                 SetProperty(ref _selectedInteressantePlaatsList, value);
 
-                double x = 0;
-                double y = 0;
-                string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
 
 
-                List<locationResult> loc = adresLocation.getAdresLocation(var, 1);
-                foreach (locationResult item in loc)
+
+                SelectedInteressantePlaatsListIsSelected = false;
+
+
+                if (_selectedInteressantePlaatsList != null)
                 {
-                    x = item.Location.X_Lambert72;
-                    y = item.Location.Y_Lambert72;
+
+                    double x = 0;
+                    double y = 0;
+                    string var = _selectedInteressantePlaatsList.Straat + ", " + _selectedInteressantePlaatsList.Gemeente;
+
+
+                    List<locationResult> loc = adresLocation.getAdresLocation(var, 1);
+                    foreach (locationResult item in loc)
+                    {
+                        x = item.Location.X_Lambert72;
+                        y = item.Location.Y_Lambert72;
+                    }
+
+
+                    Dictionary<string, object> attributes = new Dictionary<string, object>();
+
+                    attributes["id"] = SelectedInteressantePlaatsList.id;
+                    attributes["Thema"] = SelectedInteressantePlaatsList.Thema;
+                    attributes["Categorie"] = SelectedInteressantePlaatsList.Categorie;
+                    attributes["Type"] = SelectedInteressantePlaatsList.Type;
+                    attributes["Naam"] = SelectedInteressantePlaatsList.Naam;
+                    //attributes["Omschrijving"] = SelectedInteressantePlaatsList.Omschrijving;
+                    attributes["Straat"] = SelectedInteressantePlaatsList.Straat;
+                    attributes["busnr"] = SelectedInteressantePlaatsList.busnr;
+                    attributes["Gemeente"] = SelectedInteressantePlaatsList.Gemeente;
+                    attributes["Postcode"] = SelectedInteressantePlaatsList.Postcode;
+                    attributes["Huisnummer"] = SelectedInteressantePlaatsList.Huisnummer;
+
+                    GraphicSelectedAddress = new Graphic(attributes, utils.CreateMapPoint(x, y, lambertSpatialReference));
+                    SelectedInteressantePlaatsListIsSelected = true;
                 }
 
-                MapPointSelectedAddressSimple = utils.CreateMapPoint(x, y, lambertSpatialReference);
+            }
+        }
 
-                ActiveRemoveButton = false;
-                ActiveSaveButton = true;
+        private bool _selectedInteressantePlaatsListIsSelected = false;
+        public bool SelectedInteressantePlaatsListIsSelected
+        {
+            get { return _selectedInteressantePlaatsListIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedInteressantePlaatsListIsSelected, value);
+
             }
         }
 
@@ -603,7 +668,7 @@ namespace GeoPunt.Dockpanes.SearchPlace
         public void MarkGraphic(Graphic SelectedGraphic)
         {
 
-            if (!MarkedGraphicsList.Any(markedGraphic => markedGraphic.Attributes["Straat"] + ", " + markedGraphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]))
+            if (!MarkedGraphicsList.Any(markedGraphic => ComparasionString(markedGraphic) == ComparasionString(SelectedGraphic)))
             {
                 MarkedGraphicsList.Add(SelectedGraphic);
                 updatePOIMarkeer();
@@ -612,7 +677,7 @@ namespace GeoPunt.Dockpanes.SearchPlace
             else
             {
 
-                Graphic pointToDelete = MarkedGraphicsList.Where(markedGraphic => markedGraphic.Attributes["Straat"] + ", " + markedGraphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]).First();
+                Graphic pointToDelete = MarkedGraphicsList.Where(markedGraphic => ComparasionString(markedGraphic) == ComparasionString(SelectedGraphic)).FirstOrDefault();
                 MarkedGraphicsList.Remove(pointToDelete);
                 GeocodeUtils.UpdateMapOverlay(pointToDelete.Geometry as MapPoint, MapView.Active, true, true);
                 updatePOIMarkeer();
@@ -628,6 +693,11 @@ namespace GeoPunt.Dockpanes.SearchPlace
                 return false;
             }
             return true;
+        }
+
+        public string ComparasionString(Graphic graphic)
+        {
+            return $"{graphic.Attributes["Naam"]} {graphic.Attributes["Straat"]}, {graphic.Attributes["Gemeente"]}";
         }
 
 
@@ -713,24 +783,10 @@ namespace GeoPunt.Dockpanes.SearchPlace
                 return new RelayCommand(async () =>
                 {
 
-
-                    Dictionary<string, object> attributes = new Dictionary<string, object>();
-
-                    attributes["id"] = SelectedInteressantePlaatsList.id;
-                    attributes["Thema"] = SelectedInteressantePlaatsList.Thema;
-                    attributes["Categorie"] = SelectedInteressantePlaatsList.Categorie;
-                    attributes["Type"] = SelectedInteressantePlaatsList.Type;
-                    attributes["Naam"] = SelectedInteressantePlaatsList.Naam;
-                    //attributes["Omschrijving"] = SelectedInteressantePlaatsList.Omschrijving;
-                    attributes["Straat"] = SelectedInteressantePlaatsList.Straat;
-                    attributes["busnr"] = SelectedInteressantePlaatsList.busnr;
-                    attributes["Gemeente"] = SelectedInteressantePlaatsList.Gemeente;
-                    attributes["Postcode"] = SelectedInteressantePlaatsList.Postcode;
-                    attributes["Huisnummer"] = SelectedInteressantePlaatsList.Huisnummer;
-
-                    Graphic graphic = new Graphic(attributes, MapPointSelectedAddressSimple);
-
-                    GraphicsList.Add(graphic);
+                    if (!GraphicsList.Any(saveGraphic => ComparasionString(saveGraphic) == ComparasionString(GraphicSelectedAddress)))
+                    {
+                        GraphicsList.Add(GraphicSelectedAddress);
+                    }
                 });
             }
         }
@@ -742,8 +798,11 @@ namespace GeoPunt.Dockpanes.SearchPlace
                 return new RelayCommand(async () =>
                 {
 
-                    Graphic graphic = GraphicsList.Where(graphic => graphic.Attributes["Straat"] + ", " + graphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]).FirstOrDefault();
-                    Graphic graphicMarked = MarkedGraphicsList.Where(markedGraphic => markedGraphic.Attributes["Straat"] + ", " + markedGraphic.Attributes["Gemeente"] == SelectedGraphic.Attributes["Straat"] + ", " + SelectedGraphic.Attributes["Gemeente"]).FirstOrDefault();
+
+                    
+
+                    Graphic graphic = GraphicsList.Where(graphic => ComparasionString(graphic) == ComparasionString(SelectedGraphic)).FirstOrDefault();
+                    Graphic graphicMarked = MarkedGraphicsList.Where(markedGraphic => ComparasionString(markedGraphic) == ComparasionString(SelectedGraphic)).FirstOrDefault();
 
                     if (graphic != null)
                     {
@@ -768,7 +827,7 @@ namespace GeoPunt.Dockpanes.SearchPlace
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.ZoomTo(MapPointSelectedAddressSimple);
+                    utils.ZoomTo(GraphicSelectedAddress.Geometry);
                 });
             }
         }

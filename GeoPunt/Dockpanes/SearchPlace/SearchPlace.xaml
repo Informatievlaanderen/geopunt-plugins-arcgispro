@@ -16,7 +16,7 @@
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid IsEnabled="{Binding MapViewIsActive}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -101,13 +101,8 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Voeg toe" Command="{Binding CmdSave}" />
-            <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Voeg toe" Visibility="{Binding ActiveSaveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdSave}" />-->
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Zoom" Command="{Binding CmdZoom}" />
-            <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Command="{Binding CmdVoeg}" Content="{Binding TextVoegAlle}"/>-->
-            <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="4" Command="{Binding CmdClose}" Content="Sluiten"/>-->
-            <!--<CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" >Resultaten geclusterd toevoegen</CheckBox>-->
-
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Voeg toe" Command="{Binding CmdSave}" IsEnabled="{Binding SelectedInteressantePlaatsListIsSelected}" />
+            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Zoom" Command="{Binding CmdZoom}" IsEnabled="{Binding SelectedInteressantePlaatsListIsSelected}"/>
         </Grid>
 
         <Grid Grid.Row="4">
@@ -156,11 +151,10 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Zoom" Command="{Binding CmdZoomFavourite}" />
-                <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdMark}" Content="{Binding TextMarkeer}"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Verwijderen"  Command="{Binding CmdRemove}" />
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Exporteer"  Width="90" Height="20" Command="{Binding CmdSaveIcon}" Margin="0,0,0,0"  />
-                <!--<Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Verwijderen" Visibility="{Binding ActiveRemoveButton, Converter={StaticResource BoolToVisibilityConverter}}" Command="{Binding CmdRemove}" />-->
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Zoom" Command="{Binding CmdZoomFavourite}" IsEnabled="{Binding SelectedGraphicIsSelected}" />
+                <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20" Command="{Binding CmdMark}" Content="{Binding TextMarkeer}" IsEnabled="{Binding SelectedGraphicIsSelected}"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Verwijderen"  Command="{Binding CmdRemove}" IsEnabled="{Binding SelectedGraphicIsSelected}"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Exporteer"  Width="90" Height="20" Command="{Binding CmdSaveIcon}" Margin="0,0,0,0" IsEnabled="{Binding GraphicsList.Count}" />
 
 
             </Grid>

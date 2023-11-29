@@ -17,7 +17,7 @@
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid IsEnabled="{Binding MapViewIsActive}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -145,42 +145,7 @@
 
         </Grid>
 
-        <!--<Grid
-        Grid.Row="2" >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="100" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Valideer alles" Margin="3" 
-                    Command="{Binding CmdValideerAlles}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Valideer selectie"
-        Margin="3" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Annuleer" Margin="3" />
-
-            <Grid Grid.Row="1" Grid.ColumnSpan="5" HorizontalAlignment="Center" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Valideer alles" Margin="5" 
-                    Command="{Binding CmdValideerAlles}" />
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Markeer" Margin="5" />
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Content="Zoom" Margin="5" />
-            </Grid>
-            
-            
-        </Grid>-->
+      
 
         <Grid Grid.Row="2" HorizontalAlignment="Center" Margin="5,10,5,5">
             <Grid.ColumnDefinitions>
@@ -192,11 +157,12 @@
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Valideer alles"
                 Margin="5"
-                Command="{Binding CmdValideerAlles}" />
+                Command="{Binding CmdValideerAlles}"
+                IsEnabled="{Binding DataTableCSVHasItems}"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Valideer"
                 Margin="5"
                 Command="{Binding CmdValideer}"
-                IsEnabled="{Binding ElementName=DataTableCSV, Path=SelectedItems.Count}" />
+                IsEnabled="{Binding SelectedDataCsvListIsSelected}" />
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"
                 Content="{Binding TextMarkeer}" Margin="5"

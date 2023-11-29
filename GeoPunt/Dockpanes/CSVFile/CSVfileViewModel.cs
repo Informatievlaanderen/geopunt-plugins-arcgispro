@@ -3,6 +3,7 @@ using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.DataHandler;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
@@ -53,7 +54,42 @@ namespace GeoPunt.Dockpanes.CSVFile
             SelectedSeparator = ListSeparators[0];
 
 
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
         }
+
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
+
+
 
 
         private bool _isCheckedMeerdere = true;
@@ -214,8 +250,27 @@ namespace GeoPunt.Dockpanes.CSVFile
             set
             {
                 SetProperty(ref _selectedDataCsvList, value);
-                Debug.WriteLine(_selectedDataCsvList);
+                if(_selectedDataCsvList != null)
+                {
+                    SelectedDataCsvListIsSelected = true;
+                }
+                else
+                {
+                    SelectedDataCsvListIsSelected = false;
+                }
                 SelectedDataRowChanged();
+
+            }
+        }
+
+        private bool _selectedDataCsvListIsSelected = false;
+        public bool SelectedDataCsvListIsSelected
+        {
+            get { return _selectedDataCsvListIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedDataCsvListIsSelected, value);
+               
 
             }
         }
@@ -300,6 +355,25 @@ namespace GeoPunt.Dockpanes.CSVFile
             {
                 SetProperty(ref _dataTableCSV, value);
                 SelectedDataRowChanged();
+                if(_dataTableCSV != null && _dataTableCSV.Rows.Count > 0)
+                {
+                    DataTableCSVHasItems = true;
+                }
+                else
+                {
+                    DataTableCSVHasItems = false;
+                }
+            }
+        }
+
+        private bool _dataTableCSVHasItems = false;
+        public bool DataTableCSVHasItems
+        {
+            get { return _dataTableCSVHasItems; }
+            set
+            {
+                SetProperty(ref _dataTableCSVHasItems, value);
+                
             }
         }
 
@@ -544,23 +618,34 @@ namespace GeoPunt.Dockpanes.CSVFile
                     // 1) double click on project name
                     // 2) add " <UseWindowsForms>true</UseWindowsForms> " to PropertyGroup
 
-                    System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-
-                    openFileDialog1.RestoreDirectory = true;
-                    openFileDialog1.Title = "Fichiers csv";
-                    openFileDialog1.DefaultExt = "csv";
-                    //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                    //openFileDialog1.Filter = "fichiers csv (*.csv)|*.csv";
-                    openFileDialog1.Filter = "CSV-file(*.csv)|*.csv|Text-file(*.txt)|*.txt|All Files(*.*)|*.*";
-
-
-                    if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                    try
                     {
-                        await QueuedTask.Run(() =>
+
+
+                        System.Windows.Forms.OpenFileDialog openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+
+                        openFileDialog1.RestoreDirectory = true;
+                        openFileDialog1.Title = "Fichiers csv";
+                        openFileDialog1.DefaultExt = "csv";
+                        //openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+                        //openFileDialog1.Filter = "fichiers csv (*.csv)|*.csv";
+                        //openFileDialog1.Filter = "CSV-file(*.csv)|*.csv|Text-file(*.txt)|*.txt|All Files(*.*)|*.*";
+                        openFileDialog1.Filter = "CSV-file(*.csv)|*.csv|Text-file(*.txt)|*.txt";
+
+
+                        if (openFileDialog1.ShowDialog() == DialogResult.OK)
                         {
-                            TextFilePlacement = openFileDialog1.FileName;
-                            loadCSV2table();
-                        });
+                            await QueuedTask.Run(() =>
+                            {
+                                TextFilePlacement = openFileDialog1.FileName;
+                                loadCSV2table();
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                        MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
                     }
                 });
             }
@@ -607,6 +692,7 @@ namespace GeoPunt.Dockpanes.CSVFile
                         var streetIndex = 0;
                         var huisnrIndex = 0;
                         var gemeenteIndex = 0;
+                        
                         foreach (DataColumn column in DataTableCSV.Columns)
                         {
                             if (SelectedStraat == column.ColumnName)
