@@ -162,19 +162,19 @@
 
             </DataGrid>
 
-            <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+            <Grid Grid.Row="2" HorizontalAlignment="Center">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
 
                 </Grid.ColumnDefinitions>
 
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Width="80" Height="20" Command="{Binding CmdZoom}" IsEnabled="{Binding SelectedGraphicIsSelected}" Content="Zoom"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Width="80" Height="20" Command="{Binding CmdMark}" IsEnabled="{Binding SelectedGraphicIsSelected}" Content="{Binding TextMarkeer}"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Width="80" Height="20" Command="{Binding CmdMarkeerAll}" IsEnabled="{Binding GraphicsList.Count}" Content="{Binding TextMarkeerAlles}"/>
-                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Width="80" Height="20" Command="{Binding CmdExport}" IsEnabled="{Binding GraphicsList.Count}" Content="Exporteer"  />
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdZoom}" IsEnabled="{Binding SelectedGraphicIsSelected}" Content="Zoom"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Height="20" Command="{Binding CmdMark}" IsEnabled="{Binding SelectedGraphicIsSelected}" Content="{Binding TextMarkeer}"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdMarkeerAll}" IsEnabled="{Binding GraphicsList.Count}" Content="{Binding TextMarkeerAlles}"/>
+                <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Height="20" Command="{Binding CmdExport}" IsEnabled="{Binding GraphicsList.Count}" Content="Exporteer"  />
             </Grid>
 
         </Grid>
