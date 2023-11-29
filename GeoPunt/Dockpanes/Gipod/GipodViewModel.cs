@@ -669,7 +669,7 @@ namespace GeoPunt.Dockpanes.Gipod
                             MarkedGraphicsList.Add(GIPODData);
                         }
                         updateListMarkeer();
-                        TextMarkeerAlles = "Verwijder alle";
+                        TextMarkeerAlles = "Verwijder alles";
 
 
                     }
