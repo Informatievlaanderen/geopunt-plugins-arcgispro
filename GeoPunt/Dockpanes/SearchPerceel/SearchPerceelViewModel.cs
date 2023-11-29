@@ -6,6 +6,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Catalog;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using GeoPunt.Helpers;
@@ -32,8 +33,8 @@ namespace GeoPunt.Dockpanes.SearchPerceel
         List<municipality> municipalities;
         List<department> departments;
         List<parcel> parcels;
-        parcel perceel;
-        parcel perceelToSave;
+
+
         Geometry TempGeometry = null;
 
         private ObservableCollection<MapPoint> LisPointsFromPolygones = new ObservableCollection<MapPoint>();
@@ -45,13 +46,75 @@ namespace GeoPunt.Dockpanes.SearchPerceel
         public SearchPerceelViewModel()
         {
             capakey = new capakey(5000);
-            perceel = null;
             municipalities = capakey.getMunicipalities().municipalities;
             ListGemeente = new ObservableCollection<municipality>(municipalities);
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+
             TextMarkeer = "Markeer";
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
         }
+
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
+
+
+        private parcel _perceel;
+        public parcel Perceel
+        {
+            get { return _perceel; }
+            set
+            {
+                SetProperty(ref _perceel, value);
+                if (_perceel != null)
+                {
+                    PerceelExist = true;
+                }
+                else
+                {
+                    PerceelExist = false;
+                }
+            }
+        }
+
+
+        private bool _perceelExist = false;
+        public bool PerceelExist
+        {
+            get { return _perceelExist; }
+            set
+            {
+                SetProperty(ref _perceelExist, value);
+            }
+        }
+
 
         private string _textMarkeer;
         public string TextMarkeer
@@ -80,7 +143,6 @@ namespace GeoPunt.Dockpanes.SearchPerceel
             set
             {
                 SetProperty(ref _selectedGraphic, value);
-                ActiveButtonMarkeer = true;
                 //updatePercelFromSelectedPerceelToSave(_selectedGraphic);
 
                 if (_selectedGraphic != null)
@@ -95,9 +157,31 @@ namespace GeoPunt.Dockpanes.SearchPerceel
                     {
                         TextMarkeer = "Markeer";
                     }
+
+                    SelectedGraphicIsSelected = true;
+                }
+                else
+                {
+                    TextMarkeer = "Markeer";
+                    SelectedGraphicIsSelected = false;
                 }
             }
+
+
+
         }
+
+        private bool _selectedGraphicIsSelected = false;
+        public bool SelectedGraphicIsSelected
+        {
+            get { return _selectedGraphicIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedGraphicIsSelected, value);
+            }
+        }
+
+
 
         private bool _nisCodeChecked;
         public bool NISCodeChecked
@@ -124,25 +208,6 @@ namespace GeoPunt.Dockpanes.SearchPerceel
             }
         }
 
-        private bool _activeButtonMarkeer;
-        public bool ActiveButtonMarkeer
-        {
-            get { return _activeButtonMarkeer; }
-            set
-            {
-                SetProperty(ref _activeButtonMarkeer, value);
-            }
-        }
-
-        private bool _activeButtonSave;
-        public bool ActiveButtonSave
-        {
-            get { return _activeButtonSave; }
-            set
-            {
-                SetProperty(ref _activeButtonSave, value);
-            }
-        }
 
         private ObservableCollection<municipality> _listGemeente;
         public ObservableCollection<municipality> ListGemeente
@@ -269,8 +334,7 @@ namespace GeoPunt.Dockpanes.SearchPerceel
 
         private void gemeenteSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
             ListDepartments = new ObservableCollection<department>();
             ListSecties = new ObservableCollection<section>();
             ListParcels = new ObservableCollection<parcel>();
@@ -285,8 +349,7 @@ namespace GeoPunt.Dockpanes.SearchPerceel
 
         public void departmentSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
             ListSecties = new ObservableCollection<section>();
             ListParcels = new ObservableCollection<parcel>();
 
@@ -302,8 +365,7 @@ namespace GeoPunt.Dockpanes.SearchPerceel
 
         public void sectieSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
             ListParcels = new ObservableCollection<parcel>();
 
             string niscode = SelectedListGemeente.municipalityCode;
@@ -318,44 +380,9 @@ namespace GeoPunt.Dockpanes.SearchPerceel
             ListParcels = new ObservableCollection<parcel>(parcels);
         }
 
-        public void updatePercelFromSelectedPerceelToSave(Graphic graphic)
-        {
-            if (graphic == null)
-            {
-                return;
-            }
-
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
-
-            if (graphic.Attributes["Gemeente"] == null || graphic.Attributes["Gemeente"].ToString() == "") return;
-            if (graphic.Attributes["Department"] == null || graphic.Attributes["Department"].ToString() == "") return;
-            if (graphic.Attributes["Sectie"] == null || graphic.Attributes["Sectie"].ToString() == "") return;
-            if (graphic.Attributes["Perceel"] == null || graphic.Attributes["Perceel"].ToString() == "") return;
-
-            ActiveButtonMarkeer = true;
-
-            if (ListStringPercel.Contains(graphic.Attributes["Perceel"].ToString()))
-            {
-                TextMarkeer = "Verwijder markering";
-            }
-            else
-            {
-                TextMarkeer = "Markeer";
-            }
-
-            perceelToSave = capakey.getParcel(
-                int.Parse(municipality2nis(graphic.Attributes["Gemeente"].ToString())),
-                int.Parse(department2code(graphic.Attributes["Department"].ToString())),
-                graphic.Attributes["Sectie"].ToString(),
-                graphic.Attributes["Perceel"].ToString(),
-                CRS.Lambert72, capakeyGeometryType.full);
-        }
-
         public void parcelSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
 
             string niscode = SelectedListGemeente.municipalityCode;
 
@@ -369,9 +396,8 @@ namespace GeoPunt.Dockpanes.SearchPerceel
             if (sectie == "" || sectie == null) return;
             if (parcelNr == "" || parcelNr == null) return;
 
-            ActiveButtonSave = true;
 
-            perceel = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
+            Perceel = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
                                                    CRS.Lambert72, capakeyGeometryType.full);
 
 
@@ -381,7 +407,7 @@ namespace GeoPunt.Dockpanes.SearchPerceel
         {
             if (muniName == null || muniName == "") return "";
 
-            var niscodes = 
+            var niscodes =
                 from n in municipalities
                 where n.municipalityName == muniName
                 select n.municipalityCode;
@@ -395,7 +421,7 @@ namespace GeoPunt.Dockpanes.SearchPerceel
         {
             if (depName == null || depName == "") return "";
 
-            var depcodes = 
+            var depcodes =
                 from n in departments
                 where n.departmentName == depName
                 select n.departmentCode;
@@ -496,11 +522,11 @@ namespace GeoPunt.Dockpanes.SearchPerceel
                 return new RelayCommand(async () =>
                 {
 
-                    if (perceel != null)
+                    if (Perceel != null)
                     {
 
-                        geojson geojson = JsonConvert.DeserializeObject<geojson>(perceel.geometry.shape);
-                        Polygon polygon = CreateParcelPolygon(perceel.geometry.shape, geojson);
+                        geojson geojson = JsonConvert.DeserializeObject<geojson>(Perceel.geometry.shape);
+                        Polygon polygon = CreateParcelPolygon(Perceel.geometry.shape, geojson);
                         utils.ZoomTo(polygon);
 
                     }
@@ -540,11 +566,11 @@ namespace GeoPunt.Dockpanes.SearchPerceel
             {
                 return new RelayCommand(async () =>
                 {
-                    if (perceel != null)
+                    if (Perceel != null)
                     {
 
-                        geojson geojson = JsonConvert.DeserializeObject<geojson>(perceel.geometry.shape);
-                        Polygon polygon = CreateParcelPolygon(perceel.geometry.shape, geojson);
+                        geojson geojson = JsonConvert.DeserializeObject<geojson>(Perceel.geometry.shape);
+                        Polygon polygon = CreateParcelPolygon(Perceel.geometry.shape, geojson);
 
 
                         Graphic graphic = new Graphic(new Dictionary<string, object>
