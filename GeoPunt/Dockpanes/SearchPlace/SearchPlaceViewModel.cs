@@ -86,6 +86,18 @@ namespace GeoPunt.Dockpanes.SearchPlace
 
 
 
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                MarkedGraphicsList = new ObservableCollection<Graphic>();
+                TextMarkeer = "Markeer";
+                updatePOIMarkeer();
+            }
+        }
+
+
+
         public void initGui()
         {
             //rows = new SortableBindingList<poiDataRow>();

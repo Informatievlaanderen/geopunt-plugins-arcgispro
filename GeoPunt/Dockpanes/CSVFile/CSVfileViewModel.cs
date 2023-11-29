@@ -88,7 +88,17 @@ namespace GeoPunt.Dockpanes.CSVFile
             }
         }
 
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                GeocodeUtils.RemoveFromMapOverlayTemp();
 
+                ListCSVMarkeer.Clear();
+                TextMarkeer = "Markeer";
+                updateCSVMarkeer();
+            }
+        }
 
 
 
@@ -250,7 +260,7 @@ namespace GeoPunt.Dockpanes.CSVFile
             set
             {
                 SetProperty(ref _selectedDataCsvList, value);
-                if(_selectedDataCsvList != null)
+                if (_selectedDataCsvList != null)
                 {
                     SelectedDataCsvListIsSelected = true;
                 }
@@ -270,7 +280,7 @@ namespace GeoPunt.Dockpanes.CSVFile
             set
             {
                 SetProperty(ref _selectedDataCsvListIsSelected, value);
-               
+
 
             }
         }
@@ -355,7 +365,7 @@ namespace GeoPunt.Dockpanes.CSVFile
             {
                 SetProperty(ref _dataTableCSV, value);
                 SelectedDataRowChanged();
-                if(_dataTableCSV != null && _dataTableCSV.Rows.Count > 0)
+                if (_dataTableCSV != null && _dataTableCSV.Rows.Count > 0)
                 {
                     DataTableCSVHasItems = true;
                 }
@@ -373,7 +383,7 @@ namespace GeoPunt.Dockpanes.CSVFile
             set
             {
                 SetProperty(ref _dataTableCSVHasItems, value);
-                
+
             }
         }
 
@@ -534,6 +544,10 @@ namespace GeoPunt.Dockpanes.CSVFile
                     {
                         DataTableCSV.Rows.Add(row.ItemArray);
                     }
+                    if (DataTableCSV.Rows.Count > 0)
+                    {
+                        DataTableCSVHasItems = true;
+                    }
                 });
             }
             catch (Exception ex)
@@ -544,25 +558,7 @@ namespace GeoPunt.Dockpanes.CSVFile
             }
         }
 
-        //private async void refreshDatGrid(DataTable csvDataTbl)
-        //{
-        //    await QueuedTask.Run(() =>
-        //    {
-        //        DataTableCSV = new DataTable();
 
-        //        foreach (DataColumn column in csvDataTbl.Columns)
-        //        {
-        //            DataColumn dataTableCsvColumn = new DataColumn();
-        //            dataTableCsvColumn.ColumnName = column.ColumnName;
-        //            DataTableCSV.Columns.Add(dataTableCsvColumn);
-        //        }
-
-        //        foreach (DataRow row in csvDataTbl.Rows)
-        //        {
-        //            DataTableCSV.Rows.Add(row.ItemArray);
-        //        }
-        //    });
-        //}
 
         public ICommand CmdZoom
         {
@@ -681,65 +677,72 @@ namespace GeoPunt.Dockpanes.CSVFile
                             return;
                         }
 
-
-
-                        List<string> suggestions;
-                        string street; string huisnr; string gemeente;
-
-
-
-                        var cpt = 0;
-                        var streetIndex = 0;
-                        var huisnrIndex = 0;
-                        var gemeenteIndex = 0;
-                        
-                        foreach (DataColumn column in DataTableCSV.Columns)
+                        try
                         {
-                            if (SelectedStraat == column.ColumnName)
+
+
+                            List<string> suggestions;
+                            string street; string huisnr; string gemeente;
+
+
+
+                            var cpt = 0;
+                            var streetIndex = 0;
+                            var huisnrIndex = 0;
+                            var gemeenteIndex = 0;
+
+                            foreach (DataColumn column in DataTableCSV.Columns)
                             {
-                                streetIndex = cpt;
+                                if (SelectedStraat == column.ColumnName)
+                                {
+                                    streetIndex = cpt;
+                                }
+                                if (SelectedHuisnummer == column.ColumnName)
+                                {
+                                    huisnrIndex = cpt;
+                                }
+                                if (SelectedGemeente == column.ColumnName)
+                                {
+                                    gemeenteIndex = cpt;
+                                }
+                                cpt++;
                             }
-                            if (SelectedHuisnummer == column.ColumnName)
+
+
+                            //DataColumn dataTableCsvColumn2 = new DataColumn();
+                            //dataTableCsvColumn2.ColumnName = "Bestaan";
+                            //dataTableCsvColumn2.DefaultValue = "";
+                            //csvDataTbl.Columns.Add(dataTableCsvColumn2);
+
+                            // DataTableCSV.Rows.Clear();
+                            foreach (DataRow row in DataTableCSV.Rows)
                             {
-                                huisnrIndex = cpt;
+                                //street = row[0].ToString();
+                                //huisnr = row[1].ToString();
+                                //gemeente = row[2].ToString();
+
+                                street = row[streetIndex].ToString();
+                                huisnr = row[huisnrIndex].ToString();
+                                gemeente = row[gemeenteIndex].ToString();
+
+                                suggestions = validateRow(street, huisnr, gemeente);
+
+                                if (suggestions.Count == 0)
+                                {
+                                    row[Bestaan] = "NOK";
+                                }
+                                else
+                                {
+                                    row[Bestaan] = "OK";
+                                }
                             }
-                            if (SelectedGemeente == column.ColumnName)
-                            {
-                                gemeenteIndex = cpt;
-                            }
-                            cpt++;
+                            // refreshDatGrid(csvDataTbl);
+                            SelectedDataRowChanged();
                         }
-
-
-                        //DataColumn dataTableCsvColumn2 = new DataColumn();
-                        //dataTableCsvColumn2.ColumnName = "Bestaan";
-                        //dataTableCsvColumn2.DefaultValue = "";
-                        //csvDataTbl.Columns.Add(dataTableCsvColumn2);
-
-                        // DataTableCSV.Rows.Clear();
-                        foreach (DataRow row in DataTableCSV.Rows)
+                        catch (Exception ex)
                         {
-                            //street = row[0].ToString();
-                            //huisnr = row[1].ToString();
-                            //gemeente = row[2].ToString();
-
-                            street = row[streetIndex].ToString();
-                            huisnr = row[huisnrIndex].ToString();
-                            gemeente = row[gemeenteIndex].ToString();
-
-                            suggestions = validateRow(street, huisnr, gemeente);
-
-                            if (suggestions.Count == 0)
-                            {
-                                row[Bestaan] = "NOK";
-                            }
-                            else
-                            {
-                                row[Bestaan] = "OK";
-                            }
+                            MessageBox.Show(ex.Message, "Error");
                         }
-                        // refreshDatGrid(csvDataTbl);
-                        SelectedDataRowChanged();
                     });
 
                 });
@@ -760,64 +763,71 @@ namespace GeoPunt.Dockpanes.CSVFile
                             return;
                         }
 
-
-                        List<string> suggestions;
-                        string street; string huisnr; string gemeente;
-
-
-                        var cpt = 0;
-                        var streetIndex = 0;
-                        var huisnrIndex = 0;
-                        var gemeenteIndex = 0;
-                        foreach (DataColumn column in DataTableCSV.Columns)
+                        try
                         {
-                            if (SelectedStraat == column.ColumnName)
+
+                            List<string> suggestions;
+                            string street; string huisnr; string gemeente;
+
+
+                            var cpt = 0;
+                            var streetIndex = 0;
+                            var huisnrIndex = 0;
+                            var gemeenteIndex = 0;
+                            foreach (DataColumn column in DataTableCSV.Columns)
                             {
-                                streetIndex = cpt;
+                                if (SelectedStraat == column.ColumnName)
+                                {
+                                    streetIndex = cpt;
+                                }
+                                if (SelectedHuisnummer == column.ColumnName)
+                                {
+                                    huisnrIndex = cpt;
+                                }
+                                if (SelectedGemeente == column.ColumnName)
+                                {
+                                    gemeenteIndex = cpt;
+                                }
+                                cpt++;
                             }
-                            if (SelectedHuisnummer == column.ColumnName)
+
+
+                            //DataColumn dataTableCsvColumn2 = new DataColumn();
+                            //dataTableCsvColumn2.ColumnName = "Bestaan";
+                            //dataTableCsvColumn2.DefaultValue = "";
+                            //csvDataTbl.Columns.Add(dataTableCsvColumn2);
+
+
+                            // DataTableCSV.Rows.Clear();
+
+                            //street = row[0].ToString();
+                            //huisnr = row[1].ToString();
+                            //gemeente = row[2].ToString();
+
+                            street = SelectedDataCsvList[streetIndex].ToString();
+                            huisnr = SelectedDataCsvList[huisnrIndex].ToString();
+                            gemeente = SelectedDataCsvList[gemeenteIndex].ToString();
+
+                            suggestions = validateRow(street, huisnr, gemeente);
+
+                            if (suggestions.Count == 0)
                             {
-                                huisnrIndex = cpt;
+                                SelectedDataCsvList[Bestaan] = "NOK";
                             }
-                            if (SelectedGemeente == column.ColumnName)
+                            else
                             {
-                                gemeenteIndex = cpt;
+                                SelectedDataCsvList[Bestaan] = "OK";
                             }
-                            cpt++;
+
+                            SelectedDataCsvList = null;
+
+                            // refreshDatGrid(csvDataTbl);
+                            SelectedDataRowChanged();
                         }
-
-
-                        //DataColumn dataTableCsvColumn2 = new DataColumn();
-                        //dataTableCsvColumn2.ColumnName = "Bestaan";
-                        //dataTableCsvColumn2.DefaultValue = "";
-                        //csvDataTbl.Columns.Add(dataTableCsvColumn2);
-
-
-                        // DataTableCSV.Rows.Clear();
-
-                        //street = row[0].ToString();
-                        //huisnr = row[1].ToString();
-                        //gemeente = row[2].ToString();
-
-                        street = SelectedDataCsvList[streetIndex].ToString();
-                        huisnr = SelectedDataCsvList[huisnrIndex].ToString();
-                        gemeente = SelectedDataCsvList[gemeenteIndex].ToString();
-
-                        suggestions = validateRow(street, huisnr, gemeente);
-
-                        if (suggestions.Count == 0)
+                        catch (Exception ex)
                         {
-                            SelectedDataCsvList[Bestaan] = "NOK";
+                            MessageBox.Show(ex.Message, "Error");
                         }
-                        else
-                        {
-                            SelectedDataCsvList[Bestaan] = "OK";
-                        }
-
-                        SelectedDataCsvList = null;
-
-                        // refreshDatGrid(csvDataTbl);
-                        SelectedDataRowChanged();
                     });
 
                 });

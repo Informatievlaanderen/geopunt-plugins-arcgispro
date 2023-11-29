@@ -83,6 +83,11 @@ namespace GeoPunt.Dockpanes.PointMap
             {
                 GeocodeUtils.RemoveFromMapOverlayTemp();
 
+
+                MarkedGraphicsList = new ObservableCollection<Graphic>();
+                TextMarkeer = "Markeer";
+                updateListBoxMarkeer();
+
                 if(FrameworkApplication.ActiveTool != null && 
                     FrameworkApplication.ActiveTool.ID == "GeoPunt_PointMap")
                 FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");

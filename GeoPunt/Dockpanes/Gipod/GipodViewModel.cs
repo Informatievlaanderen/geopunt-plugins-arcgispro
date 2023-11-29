@@ -84,6 +84,17 @@ namespace GeoPunt.Dockpanes.Gipod
         }
 
 
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                MarkedGraphicsList = new ObservableCollection<Graphic>();
+                TextMarkeer = "Markeer";
+                TextMarkeerAlles = "Markeer alles";
+                updateListMarkeer();
+            }
+        }
+
 
         private void initGUI()
         {

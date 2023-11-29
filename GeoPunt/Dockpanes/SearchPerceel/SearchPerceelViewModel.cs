@@ -85,6 +85,16 @@ namespace GeoPunt.Dockpanes.SearchPerceel
         }
 
 
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                MarkedGraphicsList = new ObservableCollection<Graphic>();
+                TextMarkeer = "Markeer";
+                updateParcelMarkeer();
+            }
+        }
+
 
         private parcel _perceel;
         public parcel Perceel

@@ -110,6 +110,15 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             }
         }
 
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                ClearDisposables();
+                utils.UpdateMarking(new List<Polyline>());
+
+            }
+        }
 
         public void ClearDisposables()
         {
@@ -226,7 +235,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 //get geometry and length
                 var origPolyLine = profileLine;
                 var origLength = GeometryEngine.Instance.Length(origPolyLine);
-
+                
                 //List of mappoint geometries for the split
                 var splitPoints = new List<MapPoint>();
 
@@ -234,7 +243,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 double enteredValue = origLength / profilePointsMinusOne;
                 double splitAtDistance = 0; // to include first point
                 double baseNumber = GeometryEngine.Instance.GeodesicLength(profileLine, LinearUnit.Meters) / profilePointsMinusOne;
-                double length = baseNumber;
+                double length = 0;
 
                 List<Graphic> graphics = new List<Graphic>();
 
@@ -271,7 +280,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                                 {
                                     graphics.Add(new Graphic(new Dictionary<string, object>
                                 {
-                                    {"Meters", splitAtDistance},
+                                    {"Meters", length},
                                     {"Height", pixelValue},
                                     }, pt));
                                 }
@@ -279,7 +288,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                                 {
                                     graphics.Add(new Graphic(new Dictionary<string, object>
                                 {
-                                    {"Meters", splitAtDistance},
+                                    {"Meters", length},
                                     {"Height", 0},
                                     }, pt));
                                 }
@@ -288,7 +297,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                             {
                                 graphics.Add(new Graphic(new Dictionary<string, object>
                                 {
-                                    {"Meters", splitAtDistance},
+                                    {"Meters", length},
                                     {"Height", 0},
                                     }, pt));
                             }
@@ -298,6 +307,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
 
                         }
                         splitAtDistance += enteredValue;
+                        length += baseNumber;
                     }
 
                     Debug.Write(splitPoints);
@@ -481,7 +491,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             {
 
 
-                if (SelectedWCSRaster != null)
+                if (SelectedWCSRaster != null && MapView.Active.Map.Layers.Contains(SelectedWCSRaster))
                 {
                     MapView.Active.Map.RemoveLayer(SelectedWCSRaster);
                     SelectedWCSRaster = null;
