@@ -73,10 +73,12 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="100" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" Command="{Binding CmdZoek}" Content="Zoek"
+            <Label Grid.Column="1">Maximum 25 resultaten worden weergegeven</Label>
+            <Button Grid.Column="2" Command="{Binding CmdZoek}" Content="Zoek"
                     IsEnabled="{Binding IsEnableButtonZoek}"
                     Style="{DynamicResource Esri_Button}" />
         </Grid>

@@ -64,8 +64,14 @@
                 RequestNavigate="Hyperlink_RequestNavigate"
                 NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/geopunt-catalogus-in-arcgis">
                  •   Catalogus
-            </Hyperlink><LineBreak></LineBreak>
+            </Hyperlink>
+                <LineBreak></LineBreak>
+               
+                <LineBreak></LineBreak>
+                <Bold><Label >Om de functionaliteiten te gebruiken, moet een kaart worden toegevoegd. (Insert → new map)</Label></Bold>
+                <LineBreak></LineBreak>
            <LineBreak></LineBreak>
+                
 
            <Bold><Span FontSize="22">Systeem vereisten </Span></Bold>
             <LineBreak></LineBreak>
