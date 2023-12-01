@@ -73,13 +73,13 @@ namespace GeoPunt.Helpers
                 if (mapWkid != mapPoint.SpatialReference.Wkid)
                 {
                     MapPoint projectedMapPoint = GeometryEngine.Instance.Project(mapPoint, SpatialReferenceBuilder.CreateSpatialReference(mapWkid)) as MapPoint;
-                    ArcGIS.Core.Geometry.Polygon buffedMapPoint = GeometryEngine.Instance.Buffer(projectedMapPoint, distance) as ArcGIS.Core.Geometry.Polygon;
+                    ArcGIS.Core.Geometry.Polygon buffedMapPoint = GeometryEngine.Instance.GeodesicBuffer(projectedMapPoint, distance) as ArcGIS.Core.Geometry.Polygon;
                     mapView.ZoomTo(buffedMapPoint, new TimeSpan(0, 0, 0, 1));
 
                 }
                 else
                 {
-                    ArcGIS.Core.Geometry.Polygon buffedMapPoint = GeometryEngine.Instance.Buffer(mapPoint, distance) as ArcGIS.Core.Geometry.Polygon;
+                    ArcGIS.Core.Geometry.Polygon buffedMapPoint = GeometryEngine.Instance.GeodesicBuffer(mapPoint, distance) as ArcGIS.Core.Geometry.Polygon;
                     mapView.ZoomTo(buffedMapPoint, new TimeSpan(0, 0, 0, 1));
                 }
 
