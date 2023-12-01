@@ -558,7 +558,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                     {
 
 
-                        if (HoogteWMS != null)
+                        if (HoogteWMS != null && MapView.Active.Map.Layers.Contains(HoogteWMS))
                         {
                             MapView.Active.Map.RemoveLayer(HoogteWMS);
                             HoogteWMS = null;
