@@ -47,7 +47,6 @@ namespace GeoPunt.Dockpanes.ElevationProfile
     internal class ElevationProfileViewModel : DockPane
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_ElevationProfile";
-        private dhm dhm;
         private Helpers.Utils utils = new Helpers.Utils();
 
         private int LastHighlightedIndex = -1;
@@ -67,7 +66,6 @@ namespace GeoPunt.Dockpanes.ElevationProfile
         {
             Module1.ElevationProfileViewModel = this;
 
-            dhm = new dhm(timeout: 8000);
 
             PlotControl = new WpfPlot();
             PlotControl.Plot.XLabel("Afstand (m)");
@@ -93,6 +91,13 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             if (MapView.Active != null)
             {
                 MapViewIsActive = true;
+
+
+                if (SelectedWCSRaster == null || !MapView.Active.Map.Layers.Contains(SelectedWCSRaster))
+                {
+                    SelectedWCSRaster = MapView.Active.Map.GetLayersAsFlattenedList().OfType<RasterLayer>().Where(l => l.Name == "EL.GridCoverage.DTM").FirstOrDefault();
+                }
+
             }
             else
             {
@@ -206,7 +211,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 SetProperty(ref _elevationData, value);
                 if (_elevationData != null)
                 {
-                    
+
                     UpdatePlot();
                 }
             }
@@ -221,12 +226,12 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             {
 
 
-                if (SelectedWCSRaster == null || !MapView.Active.Map.Layers.Contains(SelectedWCSRaster))
-                {
-                    await AddWCSRasterAsync();
-                }
+                //if (SelectedWCSRaster == null || !MapView.Active.Map.Layers.Contains(SelectedWCSRaster))
+                //{
+                //    await AddWCSRasterAsync();
+                //}
 
-                if (SelectedWCSRaster == null || !MapView.Active.Map.Layers.Contains(SelectedWCSRaster) )
+                if (SelectedWCSRaster == null || !MapView.Active.Map.Layers.Contains(SelectedWCSRaster))
                 {
                     MessageBox.Show("WCS raster niet gevonden.", "Error raster");
                     return;
@@ -235,7 +240,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 //get geometry and length
                 var origPolyLine = profileLine;
                 var origLength = GeometryEngine.Instance.Length(origPolyLine);
-                
+
                 //List of mappoint geometries for the split
                 var splitPoints = new List<MapPoint>();
 
@@ -261,16 +266,23 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                         MapPoint pt = null;
 
                         pt = GeometryEngine.Instance.MovePointAlongLine(origPolyLine, splitAtDistance, false, 0, SegmentExtensionType.ExtendTangents);
-
+               
                         if (pt != null)
                         {
                             splitPoints.Add(pt);
 
-
-
                             var pixels = raster.MapToPixel(pt.X, pt.Y);
+                            object objPixelValue = null;
 
-                            var objPixelValue = raster.GetPixelValue(0, pixels.Item1, pixels.Item2);
+                            try
+                            {
+                                objPixelValue = raster.GetPixelValue(0, pixels.Item1, pixels.Item2);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Er is een fout opgetreden tijdens de berekening van de pixel values:" + ex.Message, "Error elevation calculation");
+                            }
+                            
 
                             if (objPixelValue != null)
                             {
@@ -301,10 +313,6 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                                     {"Height", 0},
                                     }, pt));
                             }
-
-
-
-
                         }
                         splitAtDistance += enteredValue;
                         length += baseNumber;
@@ -324,6 +332,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             }
 
         }
+
 
 
         private void UpdatePlot(Polyline profileLine)
@@ -364,7 +373,11 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 double[] dataX = (from records in ElevationData select ((IConvertible)records.Attributes["Meters"]).ToDouble(null)).ToArray();
 
                 PlotControl.Plot.Clear();
-                PlotControl.Plot.SetAxisLimits(yMin: minH, yMax: maxH, xMax: maxD);
+                //PlotControl.Plot.SetAxisLimits(
+                //        yMin: minH * 0.90, 
+                //        yMax: maxH * 1.10, 
+                //        xMax: maxD * 1.10
+                //        );
                 ScatterPlot = PlotControl.Plot.AddScatter(dataX, dataY);
                 ScatterPlot.MarkerShape = SelectedMarkerShape;
                 AddHighlightPlot();
@@ -485,6 +498,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             };
 
             RasterLayerCreationParams rasterLyrCreationParams = new RasterLayerCreationParams(serviceConnection);
+
             // rasterLyrCreationParams.Name = "Test";
 
             await QueuedTask.Run(() =>
@@ -496,13 +510,14 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                     MapView.Active.Map.RemoveLayer(SelectedWCSRaster);
                     SelectedWCSRaster = null;
 
-
                 }
 
                 try
                 {
+                    var test = MapView.Active.Map.SpatialReference;
                     SelectedWCSRaster = LayerFactory.Instance.CreateLayer<RasterLayer>(rasterLyrCreationParams, MapView.Active.Map);
                     SelectedWCSRaster.SetTransparency(40);
+                    MapView.Active.Map.SetSpatialReference(test);
 
                 }
                 catch (Exception ex)
@@ -682,7 +697,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 Graphic graphicToHighligh = ElevationData[index];
 
 
-                ArcGIS.Core.Geometry.Polygon buffer = GeometryEngine.Instance.Buffer(graphicToHighligh.Geometry, 10) as ArcGIS.Core.Geometry.Polygon;
+                ArcGIS.Core.Geometry.Polygon buffer = GeometryEngine.Instance.Buffer(graphicToHighligh.Geometry, graphicToHighligh.Geometry.Length) as ArcGIS.Core.Geometry.Polygon;
 
                 CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 2.0, SimpleLineStyle.Solid);
                 CIMPolygonSymbol polygonSym = SymbolFactory.Instance.ConstructPolygonSymbol(CIMColor.NoColor(), SimpleFillStyle.ForwardDiagonal, outline);
