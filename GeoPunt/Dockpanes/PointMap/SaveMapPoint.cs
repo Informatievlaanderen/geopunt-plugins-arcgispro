@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.PointMap
 {
     class SaveMapPoint
     {

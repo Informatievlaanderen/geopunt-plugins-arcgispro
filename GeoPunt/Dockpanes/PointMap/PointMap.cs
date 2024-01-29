@@ -27,7 +27,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
-namespace GeoPunt
+namespace GeoPunt.Dockpanes.PointMap
 {
     internal class PointMap : MapTool
     {
@@ -60,7 +60,7 @@ namespace GeoPunt
             {
                 var mapPoint = ActiveMapView.ClientToMap(e.ClientPoint);
 
-                Module1.vmSearchPlace.AddTempGraphic(mapPoint);
+                Module1.PointMapDockpaneViewModel.AddTempGraphic(mapPoint);
 
                 var coords = GeometryEngine.Instance.Project(mapPoint, SpatialReferenceBuilder.CreateSpatialReference(31370, 5710)) as MapPoint;
                 if (coords == null) return;
@@ -92,7 +92,7 @@ namespace GeoPunt
 
                 diff = Math.Sqrt(Math.Pow(xAdres - xClick, 2) + Math.Pow(yAdres - yClick, 2));
 
-                Module1.vmSearchPlace.refreshAddress(adresString, diff);
+                Module1.PointMapDockpaneViewModel.refreshAddress(adresString, diff);
             }
             else
             {
@@ -104,7 +104,7 @@ namespace GeoPunt
         }        
         protected override Task OnToolActivateAsync(bool active)
         {
-            Module1.vmSearchPlace.Showw();
+            Module1.PointMapDockpaneViewModel.ShowDockPane();
             return base.OnToolActivateAsync(active);
         }
     }

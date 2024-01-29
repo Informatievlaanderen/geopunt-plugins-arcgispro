@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchAddress
 {
     /// <summary>
     /// Interaction logic for SearchAddressDockpaneView.xaml

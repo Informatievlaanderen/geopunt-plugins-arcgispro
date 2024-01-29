@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GeoPunt.Dockpanes.SearchAddressDockpaneView"
+﻿<UserControl x:Class="GeoPunt.Dockpanes.SearchAddress.SearchAddressDockpaneView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -22,7 +22,7 @@
     </UserControl.Resources>
 
 
-    <Grid>
+    <Grid IsEnabled="{Binding MapViewIsActive}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -78,17 +78,17 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Style="{DynamicResource Esri_Button}" Height="20"
-                Command="{Binding CmdSave}" Content="Voeg toe" />
+                Command="{Binding CmdSave}" IsEnabled="{Binding SelectedStreetIsSelected}" Content="Voeg toe" />
             <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20"
-                Command="{Binding CmdZoom}" Content="Zoom" />
+                Command="{Binding CmdZoom}" IsEnabled="{Binding SelectedStreetMapPointExist}" Content="Zoom" />
         </Grid>
 
         <TextBlock Style="{DynamicResource Esri_TextBlockH2}" Grid.Row="4" Text="Favorietenlijst"
             HorizontalAlignment="Center" VerticalAlignment="Center"
             FontWeight="SemiBold" Margin="0,2.5" />
 
-        <ListBox ItemsSource="{Binding ListSaveGraphic}"
-            SelectedItem="{Binding SelectedSaveGraphic}" Grid.Row="5"
+        <ListBox ItemsSource="{Binding GraphicsList}"
+            SelectedItem="{Binding SelectedGraphic}" Grid.Row="5"
             ItemContainerStyle="{DynamicResource Esri_ListBoxItemHighlightBrush}"
             BorderBrush="{DynamicResource Esri_TextControlBrush}" BorderThickness="1" Margin="2.5,0"
         >
@@ -112,13 +112,13 @@
 
 
                 <Button Grid.Column="0" Style="{DynamicResource Esri_Button}" Height="20"
-                    Command="{Binding CmdZoomFavourite}" Content="Zoom" />
+                    Command="{Binding CmdZoomFavourite}" Content="Zoom" IsEnabled="{Binding SelectedGraphicIsSelected}"/>
                 <Button Grid.Column="1" Style="{DynamicResource Esri_Button}" Height="20"
-                    Command="{Binding CmdMark}" Content="{Binding TextMarkeer}" />
+                    Command="{Binding CmdMark}" Content="{Binding TextMarkeer}" IsEnabled="{Binding SelectedGraphicIsSelected}"/>
                 <Button Grid.Column="2" Style="{DynamicResource Esri_Button}" Height="20"
-                    Command="{Binding CmdRemoveFavourite}" Content="Verwijder" />
+                    Command="{Binding CmdRemoveFavourite}" Content="Verwijder" IsEnabled="{Binding SelectedGraphicIsSelected}"/>
                 <Button Grid.Column="3" Style="{DynamicResource Esri_Button}" Height="20"
-                    Command="{Binding CmdExport}" Content="Exporteer" />
+                    Command="{Binding CmdExport}" Content="Exporteer" IsEnabled="{Binding GraphicsList.Count}" />
 
 
             </Grid>

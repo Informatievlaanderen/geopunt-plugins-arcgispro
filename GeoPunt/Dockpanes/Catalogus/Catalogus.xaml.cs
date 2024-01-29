@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,19 +15,21 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.Catalogus
 {
     /// <summary>
-    /// Interaction logic for SearchPlaceView.xaml
+    /// Interaction logic for CatalogusView.xaml
     /// </summary>
-    public partial class SearchPlaceView : UserControl
+    public partial class CatalogusView : UserControl
     {
-        public SearchPlaceView()
+        public CatalogusView()
         {
             InitializeComponent();
-            //SearchPlaceViewModel vm = new SearchPlaceViewModel();
-            //DataGridPlace.ItemsSource = vm.LoadCollectionData();
-            
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
         }
     }
 }

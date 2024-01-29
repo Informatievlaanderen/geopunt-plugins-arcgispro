@@ -3,8 +3,8 @@
     <Name>GeoPunt</Name>
     <Description>GeoPunt description</Description>
     <Image>Images\AddInProRadarPlotTraceIcon.png</Image>
-    <Author>DSi</Author>
-    <Company>esri BeLux</Company>
+    <Author>DSi,HBr,EL</Author>
+    <Company>ESRI BeLux</Company>
     <Date>2/13/2023 9:25:48 AM</Date>
     <Subject>Framework</Subject>
     <!-- Note subject can be one or more of these topics:
@@ -43,15 +43,17 @@
         </group>-->
         <!--Actions Group-->
         <group id="GeoPunt_Group_Actions" caption="Actions" appearsOnAddInTab="false">
-          <button refID="GeoPunt_Dockpanes_SearchAddressDockpane_ShowButton" size="large" />
+          <button refID="GeoPunt_Dockpanes_SearchAddress_ShowButton" size="large" />
           <tool refID="GeoPunt_PointMap" size="large" />
           <button refID="GeoPunt_Dockpanes_CSVfile_ShowButton" size="large" />
           <button refID="GeoPunt_Dockpanes_SearchPlace_ShowButton" size="large" />
           <button refID="GeoPunt_Dockpanes_SearchPerceel_ShowButton" size="large" />
-          <button refID="GeoPunt_GipodButton" size="large" />
-          <button refID="GeoPunt_HeightButton" size="large" />
-          <button refID="GeoPunt_CatalogueButton" size="large" />
+          <button refID="GeoPunt_Dockpanes_GipodButton" size="large" />
+          <button refID="GeoPunt_ElevationProfileButton" size="large" />
+          <button refID="GeoPunt_Dockpanes_CatalogueButton" size="large" />
           <button refID="GeoPunt_ProWindowInfo" size="large" />
+          <!--<tool refID="GeoPunt_DrawTools_Drawline" size="large" />-->
+          
         </group>
         <!--Others Group-->
         <group id="GeoPunt_Group_Others" caption="Others" appearsOnAddInTab="false">
@@ -60,32 +62,32 @@
         </group>
       </groups>
       <controls>
-        <button id="GeoPunt_Buttons_StartButton" caption="Start" className="GeoPunt.Buttons.StartButton" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+        <button id="GeoPunt_Buttons_StartButton" caption="Start" className="GeoPunt.Buttons.StartButton" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png" condition="esri_mapping_mapPane">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_SearchAddressDockpane_ShowButton" caption="Adres" className="GeoPunt.Dockpanes.SearchAddressDockpane_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Adres.png">
+        <button id="GeoPunt_Dockpanes_SearchAddress_ShowButton" caption="Adres" className="GeoPunt.Dockpanes.SearchAddress.SearchAddressDockpane_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Adres.png" condition="esri_mapping_mapPane">
           <tooltip heading="Zoek een adres">Zoek een adres op en markeer dit adres op de kaart</tooltip>
         </button>
-        <tool id="GeoPunt_PointMap" className="PointMap" caption="Plaats" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
+        <tool id="GeoPunt_PointMap" className="GeoPunt.Dockpanes.PointMap.PointMap" caption="Plaats" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Place.png" condition="esri_mapping_mapPane">
           <tooltip heading="Prik een locatie op kaart">Klik op de kaart en verkrijg het dichtstbijzijnde adres en de afstand tussen beide punten</tooltip>
         </tool>
-        <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png">
+        <button id="GeoPunt_Dockpanes_CSVfile_ShowButton" caption="Bestand" className="GeoPunt.Dockpanes.CSVFile.CSVfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Bestand.png" condition="esri_mapping_mapPane">
           <tooltip heading="Bestand geocoderen">Laad een CSV-bestand met adressen op om vervolgens de adressen te geocoderen</tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png">
+        <button id="GeoPunt_Dockpanes_SearchPlace_ShowButton" caption="POI" className="GeoPunt.Dockpanes.SearchPlace.SearchPlace_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/POI.png" condition="esri_mapping_mapPane">
           <tooltip heading="Zoek een interessante plaats">Vul parameters in en zoek naar interessante plaatsen (POI: Points of Interest)</tooltip>
         </button>
-        <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png">
+        <button id="GeoPunt_Dockpanes_SearchPerceel_ShowButton" caption="Perceel" className="GeoPunt.Dockpanes.SearchPerceel.SearchPerceel_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Perceel.png" condition="esri_mapping_mapPane">
           <tooltip heading="Zoek een perceel">Zoek via de parameters gemeente, afdeling, sectie en perceel een kadastraal perceel op</tooltip>
         </button>
-        <button id="GeoPunt_GipodButton" caption="GIPOD" className="GeoPunt.Dockpanes.Gipod_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png">
-          <tooltip heading="Bevraag GIPOD">Bevraag GIPOD ...</tooltip>
+        <button id="GeoPunt_Dockpanes_GipodButton" caption="GIPOD" className="GeoPunt.Dockpanes.Gipod.Gipod_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Gipod.png" condition="esri_mapping_mapPane">
+          <tooltip heading="Bevraag GIPOD">Haal GIPOD-data op met betrekking tot geplande werkzaamheden of manifestaties</tooltip>
         </button>
-        <button id="GeoPunt_HeightButton" className="HeightButton" caption="Hoogte" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png" condition="DisableButton">
-          <tooltip heading="Hoogte">Feature not yet developed</tooltip>
+        <button id="GeoPunt_ElevationProfileButton" caption="Hoogte" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfile_ShowButton" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png" condition="esri_mapping_mapPane">
+          <tooltip heading="Hoogteprofiel">Haal hoogte-informatie van het ‘Digitaal Hoogtemodel Vlaanderen (DHMV) II, DTM, raster, 1 m’ uitgezet in een profiellijn op</tooltip>
         </button>
-        <button id="GeoPunt_CatalogueButton" className="CatalogueButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png" condition="DisableButton">
-          <tooltip heading="Catalogus">Feature not yet developed</tooltip>
+        <button id="GeoPunt_Dockpanes_CatalogueButton" className="GeoPunt.Dockpanes.Catalogus.Catalogus_ShowButton" caption="Catalogus" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Catalogus.png" condition="esri_mapping_mapPane">
+          <tooltip heading="Catalogus">Zoek in de Geopunt-catalogus datasets en services op en voeg ze toe</tooltip>
         </button>
         <button id="GeoPunt_SettingsButton" className="SettingsButton" caption="Instellingen" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Settings.png" condition="DisableButton">
           <tooltip heading="Instellingen">Feature not yet developed</tooltip>
@@ -93,28 +95,38 @@
         <button id="GeoPunt_InformationButton" caption="Info" className="ShowProWindowInfo" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Info.png">
           <tooltip heading="Info">Meer informatie over deze add-in</tooltip>
         </button>
+        <tool id="GeoPunt_DrawTools_Drawline" caption="HoogteProfielTool" className="GeoPunt.DrawTools.Drawline" loadOnClick="true" largeImage="pack://application:,,,/GeoPunt;component/Images/Hoogte.png" condition="esri_mapping_mapPane">
+          <tooltip heading="HoogteProfiel tool">HoogteProfiel tool ...</tooltip>
+        </tool>
+       
       </controls>
       <dockPanes>
         <dockPane id="GeoPunt_Dockpanes_StartDockpane" caption="Welcome in Geopunt plug-in" className="GeoPunt.Dockpanes.StartDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
           <content className="GeoPunt.Dockpanes.StartDockpaneView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_SearchAddressDockpane" caption="Zoek een adres" className="GeoPunt.Dockpanes.SearchAddressDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
-          <content className="GeoPunt.Dockpanes.SearchAddressDockpaneView" />
+        <dockPane id="GeoPunt_Dockpanes_SearchAddress_SearchAddressDockpane" caption="Zoek een adres" className="GeoPunt.Dockpanes.SearchAddress.SearchAddressDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.SearchAddress.SearchAddressDockpaneView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_PointMapDockpane" caption="Prik een locatie op kaart" className="GeoPunt.Dockpanes.PointMapDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
-          <content className="GeoPunt.Dockpanes.PointMapDockpaneView" />
+        <dockPane id="GeoPunt_Dockpanes_PointMapDockpane" caption="Prik een locatie op kaart" className="GeoPunt.Dockpanes.PointMap.PointMapDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.PointMap.PointMapDockpaneView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_SearchPlace" caption="Zoek een interessante plaats" className="GeoPunt.Dockpanes.SearchPlaceViewModel" dock="group" dockWith="esri_core_projectDockPane">
-          <content className="GeoPunt.Dockpanes.SearchPlaceView" />
+        <dockPane id="GeoPunt_Dockpanes_SearchPlace" caption="Zoek een interessante plaats" className="GeoPunt.Dockpanes.SearchPlace.SearchPlaceViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.SearchPlace.SearchPlaceView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_SearchPerceel" caption="Zoek een perceel" className="GeoPunt.Dockpanes.SearchPerceelViewModel" dock="group" dockWith="esri_core_projectDockPane">
-          <content className="GeoPunt.Dockpanes.SearchPerceelView" />
+        <dockPane id="GeoPunt_Dockpanes_SearchPerceel" caption="Zoek een perceel" className="GeoPunt.Dockpanes.SearchPerceel.SearchPerceelViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.SearchPerceel.SearchPerceelView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestanden geocoderen" className="GeoPunt.Dockpanes.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
-          <content className="GeoPunt.Dockpanes.CSVfileView" />
+        <dockPane id="GeoPunt_Dockpanes_CSVfile" caption="Bestand geocoderen" className="GeoPunt.Dockpanes.CSVFile.CSVfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.CSVFile.CSVfileView" />
         </dockPane>
-        <dockPane id="GeoPunt_Dockpanes_Gipod" caption="Bevraag GIPOD" className="GeoPunt.Dockpanes.GipodViewModel" dock="group" dockWith="esri_core_projectDockPane">
-          <content className="GeoPunt.Dockpanes.GipodView" />
+        <dockPane id="GeoPunt_Dockpanes_Gipod" caption="Bevraag GIPOD" className="GeoPunt.Dockpanes.Gipod.GipodViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.Gipod.GipodView" />
+        </dockPane>
+        <dockPane id="GeoPunt_Dockpanes_ElevationProfile" caption="Hoogteprofiel" className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfileViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.ElevationProfile.ElevationProfileView" />
+        </dockPane>
+        <dockPane id="GeoPunt_Dockpanes_Catalogus_Catalogus" caption="Catalogus" className="GeoPunt.Dockpanes.Catalogus.CatalogusViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="GeoPunt.Dockpanes.Catalogus.CatalogusView" />
         </dockPane>
       </dockPanes>
     </insertModule>

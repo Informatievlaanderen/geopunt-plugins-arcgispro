@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,21 +14,19 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchPlace
 {
     /// <summary>
-    /// Interaction logic for GipodView.xaml
+    /// Interaction logic for SearchPlaceView.xaml
     /// </summary>
-    public partial class GipodView : UserControl
+    public partial class SearchPlaceView : UserControl
     {
-        public GipodView()
+        public SearchPlaceView()
         {
             InitializeComponent();
-        }
-
-        private void DataGridHyperlinkColumn_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            //SearchPlaceViewModel vm = new SearchPlaceViewModel();
+            //DataGridPlace.ItemsSource = vm.LoadCollectionData();
+            
         }
     }
 }

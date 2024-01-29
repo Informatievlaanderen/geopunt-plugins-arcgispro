@@ -13,6 +13,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using GeoPunt.Helpers;
@@ -30,9 +31,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.Gipod
 {
-    internal class GipodViewModel : DockPane
+    internal class GipodViewModel : DockPane, IMarkedGraphicDisplayer
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_Gipod";
 
@@ -46,8 +47,53 @@ namespace GeoPunt.Dockpanes
         protected GipodViewModel()
         {
             initGUI();
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            TextMarkeer = "Markeer";
+            TextMarkeerAlles = "Markeer alles";
+            CheckMapViewIsActive();
         }
 
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
+
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                MarkedGraphicsList = new ObservableCollection<Graphic>();
+                TextMarkeer = "Markeer";
+                TextMarkeerAlles = "Markeer alles";
+                updateListMarkeer();
+            }
+        }
 
 
         private void initGUI()
@@ -70,6 +116,12 @@ namespace GeoPunt.Dockpanes
 
         }
 
+        public string ComparasionString(Graphic graphic)
+        {
+            return $"{graphic.Attributes["gipodId"]}";
+        }
+
+
         public ICommand ChangeTypeManifestation
         {
             get
@@ -89,6 +141,27 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _gipodType, value);
+            }
+        }
+
+
+        private string _textMarkeer;
+        public string TextMarkeer
+        {
+            get { return _textMarkeer; }
+            set
+            {
+                SetProperty(ref _textMarkeer, value);
+            }
+        }
+
+        private string _textMarkeerAlles;
+        public string TextMarkeerAlles
+        {
+            get { return _textMarkeerAlles; }
+            set
+            {
+                SetProperty(ref _textMarkeerAlles, value);
             }
         }
 
@@ -132,14 +205,14 @@ namespace GeoPunt.Dockpanes
 
 
             Dictionary<string, string> mapProvincie = new Dictionary<string, string>() {
-                { "Antwerpen", "1" }, 
-                { "Limburg", "7" }, 
-                { "Vlaams-Brabant", "2" }, 
-                { "Oost-Vlaanderen", "4" }, 
+                { "Antwerpen", "1" },
+                { "Limburg", "7" },
+                { "Vlaams-Brabant", "2" },
+                { "Oost-Vlaanderen", "4" },
                 { "West-Vlaanderen", "3" } };
-                
 
-            if(!mapProvincie.ContainsKey(SelectedProvincie))
+
+            if (!mapProvincie.ContainsKey(SelectedProvincie))
             {
                 cities = (from municipality t in municipality.municipalities
                           select t.municipalityName).ToList();
@@ -303,7 +376,7 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
 
-                    ListGIPODData = new ObservableCollection<Graphic>();
+                    GraphicsList = new ObservableCollection<Graphic>();
 
                     await QueuedTask.Run(() =>
                     {
@@ -321,10 +394,11 @@ namespace GeoPunt.Dockpanes
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show(ex.Message + " : " + ex.StackTrace);
+                            // MessageBox.Show(ex.Message + " : " + ex.StackTrace);
+                            MessageBox.Show("Er is een fout opgetreden bij het zoeken naar Gipod-gegevens.Probeer het opnieuw of controleer de ingestelde parameters.");
+
                         }
                     });
-
                 });
             }
         }
@@ -425,73 +499,106 @@ namespace GeoPunt.Dockpanes
 
                 }
             }
-            ListGIPODData = new ObservableCollection<Graphic>(graphics);
+            GraphicsList = new ObservableCollection<Graphic>(graphics);
 
         }
 
 
 
-        private ObservableCollection<Graphic> _listGIPODData = new ObservableCollection<Graphic>();
-        public ObservableCollection<Graphic> ListGIPODData
+        private ObservableCollection<Graphic> _graphicsList = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> GraphicsList
         {
-            get { return _listGIPODData; }
+            get { return _graphicsList; }
             set
             {
-                SetProperty(ref _listGIPODData, value);
-                if (_listGIPODData.Count > 0)
-                {
-                    ListGIPODHaveData = true;
-                }
-                else
-                {
-                    ListGIPODHaveData = false;
-                }
-            }
-        }
-
-        private bool _listGIPODHaveData = false;
-        public bool ListGIPODHaveData
-        {
-            get { return _listGIPODHaveData; }
-            set
-            {
-                SetProperty(ref _listGIPODHaveData, value);
+                SetProperty(ref _graphicsList, value);
+                MarkedGraphicsList.Clear();
+                updateListMarkeer();
+                TextMarkeerAlles = "Markeer alles";
             }
         }
 
 
-        private Graphic _selectedGIPODData;
-        public Graphic SelectedGIPODData
+
+
+        private Graphic _selectedGraphic;
+        public Graphic SelectedGraphic
         {
-            get { return _selectedGIPODData; }
+            get { return _selectedGraphic; }
             set
             {
-                SetProperty(ref _selectedGIPODData, value);
-                if (_selectedGIPODData != null)
+                SetProperty(ref _selectedGraphic, value);
+                if (_selectedGraphic != null)
                 {
-                    GIPODDataIsSelected = true;
+                    if (MarkedGraphicsList.Any(saveGraphic => ComparasionString(saveGraphic) == ComparasionString(_selectedGraphic)))
+                    {
+
+                        TextMarkeer = "Verwijder markering";
+                    }
+                    else
+                    {
+                        TextMarkeer = "Markeer";
+                    }
+
+                    SelectedGraphicIsSelected = true;
                 }
                 else
                 {
-                    GIPODDataIsSelected = false;
+                    TextMarkeer = "Markeer";
+                    SelectedGraphicIsSelected = false;
                 }
                 //ActiveButtonMarkeer = true;
                 //updatePercelFromSelectedPerceelToSave(_GIPODData);
             }
         }
 
-        private bool _gipodDataIsSelected = false;
-        public bool GIPODDataIsSelected
+        private bool _selectedGraphicIsSelected = false;
+        public bool SelectedGraphicIsSelected
         {
-            get { return _gipodDataIsSelected; }
+            get { return _selectedGraphicIsSelected; }
             set
             {
-                SetProperty(ref _gipodDataIsSelected, value);
+                SetProperty(ref _selectedGraphicIsSelected, value);
                 //ActiveButtonMarkeer = true;
                 //updatePercelFromSelectedPerceelToSave(_GIPODData);
             }
         }
 
+
+        private ObservableCollection<Graphic> _markedGraphicsList = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> MarkedGraphicsList
+        {
+            get { return _markedGraphicsList; }
+            set
+            {
+                SetProperty(ref _markedGraphicsList, value);
+            }
+        }
+
+        public void MarkGraphic(Graphic SelectedGraphic)
+        {
+            if (!MarkedGraphicsList.Any(saveGraphic => ComparasionString(saveGraphic) == ComparasionString(SelectedGraphic)))
+            {
+                MarkedGraphicsList.Add(SelectedGraphic);
+                updateListMarkeer();
+                TextMarkeer = "Verwijder markering";
+            }
+            else
+            {
+
+                Graphic pointToDelete = MarkedGraphicsList.Where(saveGraphic => ComparasionString(saveGraphic) == ComparasionString(SelectedGraphic)).FirstOrDefault();
+                MarkedGraphicsList.Remove(pointToDelete);
+                updateListMarkeer();
+                TextMarkeer = "Markeer";
+            }
+        }
+
+        public void updateListMarkeer()
+        {
+
+            utils.UpdateMarking((from markedGraphic in MarkedGraphicsList select markedGraphic.Geometry).ToList());
+
+        }
 
 
         public ICommand CmdZoom
@@ -501,37 +608,22 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
                     Debug.WriteLine("CmdZoom");
-                    utils.ZoomTo(SelectedGIPODData.Geometry);
+                    utils.ZoomTo(SelectedGraphic.Geometry);
                 });
             }
         }
 
 
-        public ICommand CmdMarkeer
+        public ICommand CmdMark
         {
             get
             {
                 return new RelayCommand(async () =>
                 {
-                    Debug.WriteLine("CmdMarkeer");
-
-                    await QueuedTask.Run(() =>
+                    if (SelectedGraphic != null)
                     {
-                        if (overlays.Count > 0)
-                        {
-                            foreach (IDisposable overlay in overlays)
-                            {
-                                overlay.Dispose();
-                            }
-                            overlays = new ObservableCollection<IDisposable>();
-
-                        }
-
-                        CIMPointSymbol symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreenRGB, 10.0, SimpleMarkerStyle.Diamond);
-                        CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
-                        overlays.Add(MapView.Active.AddOverlay(SelectedGIPODData.Geometry, symbolReference));
-
-                    });
+                        MarkGraphic(SelectedGraphic);
+                    }
                 });
             }
         }
@@ -545,27 +637,60 @@ namespace GeoPunt.Dockpanes
                 {
                     Debug.WriteLine("CmdMarkeerAll");
 
-                    await QueuedTask.Run(() =>
+                    //await QueuedTask.Run(() =>
+                    //{
+                    //    if (overlays.Count > 0)
+                    //    {
+                    //        foreach (IDisposable overlay in overlays)
+                    //        {
+                    //            overlay.Dispose();
+                    //        }
+                    //        overlays = new ObservableCollection<IDisposable>();
+
+
+                    //    }
+
+                    //    CIMPointSymbol symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreenRGB, 10.0, SimpleMarkerStyle.Diamond);
+                    //    CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
+
+                    //    foreach (Graphic GIPODData in GraphicsList)
+                    //    {
+                    //        overlays.Add(MapView.Active.AddOverlay(GIPODData.Geometry, symbolReference));
+                    //    }
+
+                    //    foreach (Graphic GIPODData in GraphicsList)
+                    //    {
+                    //        MarkedGraphicsList.Add(SelectedGraphic);
+                    //    }
+
+                    //    MarkedGraphicsList.Clear();
+
+                    //    updateListMarkeer();
+
+
+                    //});
+
+
+
+                    if (!(MarkedGraphicsList.Count > 10))
                     {
-                        if (overlays.Count > 0)
+                        MarkedGraphicsList = new ObservableCollection<Graphic>();
+                        foreach (Graphic GIPODData in GraphicsList)
                         {
-                            foreach (IDisposable overlay in overlays)
-                            {
-                                overlay.Dispose();
-                            }
-                            overlays = new ObservableCollection<IDisposable>();
-
-
+                            MarkedGraphicsList.Add(GIPODData);
                         }
+                        updateListMarkeer();
+                        TextMarkeerAlles = "Verwijder alles";
 
-                        CIMPointSymbol symbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.GreenRGB, 10.0, SimpleMarkerStyle.Diamond);
-                        CIMSymbolReference symbolReference = symbol.MakeSymbolReference();
 
-                        foreach (Graphic GIPODData in ListGIPODData)
-                        {
-                            overlays.Add(MapView.Active.AddOverlay(GIPODData.Geometry, symbolReference));
-                        }
-                    });
+                    }
+                    else
+                    {
+
+                        MarkedGraphicsList = new ObservableCollection<Graphic>();
+                        updateListMarkeer();
+                        TextMarkeerAlles = "Markeer alles";
+                    }
                 });
             }
         }
@@ -578,7 +703,7 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    utils.ExportToGeoJson(ListGIPODData.ToList());
+                    utils.ExportToGeoJson(GraphicsList.ToList());
                 });
             }
         }
@@ -611,6 +736,8 @@ namespace GeoPunt.Dockpanes
 
             pane.Activate();
         }
+
+
 
         /// <summary>
         /// Text shown near the top of the DockPane.

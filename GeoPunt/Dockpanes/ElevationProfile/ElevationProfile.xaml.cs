@@ -14,17 +14,16 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.ElevationProfile
 {
     /// <summary>
-    /// Interaction logic for SearchPerceelView.xaml
+    /// Interaction logic for ElevationProfileView.xaml
     /// </summary>
-    public partial class SearchPerceelView : UserControl
+    public partial class ElevationProfileView : UserControl
     {
-        public SearchPerceelView()
+        public ElevationProfileView()
         {
             InitializeComponent();
         }
-
     }
 }

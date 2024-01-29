@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="GeoPunt.Dockpanes.SearchPerceelView"
+﻿<UserControl x:Class="GeoPunt.Dockpanes.SearchPerceel.SearchPerceelView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -17,7 +17,7 @@
             <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid IsEnabled="{Binding MapViewIsActive}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -33,8 +33,8 @@
 
         <Grid Grid.Row="1" Margin="5,5,5,0" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -46,13 +46,13 @@
 
             <TextBlock FontSize="13.5" Grid.Column="0"
                 Grid.Row="0"
-                VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2.5"
+                VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2.5"
                 Text="Gemeente:" />
             <ComboBox IsEditable="True" ItemsSource="{Binding ListGemeente}"
                 DisplayMemberPath="{Binding GemeenteDisplayMember, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Grid.Row="0"
                 SelectedItem="{Binding SelectedListGemeente}" HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Right" Grid.Column="1" Margin="2.5">
+                HorizontalContentAlignment="Left" Grid.Column="1" Margin="2.5">
                 <!--!!!-->
                 <!--this
                 code helps to open a combobox of 1000 items faster-->
@@ -67,33 +67,33 @@
 
             <TextBlock FontSize="13.5" Grid.Column="0"
                 Grid.Row="1"
-                VerticalAlignment="Center" HorizontalAlignment="Center" Margin="2.5"
+                VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2.5"
                 Text="Afdeling:" />
             <ComboBox IsEditable="True" ItemsSource="{Binding ListDepartments}"
                 DisplayMemberPath="{Binding DepartmentNameDisplayMember, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Grid.Row="1"
                 SelectedItem="{Binding SelectedListDepartments}" HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Right" Grid.Column="1" Margin="2.5" />
+                HorizontalContentAlignment="Left" Grid.Column="1" Margin="2.5" />
 
 
             <TextBlock FontSize="13.5" Grid.Column="0"
                 Grid.Row="2" Margin="2.5"
-                VerticalAlignment="Center" HorizontalAlignment="Center"
+                VerticalAlignment="Center" HorizontalAlignment="Left"
                 Text="Sectie:" />
             <ComboBox IsEditable="True" ItemsSource="{Binding ListSecties}"
                 DisplayMemberPath="sectionCode" Grid.Row="2"
                 SelectedItem="{Binding SelectedListSecties}" HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Right" Grid.Column="1" Margin="2.5" />
+                HorizontalContentAlignment="Left" Grid.Column="1" Margin="2.5" />
 
 
             <TextBlock FontSize="13.5" Grid.Column="0"
                 Grid.Row="3" Margin="2.5"
-                VerticalAlignment="Center" HorizontalAlignment="Center"
+                VerticalAlignment="Center" HorizontalAlignment="Left"
                 Text="Perceel:" />
             <ComboBox IsEditable="True" ItemsSource="{Binding ListParcels}"
                 DisplayMemberPath="perceelnummer" Grid.Row="3"
                 SelectedItem="{Binding SelectedListParcels}" HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Right" Grid.Column="1" Margin="2.5"
+                HorizontalContentAlignment="Left" Grid.Column="1" Margin="2.5"
                 x:Name="cmbxPerceel"
             >
                 <ComboBox.ItemsPanel>
@@ -112,27 +112,12 @@
             </Grid.ColumnDefinitions>
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Voeg toe"
-                Command="{Binding CmdSave}" />
+                Command="{Binding CmdSave}" IsEnabled="{Binding PerceelExist}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1" Content="Zoom"
-                Command="{Binding CmdZoomParcel}" />
+                Command="{Binding CmdZoomParcel}" IsEnabled="{Binding PerceelExist}" />
 
 
-            <!--button
-            with visibility-->
-            <!--<Button
-            Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Opslaan"
-            Command="{Binding CmdSave}" Visibility="{Binding ActiveButtonSave,
-            Converter={StaticResource BoolToVisibilityConverter}}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"  Content="Verwijderen"
-            Command="{Binding CmdRemove}" Visibility="{Binding ActiveButtonMarkeer,
-            Converter={StaticResource BoolToVisibilityConverter}}" />
-            <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="{Binding TextMarkeer}"
-            Command="{Binding CmdMarkeer}" Visibility="{Binding ActiveButtonMarkeer,
-            Converter={StaticResource BoolToVisibilityConverter}}"   />-->
-
-            <!--<Button
-            Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Sluiten"
-            Command="{Binding CmdClose}"   />-->
+        
 
         </Grid>
 
@@ -177,13 +162,13 @@
             </Grid.ColumnDefinitions>
 
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="0" Content="Zoom"
-                Command="{Binding CmdZoomParcelFavourite}" />
+                Command="{Binding CmdZoomParcelFavourite}" IsEnabled="{Binding SelectedGraphicIsSelected}"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="1"
-                Content="{Binding TextMarkeer}" Command="{Binding CmdMark}" />
+                Content="{Binding TextMarkeer}" Command="{Binding CmdMark}" IsEnabled="{Binding SelectedGraphicIsSelected}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2" Content="Verwijder"
-                Command="{Binding CmdRemove}" />
+                Command="{Binding CmdRemove}" IsEnabled="{Binding SelectedGraphicIsSelected}" />
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="3" Content="Exporteer"
-                Width="80" Height="20" Command="{Binding CmdSaveIcon}" />
+                Width="80" Height="20" Command="{Binding CmdSaveIcon}" IsEnabled="{Binding GraphicsList.Count}" />
 
 
         </Grid>

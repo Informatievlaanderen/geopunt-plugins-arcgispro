@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,21 +14,17 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchPerceel
 {
     /// <summary>
-    /// Interaction logic for PointMapDockpaneView.xaml
+    /// Interaction logic for SearchPerceelView.xaml
     /// </summary>
-    public partial class PointMapDockpaneView : UserControl
+    public partial class SearchPerceelView : UserControl
     {
-        public PointMapDockpaneView()
+        public SearchPerceelView()
         {
             InitializeComponent();
         }
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
-        }
     }
 }

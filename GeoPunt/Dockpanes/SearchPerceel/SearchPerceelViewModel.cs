@@ -6,6 +6,7 @@ using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Catalog;
 using ArcGIS.Desktop.Mapping;
+using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using GeoPunt.Helpers;
@@ -21,19 +22,19 @@ using System.Windows.Input;
 
 
 
-namespace GeoPunt.Dockpanes
+namespace GeoPunt.Dockpanes.SearchPerceel
 {
     internal class SearchPerceelViewModel : DockPane, IMarkedGraphicDisplayer
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_SearchPerceel";
         private Helpers.Utils utils = new Helpers.Utils();
-        private ArcGIS.Core.Geometry.SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
+        private SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
 
-        List<datacontract.municipality> municipalities;
-        List<datacontract.department> departments;
-        List<datacontract.parcel> parcels;
-        datacontract.parcel perceel;
-        datacontract.parcel perceelToSave;
+        List<municipality> municipalities;
+        List<department> departments;
+        List<parcel> parcels;
+
+
         Geometry TempGeometry = null;
 
         private ObservableCollection<MapPoint> LisPointsFromPolygones = new ObservableCollection<MapPoint>();
@@ -41,17 +42,89 @@ namespace GeoPunt.Dockpanes
         private ObservableCollection<ObservableCollection<MapPoint>> ListPolygonesToMarkeer = new ObservableCollection<ObservableCollection<MapPoint>>();
         private ObservableCollection<string> ListStringPercel = new ObservableCollection<string>();
 
-        DataHandler.capakey capakey;
+        capakey capakey;
         public SearchPerceelViewModel()
         {
-            capakey = new DataHandler.capakey(5000);
-            perceel = null;
+            capakey = new capakey(5000);
             municipalities = capakey.getMunicipalities().municipalities;
             ListGemeente = new ObservableCollection<municipality>(municipalities);
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+
             TextMarkeer = "Markeer";
+            ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
+            CheckMapViewIsActive();
         }
+
+        private void OnActiveMapViewChanged(ActiveMapViewChangedEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine("ActiveMapViewChangedTriggered");
+
+            CheckMapViewIsActive();
+
+        }
+
+        private void CheckMapViewIsActive()
+        {
+            if (MapView.Active != null)
+            {
+                MapViewIsActive = true;
+            }
+            else
+            {
+                MapViewIsActive = false;
+            }
+        }
+
+        private bool _mapViewIsActive;
+        public bool MapViewIsActive
+        {
+            get { return _mapViewIsActive; }
+            set
+            {
+                SetProperty(ref _mapViewIsActive, value);
+            }
+        }
+
+
+        protected override void OnShow(bool isVisible)
+        {
+            if (!isVisible)
+            {
+                MarkedGraphicsList = new ObservableCollection<Graphic>();
+                TextMarkeer = "Markeer";
+                updateParcelMarkeer();
+            }
+        }
+
+
+        private parcel _perceel;
+        public parcel Perceel
+        {
+            get { return _perceel; }
+            set
+            {
+                SetProperty(ref _perceel, value);
+                if (_perceel != null)
+                {
+                    PerceelExist = true;
+                }
+                else
+                {
+                    PerceelExist = false;
+                }
+            }
+        }
+
+
+        private bool _perceelExist = false;
+        public bool PerceelExist
+        {
+            get { return _perceelExist; }
+            set
+            {
+                SetProperty(ref _perceelExist, value);
+            }
+        }
+
 
         private string _textMarkeer;
         public string TextMarkeer
@@ -80,7 +153,6 @@ namespace GeoPunt.Dockpanes
             set
             {
                 SetProperty(ref _selectedGraphic, value);
-                ActiveButtonMarkeer = true;
                 //updatePercelFromSelectedPerceelToSave(_selectedGraphic);
 
                 if (_selectedGraphic != null)
@@ -95,9 +167,31 @@ namespace GeoPunt.Dockpanes
                     {
                         TextMarkeer = "Markeer";
                     }
+
+                    SelectedGraphicIsSelected = true;
+                }
+                else
+                {
+                    TextMarkeer = "Markeer";
+                    SelectedGraphicIsSelected = false;
                 }
             }
+
+
+
         }
+
+        private bool _selectedGraphicIsSelected = false;
+        public bool SelectedGraphicIsSelected
+        {
+            get { return _selectedGraphicIsSelected; }
+            set
+            {
+                SetProperty(ref _selectedGraphicIsSelected, value);
+            }
+        }
+
+
 
         private bool _nisCodeChecked;
         public bool NISCodeChecked
@@ -124,25 +218,6 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private bool _activeButtonMarkeer;
-        public bool ActiveButtonMarkeer
-        {
-            get { return _activeButtonMarkeer; }
-            set
-            {
-                SetProperty(ref _activeButtonMarkeer, value);
-            }
-        }
-
-        private bool _activeButtonSave;
-        public bool ActiveButtonSave
-        {
-            get { return _activeButtonSave; }
-            set
-            {
-                SetProperty(ref _activeButtonSave, value);
-            }
-        }
 
         private ObservableCollection<municipality> _listGemeente;
         public ObservableCollection<municipality> ListGemeente
@@ -269,8 +344,7 @@ namespace GeoPunt.Dockpanes
 
         private void gemeenteSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
             ListDepartments = new ObservableCollection<department>();
             ListSecties = new ObservableCollection<section>();
             ListParcels = new ObservableCollection<parcel>();
@@ -285,8 +359,7 @@ namespace GeoPunt.Dockpanes
 
         public void departmentSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
             ListSecties = new ObservableCollection<section>();
             ListParcels = new ObservableCollection<parcel>();
 
@@ -296,14 +369,13 @@ namespace GeoPunt.Dockpanes
             if (niscode == "" || niscode == null) return;
             if (depCode == "" || depCode == null) return;
 
-            List<datacontract.section> secties = capakey.getSecties(int.Parse(niscode), int.Parse(depCode)).sections;
+            List<section> secties = capakey.getSecties(int.Parse(niscode), int.Parse(depCode)).sections;
             ListSecties = new ObservableCollection<section>(secties);
         }
 
         public void sectieSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
             ListParcels = new ObservableCollection<parcel>();
 
             string niscode = SelectedListGemeente.municipalityCode;
@@ -318,44 +390,9 @@ namespace GeoPunt.Dockpanes
             ListParcels = new ObservableCollection<parcel>(parcels);
         }
 
-        public void updatePercelFromSelectedPerceelToSave(Graphic graphic)
-        {
-            if (graphic == null)
-            {
-                return;
-            }
-
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
-
-            if (graphic.Attributes["Gemeente"] == null || graphic.Attributes["Gemeente"].ToString() == "") return;
-            if (graphic.Attributes["Department"] == null || graphic.Attributes["Department"].ToString() == "") return;
-            if (graphic.Attributes["Sectie"] == null || graphic.Attributes["Sectie"].ToString() == "") return;
-            if (graphic.Attributes["Perceel"] == null || graphic.Attributes["Perceel"].ToString() == "") return;
-
-            ActiveButtonMarkeer = true;
-
-            if (ListStringPercel.Contains(graphic.Attributes["Perceel"].ToString()))
-            {
-                TextMarkeer = "Verwijder markering";
-            }
-            else
-            {
-                TextMarkeer = "Markeer";
-            }
-
-            perceelToSave = capakey.getParcel(
-                int.Parse(municipality2nis(graphic.Attributes["Gemeente"].ToString())),
-                int.Parse(department2code(graphic.Attributes["Department"].ToString())),
-                graphic.Attributes["Sectie"].ToString(),
-                graphic.Attributes["Perceel"].ToString(),
-                DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
-        }
-
         public void parcelSelectionChange()
         {
-            ActiveButtonSave = false;
-            ActiveButtonMarkeer = false;
+            PerceelExist = false;
 
             string niscode = SelectedListGemeente.municipalityCode;
 
@@ -369,10 +406,9 @@ namespace GeoPunt.Dockpanes
             if (sectie == "" || sectie == null) return;
             if (parcelNr == "" || parcelNr == null) return;
 
-            ActiveButtonSave = true;
 
-            perceel = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
-                                                   DataHandler.CRS.Lambert72, DataHandler.capakeyGeometryType.full);
+            Perceel = capakey.getParcel(int.Parse(niscode), int.Parse(depCode), sectie, parcelNr,
+                                                   CRS.Lambert72, capakeyGeometryType.full);
 
 
         }
@@ -381,28 +417,28 @@ namespace GeoPunt.Dockpanes
         {
             if (muniName == null || muniName == "") return "";
 
-            var niscodes = (
+            var niscodes =
                 from n in municipalities
                 where n.municipalityName == muniName
-                select n.municipalityCode);
+                select n.municipalityCode;
 
             if (niscodes.Count() == 0) return "";
 
-            return niscodes.First<string>();
+            return niscodes.First();
         }
 
         private string department2code(string depName)
         {
             if (depName == null || depName == "") return "";
 
-            var depcodes = (
+            var depcodes =
                 from n in departments
                 where n.departmentName == depName
-                select n.departmentCode);
+                select n.departmentCode;
 
             if (depcodes.Count() == 0) return "";
 
-            return depcodes.First<string>();
+            return depcodes.First();
         }
 
 
@@ -415,7 +451,7 @@ namespace GeoPunt.Dockpanes
             }
         }
 
-        private CIMPointSymbol CreatePoinSymbol(System.Drawing.Color color, double size)
+        private CIMPointSymbol CreatePoinSymbol(Color color, double size)
         {
             var pointSymbol = SymbolFactory.Instance.ConstructPointSymbol(ColorFactory.Instance.CreateColor(color), size, SimpleMarkerStyle.Square);
             pointSymbol.UseRealWorldSymbolSizes = true;
@@ -433,12 +469,12 @@ namespace GeoPunt.Dockpanes
                 {
                     overlay.Dispose();
                 }
-                _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
+                _overlayObjectPerceel = new ObservableCollection<IDisposable>();
             }
         }
 
-        private static ObservableCollection<System.IDisposable> _overlayObjectPerceel = new ObservableCollection<System.IDisposable>();
-        private static ObservableCollection<System.IDisposable> _overlayObjectPerceelToMarkeer = new ObservableCollection<System.IDisposable>();
+        private static ObservableCollection<IDisposable> _overlayObjectPerceel = new ObservableCollection<IDisposable>();
+        private static ObservableCollection<IDisposable> _overlayObjectPerceelToMarkeer = new ObservableCollection<IDisposable>();
 
 
         private Polygon CreateParcelPolygon(string capakeyResponse, geojson Geom)
@@ -448,10 +484,10 @@ namespace GeoPunt.Dockpanes
             if (Geom.type == "MultiPolygon")
             {
 
-                datacontract.geojsonMultiPolygon muniPolygons =
-                                  JsonConvert.DeserializeObject<datacontract.geojsonMultiPolygon>(capakeyResponse);
+                geojsonMultiPolygon muniPolygons =
+                                  JsonConvert.DeserializeObject<geojsonMultiPolygon>(capakeyResponse);
 
-                foreach (datacontract.geojsonPolygon poly in muniPolygons.toPolygonList())
+                foreach (geojsonPolygon poly in muniPolygons.toPolygonList())
                 {
                     MessageBox.Show($@"Multipolygones :: {poly}");
 
@@ -460,8 +496,8 @@ namespace GeoPunt.Dockpanes
             }
             else if (Geom.type == "Polygon")
             {
-                datacontract.geojsonPolygon municipalityPolygon =
-                            JsonConvert.DeserializeObject<datacontract.geojsonPolygon>(capakeyResponse);
+                geojsonPolygon municipalityPolygon =
+                            JsonConvert.DeserializeObject<geojsonPolygon>(capakeyResponse);
                 MapPoint MapPointFromPolygone = null;
                 LisPointsFromPolygones.Clear();
 
@@ -496,11 +532,11 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
 
-                    if (perceel != null)
+                    if (Perceel != null)
                     {
-                        
-                        geojson geojson = JsonConvert.DeserializeObject<geojson>(perceel.geometry.shape);
-                        Polygon polygon = CreateParcelPolygon(perceel.geometry.shape, geojson);
+
+                        geojson geojson = JsonConvert.DeserializeObject<geojson>(Perceel.geometry.shape);
+                        Polygon polygon = CreateParcelPolygon(Perceel.geometry.shape, geojson);
                         utils.ZoomTo(polygon);
 
                     }
@@ -529,7 +565,7 @@ namespace GeoPunt.Dockpanes
                 return new RelayCommand(async () =>
                 {
 
-                    utils.ZoomTo(TempGeometry);
+                    utils.ZoomTo(SelectedGraphic.Geometry);
                 });
             }
         }
@@ -540,11 +576,11 @@ namespace GeoPunt.Dockpanes
             {
                 return new RelayCommand(async () =>
                 {
-                    if (perceel != null)
+                    if (Perceel != null)
                     {
 
-                        geojson geojson = JsonConvert.DeserializeObject<geojson>(perceel.geometry.shape);
-                        Polygon polygon = CreateParcelPolygon(perceel.geometry.shape, geojson);
+                        geojson geojson = JsonConvert.DeserializeObject<geojson>(Perceel.geometry.shape);
+                        Polygon polygon = CreateParcelPolygon(Perceel.geometry.shape, geojson);
 
 
                         Graphic graphic = new Graphic(new Dictionary<string, object>
