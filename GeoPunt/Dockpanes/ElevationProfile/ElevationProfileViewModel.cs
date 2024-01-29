@@ -697,13 +697,13 @@ namespace GeoPunt.Dockpanes.ElevationProfile
                 Graphic graphicToHighligh = ElevationData[index];
 
 
-                ArcGIS.Core.Geometry.Polygon buffer = GeometryEngine.Instance.Buffer(graphicToHighligh.Geometry, graphicToHighligh.Geometry.Length) as ArcGIS.Core.Geometry.Polygon;
+                ArcGIS.Core.Geometry.Polygon buffer = GeometryEngine.Instance.GeodesicBuffer(graphicToHighligh.Geometry, 10,LinearUnit.Meters) as ArcGIS.Core.Geometry.Polygon;
 
                 CIMStroke outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 2.0, SimpleLineStyle.Solid);
                 CIMPolygonSymbol polygonSym = SymbolFactory.Instance.ConstructPolygonSymbol(CIMColor.NoColor(), SimpleFillStyle.ForwardDiagonal, outline);
 
                 highLightDisposables.Add(MapView.Active.AddOverlay(buffer, polygonSym.MakeSymbolReference()));
-
+                 
             });
 
         }
