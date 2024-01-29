@@ -50,7 +50,7 @@
             <Button x:Name="test" Style="{DynamicResource Esri_Button}" Grid.Column="0"  Height="20" Command="{Binding CmdActiveDraw}"  Content="Teken de profiellijn"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="2"  Height="20" Command="{Binding CmdAddWCSRaster}"  Content="Voeg hoogtemodel toe"/>
             <Button Style="{DynamicResource Esri_Button}" Grid.Column="3"  Height="20" Command="{Binding CmdAddLayer}"  Content="Voeg WMS toe"/>
-            <Label Grid.Row="1">Voeg eerst de WCS toe aan de kaart</Label>
+            <Label Grid.Row="1">Voeg eerst hierboven het Hoogtemodel toe</Label>
             
         </Grid>
 
