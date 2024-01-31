@@ -431,7 +431,7 @@ namespace GeoPunt.Dockpanes.Catalogus
             {
 
                 
-                string selectedType = SelectedType.Key == "None" || SelectedType.Key == null ? "" : SelectedType.Key;
+                string selectedType = SelectedType.Key == "None" || SelectedType.Key == null ? "" : SelectedType.Value;
 
                 metaList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
 

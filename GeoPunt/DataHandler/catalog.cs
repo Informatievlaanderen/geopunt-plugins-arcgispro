@@ -130,11 +130,11 @@ namespace GeoPunt.DataHandler
             if (orgName != "" && orgName != null) facets.Add("orgName/" + orgName);
             if (dataType != "" && dataType != null) facets.Add("type/" + dataType);
             if (siteId != "" && siteId != null) facets.Add("sourceCatalog/" + siteId);
-            if (inspiretheme != "" && inspiretheme != null) facets.Add("inspiretheme/" + inspiretheme);
+            if (inspiretheme != "" && inspiretheme != null) facets.Add("inspireTheme/" + inspiretheme);
 
             if (facets.Count() > 0)
             {
-                qryValues.Add("facet.q", HttpUtility.UrlEncode(String.Join("&", facets.ToArray())));
+                qryValues.Add("facet.q", HttpUtility.UrlEncode(String.Join("&", facets.Select(facet => facet.Replace("&", "%26")).ToArray())));
             }
 
             client.QueryString = qryValues;
