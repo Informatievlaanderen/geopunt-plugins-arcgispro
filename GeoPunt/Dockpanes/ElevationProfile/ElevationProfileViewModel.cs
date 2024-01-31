@@ -72,6 +72,7 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             PlotControl.Plot.YLabel("Hoogte (m)");
             PlotControl.Plot.Title("Hoogteprofiel");
             PlotControl.MouseMove += PlotControl_MouseMove;
+            PlotControl.MouseLeave += PlotControl_MouseLeave;
             PlotControl.Refresh();
 
             ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
@@ -121,6 +122,15 @@ namespace GeoPunt.Dockpanes.ElevationProfile
             {
                 ClearDisposables();
                 utils.UpdateMarking(new List<Polyline>());
+
+            }
+            else if (_profileLine != null)
+            {
+
+                QueuedTask.Run(() =>
+                {
+                    utils.UpdateMarking(new List<Polyline>() { ProfileLine });
+                });
 
             }
         }
@@ -661,6 +671,17 @@ namespace GeoPunt.Dockpanes.ElevationProfile
         #endregion
 
         #region Events
+
+
+        private void PlotControl_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ClearDisposables();
+            if (ScatterPlot != null && HighlightPlot != null)
+            {
+                HighlightPlot.IsVisible = false;
+                PlotControl.Render();
+            }
+        }
 
         private void PlotControl_MouseMove(object sender, MouseEventArgs e)
         {
