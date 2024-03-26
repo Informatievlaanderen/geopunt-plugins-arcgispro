@@ -502,7 +502,7 @@ namespace GeoPunt.Dockpanes.CSVFile
                     if (csvDataTbl.Rows.Count == maxRowCount)
                     {
                         string msg = string.Format(
-                          "Maximaal aantal van {0} rijen overschreden, enkel de eerste {0} rijen worden getoont.", maxRowCount);
+                          "Maximaal aantal van {0} rijen overschreden, enkel de eerste {0} rijen worden getoond.", maxRowCount);
                         System.Windows.MessageBox.Show(msg, "Maximaal aantal rijen overschreden.");
                         //csvErrorLbl.Text = msg;
                     }
