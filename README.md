@@ -2,7 +2,7 @@
 
 This project aims to migrate the add-in developed for ArcMap to ArcGIS Pro in collaboration with Vlaams Overheid and ESRI Belux.
 
-Link to the old plugin: [Geopunt4ArcGIS](https://github.com/warrieka/geopunt4arcgis)
+Link to the old plugin: [Geopunt4ArcGIS](https://github.com/Informatievlaanderen/geopunt-plugins-arcgismap)
 
 ## Description
 
