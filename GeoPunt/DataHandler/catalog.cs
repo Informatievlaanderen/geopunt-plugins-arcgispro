@@ -150,18 +150,11 @@ namespace GeoPunt.DataHandler
         }
 
 
-        public datacontract.catalogResponse search(string searchfield = "", int offset = 0, int limit = 21,
+        public datacontract.catalogResponse search(string keyword = "", int offset = 0, int limit = 21,
            string themekey = "", string orgName = "", string dataType = "", string siteId = "", string inspiretheme = "")
         {
             qryValues.Add("sort", "title:asc");
-            if (searchfield == "" || searchfield == null) 
-            { 
-                qryValues.Add("searchfield", "any"); 
-            } 
-            else
-            {
-                qryValues.Add("searchfield", searchfield);
-            };
+            qryValues.Add("q", keyword); 
             qryValues.Add("offset", offset.ToString());
             qryValues.Add("limit", limit.ToString());
 
