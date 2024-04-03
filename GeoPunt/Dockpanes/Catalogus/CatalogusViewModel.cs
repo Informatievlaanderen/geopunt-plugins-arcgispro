@@ -7,6 +7,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Core.CommonControls;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Mapping.Events;
+using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using geopunt4Arcgis;
 using ScottPlot;
@@ -26,7 +27,7 @@ namespace GeoPunt.Dockpanes.Catalogus
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_Catalogus_Catalogus";
         private catalog clg;
-        private datacontract.metadataResponse metaList = null;
+        private datacontract.catalogResponse cataList = null;
 
 
         protected CatalogusViewModel()
@@ -70,13 +71,13 @@ namespace GeoPunt.Dockpanes.Catalogus
 
 
 
-    public void initGui()
+        public void initGui()
         {
             clg = new catalog(timeout: 8000);
 
-            ListKeyword = new ObservableCollection<string>(
-                clg.getKeyWords()
-                );
+            //ListKeyword = new ObservableCollection<string>(
+            //    clg.getKeyWords()
+            //    );
 
             ListGDIThema = new ObservableCollection<string>(
                 clg.getGDIthemes()
@@ -97,7 +98,6 @@ namespace GeoPunt.Dockpanes.Catalogus
 
             Dictionary<string, string> dictionaryWithEmptyValue = new Dictionary<string, string> { { "None", "" } };
 
-            ListDataSource = new ObservableDictionary<string, string>(dictionaryWithEmptyValue.Concat(clg.getSources()).ToDictionary(x => x.Key, x => x.Value));
             ListType = new ObservableDictionary<string, string>(dictionaryWithEmptyValue.Concat(clg.dataTypes).ToDictionary(x => x.Key, x => x.Value));
 
 
@@ -139,6 +139,22 @@ namespace GeoPunt.Dockpanes.Catalogus
             set
             {
                 SetProperty(ref _selectedKeyword, value);
+                if (_selectedKeyword != null && _selectedKeyword.Trim() != "")
+                {
+                    try
+                    {
+                        ListKeyword = new ObservableCollection<string>(
+                        clg.getKeyWords(_selectedKeyword)
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        ListKeyword = new ObservableCollection<string>();
+                        Debug.WriteLine(ex.ToString());
+                        throw;
+                    }
+
+                }
             }
         }
 
@@ -271,10 +287,22 @@ namespace GeoPunt.Dockpanes.Catalogus
 
                 if (_selectedResultSearch != null)
                 {
-                    if (metaList.geturl(_selectedResultSearch, "Esri Rest API", 0)) ButtonDownloadIsEnable = true;
-                    if (metaList.geturl(_selectedResultSearch, "OGC:WMS")) ButtonWMSIsEnable = true;
+                    StackPanelControl.Children.Clear();
+                    string selVal = SelectedResultSearch;
+                    datacontract.catalogRecord cataObj = (from n in cataList.catalogRecords
+                                                          where n.Title == _selectedResultSearch
+                                                          select n).ToList().FirstOrDefault();
+                    if (cataObj != null)
+                    {
+                        catalogRecordInfo catalogrecordInfo = clg.searchCatalogRecordInfo(cataObj.ID);
 
-                    updateInfo();
+
+                        updateInfo(catalogrecordInfo);
+                    }
+
+
+
+
                 }
             }
         }
@@ -315,7 +343,7 @@ namespace GeoPunt.Dockpanes.Catalogus
         }
 
 
-        
+
 
         private string _linkFiche = "";
 
@@ -423,22 +451,23 @@ namespace GeoPunt.Dockpanes.Catalogus
         {
             ListResultSearch = new ObservableCollection<string>();
             TextStatus = "";
-            
+
             StackPanelControl.Children.Clear();
             SearchIsNotBusy = false;
-            
+
             try
             {
 
-                
+
                 string selectedType = SelectedType.Key == "None" || SelectedType.Key == null ? "" : SelectedType.Value;
 
-                metaList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
+                // cataList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
+                cataList = clg.search(SelectedKeyword, 0, 100, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
 
-                if (metaList.to != 0)
+                if (cataList.TotalItems != 0)
                 {
                     updateFilter();
-                    TextStatus = string.Format("Aantal records gevonden: {0}", metaList.summary.count);
+                    TextStatus = string.Format("Aantal records gevonden: {0}", cataList.TotalItems);
                 }
                 else
                 {
@@ -486,30 +515,30 @@ namespace GeoPunt.Dockpanes.Catalogus
                         ListResultSearch = new ObservableCollection<string>(terms);
                     }
                     break;
-                case "WMS":
-                    terms = filterWMS();
-                    if (terms != null)
-                    {
-                        terms.RemoveAll(e => e == null);
-                        ListResultSearch = new ObservableCollection<string>(terms);
-                    }
-                    break;
-                case "Arcgis service":
-                    terms = filterAGS();
-                    if (terms != null)
-                    {
-                        terms.RemoveAll(e => e == null);
-                        ListResultSearch = new ObservableCollection<string>(terms);
-                    }
-                    break;
-                case "Download":
-                    terms = filterDL();
-                    if (terms != null)
-                    {
-                        terms.RemoveAll(e => e == null);
-                        ListResultSearch = new ObservableCollection<string>(terms);
-                    }
-                    break;
+                //case "WMS":
+                //    terms = filterWMS();
+                //    if (terms != null)
+                //    {
+                //        terms.RemoveAll(e => e == null);
+                //        ListResultSearch = new ObservableCollection<string>(terms);
+                //    }
+                //    break;
+                //case "Arcgis service":
+                //    terms = filterAGS();
+                //    if (terms != null)
+                //    {
+                //        terms.RemoveAll(e => e == null);
+                //        ListResultSearch = new ObservableCollection<string>(terms);
+                //    }
+                //    break;
+                //case "Download":
+                //    terms = filterDL();
+                //    if (terms != null)
+                //    {
+                //        terms.RemoveAll(e => e == null);
+                //        ListResultSearch = new ObservableCollection<string>(terms);
+                //    }
+                //    break;
                 default:
                     break;
             }
@@ -517,73 +546,62 @@ namespace GeoPunt.Dockpanes.Catalogus
 
 
 
-        private void updateInfo()
+        private void updateInfo(catalogRecordInfo catalogrecordInfo)
         {
 
             StackPanelControl.Children.Clear();
-            string selVal = SelectedResultSearch;
-            List<datacontract.metadata> metaObjs = (from n in metaList.metadataRecords
-                                                    where n.title == selVal
-                                                    select n).ToList();
-            if (metaObjs.Count > 0)
+
+
+            System.Windows.Controls.TextBlock titleTextBlock = new System.Windows.Controls.TextBlock();
+            titleTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
+            titleTextBlock.Margin = new System.Windows.Thickness(2);
+            StackPanelControl.Children.Add(titleTextBlock);
+            titleTextBlock.Inlines.Add(new System.Windows.Documents.Run(catalogrecordInfo.CatalogRecordExtra.Title) { FontWeight = System.Windows.FontWeights.Bold, FontSize = 24 });
+
+
+            System.Windows.Controls.TextBlock descriptionTextBlock = new System.Windows.Controls.TextBlock();
+            descriptionTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
+            descriptionTextBlock.Margin = new System.Windows.Thickness(2);
+            StackPanelControl.Children.Add(descriptionTextBlock);
+            descriptionTextBlock.Inlines.Add(new System.Windows.Documents.Run(catalogrecordInfo.CatalogRecordExtra.Description));
+
+
+            ButtonNavigateResultIsEnabled = true;
+            LinkFiche = catalogrecordInfo.Url;
+
+
+            System.Windows.Controls.StackPanel linkContainer = new System.Windows.Controls.StackPanel();
+            StackPanelControl.Children.Add(linkContainer);
+            if (catalogrecordInfo.CatalogRecordExtra.Distributions != null && catalogrecordInfo.CatalogRecordExtra.Distributions.Count() > 0)
             {
 
-
-
-
-
-                datacontract.metadata metaObj = metaObjs[0];
-
-                System.Windows.Controls.TextBlock titleTextBlock = new System.Windows.Controls.TextBlock();
-                titleTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
-                titleTextBlock.Margin = new System.Windows.Thickness(2);
-                StackPanelControl.Children.Add(titleTextBlock);
-                titleTextBlock.Inlines.Add(new System.Windows.Documents.Run(metaObj.title) { FontWeight = System.Windows.FontWeights.Bold, FontSize = 24 });
-
-
-                System.Windows.Controls.TextBlock descriptionTextBlock = new System.Windows.Controls.TextBlock();
-                descriptionTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
-                descriptionTextBlock.Margin = new System.Windows.Thickness(2);
-                StackPanelControl.Children.Add(descriptionTextBlock);
-                descriptionTextBlock.Inlines.Add(new System.Windows.Documents.Run(metaObj.description));
-
-
-                ButtonNavigateResultIsEnabled = true;
-                LinkFiche = $@"https://metadata.vlaanderen.be/srv/dut/catalog.search#/metadata/{metaObj.geonet.uuid}";
-
-
-                System.Windows.Controls.Grid linkContainer = new System.Windows.Controls.Grid();
-                StackPanelControl.Children.Add(linkContainer);
-                if (metaObj.links != null && metaObj.links.Count() > 0)
+                foreach (catalogDistribution distribution in catalogrecordInfo.CatalogRecordExtra.Distributions)
                 {
 
-                    foreach (string link in metaObj.links)
+                    if (distribution.AccessUrl != null)
                     {
-                        string[] links = link.Split('|');
-                        if (links[3].ToUpper().Contains("DOWNLOAD"))
-                        {
-                            string url = links[2];
-                            string name = (string.IsNullOrEmpty(links[0])) ? links[1] : links[0];
+                        string url = distribution.AccessUrl;
+                        string name = distribution.Title;
 
-                            //bulleted[i] = "\u2022" + unbulleted[i];
-                            System.Windows.Documents.Hyperlink hyperlink = new System.Windows.Documents.Hyperlink();
-                            string linkName = $@"   •   {name}";
-                            hyperlink.Inlines.Add(linkName);
-                            hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
-                            hyperlink.NavigateUri = new Uri(url);
+                        //bulleted[i] = "\u2022" + unbulleted[i];
+                        System.Windows.Documents.Hyperlink hyperlink = new System.Windows.Documents.Hyperlink();
+                        string linkName = $@"   •   {name}/{distribution.Description}";
+                        hyperlink.Inlines.Add(linkName);
+                        hyperlink.RequestNavigate += Hyperlink_RequestNavigate;
+                        hyperlink.NavigateUri = new Uri(url);
 
-                            System.Windows.Controls.TextBlock hyperlinkTextBlock = new System.Windows.Controls.TextBlock();
-                            hyperlinkTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
-                            hyperlinkTextBlock.Margin = new System.Windows.Thickness(2,0,2,0);
-                            hyperlinkTextBlock.Inlines.Add(hyperlink);
+                        System.Windows.Controls.TextBlock hyperlinkTextBlock = new System.Windows.Controls.TextBlock();
+                        hyperlinkTextBlock.TextWrapping = System.Windows.TextWrapping.Wrap;
+                        hyperlinkTextBlock.Margin = new System.Windows.Thickness(2, 0, 2, 0);
+                        hyperlinkTextBlock.Inlines.Add(hyperlink);
 
 
-                            linkContainer.Children.Add(hyperlinkTextBlock);
-                        }
+                        linkContainer.Children.Add(hyperlinkTextBlock);
                     }
                 }
-
             }
+
+
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
@@ -597,7 +615,7 @@ namespace GeoPunt.Dockpanes.Catalogus
             //string arcName;
             //string arcUrl;
 
-            //bool hasArc = metaList.geturl(selVal, "Esri Rest API", out arcUrl, out arcName, 0);
+            //bool hasArc = cataList.geturl(selVal, "Esri Rest API", out arcUrl, out arcName, 0);
             //if (hasArc)
             //{
             //    arcUrl = arcUrl.Split('?')[0] + "?";
@@ -614,90 +632,90 @@ namespace GeoPunt.Dockpanes.Catalogus
 
         private void addWMS()
         {
-            string selVal = SelectedResultSearch;
+            //string selVal = SelectedResultSearch;
 
-            string lyrName; string wmsUrl;
+            //string lyrName; string wmsUrl;
 
-            bool hasWms = metaList.geturl(selVal, "OGC:WMS", out wmsUrl, out lyrName);
-            if (hasWms)
-            {
-                wmsUrl = wmsUrl.Split('?')[0] + "?";
+            //bool hasWms = cataList.geturl(selVal, "OGC:WMS", out wmsUrl, out lyrName);
+            //if (hasWms)
+            //{
+            //    wmsUrl = wmsUrl.Split('?')[0] + "?";
 
-                if (geopuntHelper.websiteExists(wmsUrl, true) == false)
-                {
-                    MessageBox.Show("Kan geen connectie maken met de Service.", "Connection timed out");
-                    return;
-                }
-                try
-                {
+            //    if (geopuntHelper.websiteExists(wmsUrl, true) == false)
+            //    {
+            //        MessageBox.Show("Kan geen connectie maken met de Service.", "Connection timed out");
+            //        return;
+            //    }
+            //    try
+            //    {
 
-                    if (MapView.Active == null)
-                    {
-                        MessageBox.Show("No map view active.");
-                        return;
-                    }
+            //        if (MapView.Active == null)
+            //        {
+            //            MessageBox.Show("No map view active.");
+            //            return;
+            //        }
 
-                    // TODO change below part to make able to select which layer to add
+            //        // TODO change below part to make able to select which layer to add
 
-                    var serverConnection = new CIMInternetServerConnection { URL = wmsUrl };
-                    var connection = new CIMWMSServiceConnection { ServerConnection = serverConnection };
+            //        var serverConnection = new CIMInternetServerConnection { URL = wmsUrl };
+            //        var connection = new CIMWMSServiceConnection { ServerConnection = serverConnection };
 
-                    // Add a new layer to the map
-                    var layerParams = new LayerCreationParams(connection);
+            //        // Add a new layer to the map
+            //        var layerParams = new LayerCreationParams(connection);
 
 
-                    QueuedTask.Run(() =>
-                    {
+            //        QueuedTask.Run(() =>
+            //        {
 
-                        try
-                        {
-                            LayerFactory.Instance.CreateLayer<WMSLayer>(layerParams, MapView.Active.Map);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message, $@"Error trying to add layer");
-                        }
-                    });
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
-                }
-            }
+            //            try
+            //            {
+            //                LayerFactory.Instance.CreateLayer<WMSLayer>(layerParams, MapView.Active.Map);
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                MessageBox.Show(ex.Message, $@"Error trying to add layer");
+            //            }
+            //        });
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
+            //    }
+            //}
         }
 
 
 
 
-        private List<string> filterDL()
-        {
-            if (metaList == null) return null;
-            return (from g in metaList.metadataRecords
-                    where metaList.geturl(g.title, "DOWNLOAD")
-                    select g.title).ToList<string>();
-        }
+        //private List<string> filterDL()
+        //{
+        //    if (cataList == null) return null;
+        //    return (from g in cataList.catalogRecords
+        //            where cataList.geturl(g.Title, "DOWNLOAD")
+        //            select g.Title).ToList<string>();
+        //}
 
-        private List<string> filterWMS()
-        {
-            if (metaList == null) return null;
-            return (from g in metaList.metadataRecords
-                    where metaList.geturl(g.title, "OGC:WMS")
-                    select g.title).ToList<string>();
-        }
+        //private List<string> filterWMS()
+        //{
+        //    if (cataList == null) return null;
+        //    return (from g in cataList.catalogRecords
+        //            where cataList.geturl(g.Title, "OGC:WMS")
+        //            select g.Title).ToList<string>();
+        //}
 
-        private List<string> filterAGS()
-        {
-            if (metaList == null) return null;
-            return (from g in metaList.metadataRecords
-                    where metaList.geturl(g.title, "Esri Rest API", 0)
-                    select g.title).ToList<string>();
-        }
+        //private List<string> filterAGS()
+        //{
+        //    if (cataList == null) return null;
+        //    return (from g in cataList.catalogRecords
+        //            where cataList.geturl(g.Title, "Esri Rest API", 0)
+        //            select g.Title).ToList<string>();
+        //}
 
         private List<string> geenFilter()
         {
-            if (metaList == null) return null;
-            return (from g in metaList.metadataRecords
-                    select g.title).ToList<string>();
+            if (cataList == null) return null;
+            return (from g in cataList.catalogRecords
+                    select g.Title).ToList<string>();
         }
 
 
