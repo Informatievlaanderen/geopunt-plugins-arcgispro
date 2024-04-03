@@ -457,8 +457,8 @@ namespace GeoPunt.Dockpanes.Catalogus
                 string selectedType = SelectedType.Key == "None" || SelectedType.Key == null ? "" : SelectedType.Value;
                 string selectedInspireThema = SelectedInspireThema.Key == "None" || SelectedInspireThema.Key == null ? "" : SelectedInspireThema.Key;
 
-                // cataList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", selectedInspireThema);
-                cataList = clg.search(SelectedKeyword, 0, 100, SelectedGDIThema, SelectedOrganisationName, selectedType, "", selectedInspireThema);
+                cataList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", selectedInspireThema);
+                // cataList = clg.search(SelectedKeyword, 0, 100, SelectedGDIThema, SelectedOrganisationName, selectedType, "", selectedInspireThema);
 
                 if (cataList.TotalItems != 0)
                 {
