@@ -22,7 +22,7 @@ namespace GeoPunt.datacontract
         public geonet geonet { get; set; }
     }
 
-    public class catalogrecord
+    public class catalogRecord
     {
         [JsonProperty("@id")]
         public string ID { get; set; }
@@ -44,16 +44,57 @@ namespace GeoPunt.datacontract
         public string Modified { get; set; }
 
 
-        [JsonProperty("format")]
-        [JsonConverter(typeof(CustomArrayConverter<string>))]
-        public List<string> Formats { get; set; }
+        //[JsonProperty("format")]
+        //[JsonConverter(typeof(CustomArrayConverter<string>))]
+        //public List<string> Formats { get; set; }
 
-        [JsonProperty("accessRights")]
-        public string AccessRights { get; set; }
 
     }
 
-    
+    public class catalogRecordExtra : catalogRecord
+    {
+        
+
+        [JsonProperty("distribution")]
+        [JsonConverter(typeof(CustomArrayConverter<catalogDistribution>))]
+        public List<catalogDistribution> Distributions { get; set; }
+    }
+
+
+
+    public class catalogDistribution : catalogRecord
+    {
+
+
+        [JsonProperty("downloadUrl")]
+        public string DownloadUrl { get; set; }
+
+
+
+        [JsonProperty("accessUrl")]
+        public string AccessUrl { get; set; }
+        
+        
+
+    }
+
+
+
+    public class catalogRecordInfo
+    {   
+        [JsonProperty("identifier")]
+        public string Identifier { get; set; }
+
+        [JsonProperty("url")]
+        public string Url { get; set; }
+
+        [JsonProperty("modified")]
+        public string Modified { get; set; }
+
+        [JsonProperty("primaryTopic")]
+        public catalogRecordExtra CatalogRecordExtra { get; set; }
+
+    }
 
     public class geonet
     {
@@ -124,8 +165,14 @@ namespace GeoPunt.datacontract
         
 
         [JsonProperty("member")]
-        public List<catalogrecord> catalogRecords { get; set; }
+        public List<catalogRecord> catalogRecords { get; set; }
 
+    }
+
+    public class catalogRecordInfoResponse
+    {
+        [JsonProperty("catalogRecord")]
+        public catalogRecordInfo CatalogRecord { get; set; }
     }
 
 
