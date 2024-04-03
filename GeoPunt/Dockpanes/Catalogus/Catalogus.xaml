@@ -130,6 +130,7 @@
 
 
             <Button Grid.Column="2" Style="{DynamicResource Esri_Button}"  Content="WMS toevoegen" Margin="5" IsEnabled="{Binding ButtonWMSIsEnable}" Command="{Binding CmdAddWms}"/>
+            <!--<Button Grid.Column="3" Style="{DynamicResource Esri_Button}"  Content="WFS toevoegen" Margin="5" IsEnabled="{Binding ButtonWFSIsEnable}" Command="{Binding CmdAddWfs}"/>-->
 
 
 

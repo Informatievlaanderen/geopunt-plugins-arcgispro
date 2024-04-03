@@ -270,6 +270,7 @@ namespace GeoPunt.Dockpanes.Catalogus
                 SetProperty(ref _selectedResultSearch, value);
 
                 ButtonWMSIsEnable = false;
+                ButtonWFSIsEnable = false;
                 ButtonNavigateResultIsEnabled = false;
                 LinkFiche = "";
 
@@ -374,6 +375,30 @@ namespace GeoPunt.Dockpanes.Catalogus
             }
         }
 
+        private bool _buttonWFSIsEnable = false;
+        public bool ButtonWFSIsEnable
+        {
+            get { return _buttonWFSIsEnable; }
+            set
+            {
+                SetProperty(ref _buttonWFSIsEnable, value);
+                if (!ButtonWFSIsEnable)
+                {
+                    WFSUrl = null;
+                }
+            }
+        }
+
+        private string _wfsUrl;
+        public string WFSUrl
+        {
+            get { return _wfsUrl; }
+            set
+            {
+                SetProperty(ref _wfsUrl, value);
+            }
+        }
+
 
 
 
@@ -406,6 +431,15 @@ namespace GeoPunt.Dockpanes.Catalogus
                 return new RelayCommand(() => { addWMS(); });
             }
         }
+
+        public ICommand CmdAddWfs
+        {
+            get
+            {
+                return new RelayCommand(() => { addWFS(); });
+            }
+        }
+
 
 
         private void search()
@@ -505,6 +539,15 @@ namespace GeoPunt.Dockpanes.Catalogus
 
             }
 
+            if (catalogrecordInfo.CatalogRecordExtra.Subject.Any(p => p.Label == "OGC:WFS"))
+            {
+                ButtonWFSIsEnable = true;
+                WFSUrl = catalogrecordInfo.CatalogRecordExtra.EndpointUrl;
+
+            }
+
+            
+
                 if (catalogrecordInfo.CatalogRecordExtra.Distributions != null && catalogrecordInfo.CatalogRecordExtra.Distributions.Count() > 0)
             {
 
@@ -587,7 +630,49 @@ namespace GeoPunt.Dockpanes.Catalogus
             }
         }
 
+        private void addWFS()
+        {
 
+            if (WFSUrl != null && WFSUrl != "")
+            {
+
+                try
+                {
+
+                    if (MapView.Active == null)
+                    {
+                        MessageBox.Show("No map view active.");
+                        return;
+                    }
+
+                    // TODO change below part to make able to select which layer to add
+
+                    var serverConnection = new CIMInternetServerConnection { URL = WFSUrl };
+                    var connection = new CIMWFSServiceConnection { ServerConnection = serverConnection };
+
+                    // Add a new layer to the map
+                    var layerParams = new LayerCreationParams(connection);
+
+
+                    QueuedTask.Run(() =>
+                    {
+
+                        try
+                        {
+                            LayerFactory.Instance.CreateLayer<FeatureLayer>(layerParams, MapView.Active.Map);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, $@"Error trying to add layer");
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
+                }
+            }
+        }
 
 
         //private List<string> filterDL()
