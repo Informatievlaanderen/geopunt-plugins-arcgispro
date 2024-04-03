@@ -22,80 +22,6 @@ namespace GeoPunt.datacontract
         public geonet geonet { get; set; }
     }
 
-    public class catalogRecord
-    {
-        [JsonProperty("@id")]
-        public string ID { get; set; }
-
-        [JsonProperty("@type")]
-        public string Type { get; set; }
-
-        [JsonProperty("identifier")]
-        public string Identifier { get; set; }
-
-        [JsonProperty("title")]
-        public string Title { get; set; }
-
-        [JsonProperty("description")]
-        public string Description { get; set; }
-
-
-        [JsonProperty("modified")]
-        public string Modified { get; set; }
-
-
-        //[JsonProperty("format")]
-        //[JsonConverter(typeof(CustomArrayConverter<string>))]
-        //public List<string> Formats { get; set; }
-
-
-    }
-
-    public class catalogRecordExtra : catalogRecord
-    {
-        
-
-        [JsonProperty("distribution")]
-        [JsonConverter(typeof(CustomArrayConverter<catalogDistribution>))]
-        public List<catalogDistribution> Distributions { get; set; }
-    }
-
-
-
-    public class catalogDistribution : catalogRecord
-    {
-
-
-        [JsonProperty("downloadUrl")]
-        public string DownloadUrl { get; set; }
-
-
-
-        [JsonProperty("accessUrl")]
-        public string AccessUrl { get; set; }
-        
-        
-
-    }
-
-
-
-    public class catalogRecordInfo
-    {   
-        [JsonProperty("identifier")]
-        public string Identifier { get; set; }
-
-        [JsonProperty("url")]
-        public string Url { get; set; }
-
-        [JsonProperty("modified")]
-        public string Modified { get; set; }
-
-        [JsonProperty("primaryTopic")]
-        public catalogRecordExtra CatalogRecordExtra { get; set; }
-
-    }
-
     public class geonet
     {
         public int id { get; set; }
@@ -155,24 +81,6 @@ namespace GeoPunt.datacontract
             return geturl(searchText, stype, out wmsUrl, out wmsLayer, field_idx);
         }
         #endregion
-    }
-
-    public class catalogResponse
-    {
-
-        [JsonProperty("totalItems")]
-        public int TotalItems { get; set; }
-        
-
-        [JsonProperty("member")]
-        public List<catalogRecord> catalogRecords { get; set; }
-
-    }
-
-    public class catalogRecordInfoResponse
-    {
-        [JsonProperty("catalogRecord")]
-        public catalogRecordInfo CatalogRecord { get; set; }
     }
 
 

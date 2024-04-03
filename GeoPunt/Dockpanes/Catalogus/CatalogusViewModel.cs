@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 
 namespace GeoPunt.Dockpanes.Catalogus
@@ -356,9 +357,22 @@ namespace GeoPunt.Dockpanes.Catalogus
             set
             {
                 SetProperty(ref _buttonWMSIsEnable, value);
+                if(!ButtonWMSIsEnable)
+                {
+                    WMSUrl = null;
+                }
             }
         }
 
+        private string _wmsUrl;
+        public string WMSUrl
+        {
+            get { return _wmsUrl; }
+            set
+            {
+                SetProperty(ref _wmsUrl, value);
+            }
+        }
 
 
 
@@ -482,7 +496,16 @@ namespace GeoPunt.Dockpanes.Catalogus
 
             System.Windows.Controls.StackPanel linkContainer = new System.Windows.Controls.StackPanel();
             StackPanelControl.Children.Add(linkContainer);
-            if (catalogrecordInfo.CatalogRecordExtra.Distributions != null && catalogrecordInfo.CatalogRecordExtra.Distributions.Count() > 0)
+
+
+            if (catalogrecordInfo.CatalogRecordExtra.Subject.Any(p => p.Label == "OGC:WMS"))
+            {
+                ButtonWMSIsEnable = true;
+                WMSUrl = catalogrecordInfo.CatalogRecordExtra.EndpointUrl;
+
+            }
+
+                if (catalogrecordInfo.CatalogRecordExtra.Distributions != null && catalogrecordInfo.CatalogRecordExtra.Distributions.Count() > 0)
             {
 
                 foreach (catalogDistribution distribution in catalogrecordInfo.CatalogRecordExtra.Distributions)
@@ -522,56 +545,46 @@ namespace GeoPunt.Dockpanes.Catalogus
 
         private void addWMS()
         {
-            //string selVal = SelectedResultSearch;
 
-            //string lyrName; string wmsUrl;
+            if (WMSUrl != null && WMSUrl != "")
+            {
+                
+                try
+                {
 
-            //bool hasWms = cataList.geturl(selVal, "OGC:WMS", out wmsUrl, out lyrName);
-            //if (hasWms)
-            //{
-            //    wmsUrl = wmsUrl.Split('?')[0] + "?";
+                    if (MapView.Active == null)
+                    {
+                        MessageBox.Show("No map view active.");
+                        return;
+                    }
 
-            //    if (geopuntHelper.websiteExists(wmsUrl, true) == false)
-            //    {
-            //        MessageBox.Show("Kan geen connectie maken met de Service.", "Connection timed out");
-            //        return;
-            //    }
-            //    try
-            //    {
+                    // TODO change below part to make able to select which layer to add
 
-            //        if (MapView.Active == null)
-            //        {
-            //            MessageBox.Show("No map view active.");
-            //            return;
-            //        }
+                    var serverConnection = new CIMInternetServerConnection { URL = WMSUrl };
+                    var connection = new CIMWMSServiceConnection { ServerConnection = serverConnection };
 
-            //        // TODO change below part to make able to select which layer to add
-
-            //        var serverConnection = new CIMInternetServerConnection { URL = wmsUrl };
-            //        var connection = new CIMWMSServiceConnection { ServerConnection = serverConnection };
-
-            //        // Add a new layer to the map
-            //        var layerParams = new LayerCreationParams(connection);
+                    // Add a new layer to the map
+                    var layerParams = new LayerCreationParams(connection);
 
 
-            //        QueuedTask.Run(() =>
-            //        {
+                    QueuedTask.Run(() =>
+                    {
 
-            //            try
-            //            {
-            //                LayerFactory.Instance.CreateLayer<WMSLayer>(layerParams, MapView.Active.Map);
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                MessageBox.Show(ex.Message, $@"Error trying to add layer");
-            //            }
-            //        });
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
-            //    }
-            //}
+                        try
+                        {
+                            LayerFactory.Instance.CreateLayer<WMSLayer>(layerParams, MapView.Active.Map);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, $@"Error trying to add layer");
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message + " : " + ex.StackTrace, "Error");
+                }
+            }
         }
 
 
