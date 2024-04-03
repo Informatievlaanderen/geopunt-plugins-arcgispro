@@ -128,11 +128,9 @@
                 <ColumnDefinition  Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Column="0" Margin="5" IsEditable="True" ItemsSource="{Binding ListFilter}" SelectedItem="{Binding SelectedFilter}"  />
-
 
             <Button Grid.Column="2" Style="{DynamicResource Esri_Button}"  Content="WMS toevoegen" Margin="5" IsEnabled="{Binding ButtonWMSIsEnable}" Command="{Binding CmdAddWms}"/>
-            <Button Grid.Column="3" Style="{DynamicResource Esri_Button}"  Content="ArcGIS service toevoegen" Margin="5" IsEnabled="{Binding ButtonDownloadIsEnable}" Command="{Binding CmdDownload}"/>
+
 
 
         </Grid>

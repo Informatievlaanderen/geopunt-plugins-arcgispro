@@ -108,16 +108,6 @@ namespace GeoPunt.Dockpanes.Catalogus
             ListInspireThema.Insert(0, "");
 
 
-
-            ListFilter = new ObservableCollection<string>(new List<string>()
-            { "Alles weergeven",
-            "WMS",
-            "Download",
-            "Arcgis service"});
-
-            SelectedFilter = ListFilter.First();
-
-
             StackPanelControl = new System.Windows.Controls.StackPanel();
         }
 
@@ -280,7 +270,6 @@ namespace GeoPunt.Dockpanes.Catalogus
             {
                 SetProperty(ref _selectedResultSearch, value);
 
-                ButtonDownloadIsEnable = false;
                 ButtonWMSIsEnable = false;
                 ButtonNavigateResultIsEnabled = false;
                 LinkFiche = "";
@@ -362,27 +351,6 @@ namespace GeoPunt.Dockpanes.Catalogus
             }
         }
 
-
-        private ObservableCollection<string> _listFilter = new ObservableCollection<string>();
-        public ObservableCollection<string> ListFilter
-        {
-            get { return _listFilter; }
-            set
-            {
-                SetProperty(ref _listFilter, value);
-            }
-        }
-        private string _selectedFilter;
-        public string SelectedFilter
-        {
-            get { return _selectedFilter; }
-            set
-            {
-                SetProperty(ref _selectedFilter, value);
-                updateFilter();
-            }
-        }
-
         private bool _buttonWMSIsEnable = false;
         public bool ButtonWMSIsEnable
         {
@@ -390,17 +358,6 @@ namespace GeoPunt.Dockpanes.Catalogus
             set
             {
                 SetProperty(ref _buttonWMSIsEnable, value);
-            }
-        }
-
-
-        private bool _buttonDownloadIsEnable = false;
-        public bool ButtonDownloadIsEnable
-        {
-            get { return _buttonDownloadIsEnable; }
-            set
-            {
-                SetProperty(ref _buttonDownloadIsEnable, value);
             }
         }
 
@@ -438,14 +395,6 @@ namespace GeoPunt.Dockpanes.Catalogus
             }
         }
 
-        public ICommand CmdDownload
-        {
-            get
-            {
-                return new RelayCommand(() => { loadArcgis(); });
-            }
-        }
-
 
         private void search()
         {
@@ -466,7 +415,15 @@ namespace GeoPunt.Dockpanes.Catalogus
 
                 if (cataList.TotalItems != 0)
                 {
-                    updateFilter();
+
+                    List<string> catalogTitleList = (from g in cataList.catalogRecords
+                                                     select g.Title).ToList<string>();
+                    if (catalogTitleList != null)
+                    {
+                        catalogTitleList.RemoveAll(e => e == null);
+                        ListResultSearch = new ObservableCollection<string>(catalogTitleList);
+                    }
+
                     TextStatus = string.Format("Aantal records gevonden: {0}", cataList.TotalItems);
                 }
                 else
@@ -499,52 +456,6 @@ namespace GeoPunt.Dockpanes.Catalogus
                 SearchIsNotBusy = true;
             }
         }
-
-
-        private void updateFilter()
-        {
-            ListResultSearch = new ObservableCollection<string>();
-            List<string> terms;
-            switch (SelectedFilter)
-            {
-                case "Alles weergeven":
-                    terms = geenFilter();
-                    if (terms != null)
-                    {
-                        terms.RemoveAll(e => e == null);
-                        ListResultSearch = new ObservableCollection<string>(terms);
-                    }
-                    break;
-                //case "WMS":
-                //    terms = filterWMS();
-                //    if (terms != null)
-                //    {
-                //        terms.RemoveAll(e => e == null);
-                //        ListResultSearch = new ObservableCollection<string>(terms);
-                //    }
-                //    break;
-                //case "Arcgis service":
-                //    terms = filterAGS();
-                //    if (terms != null)
-                //    {
-                //        terms.RemoveAll(e => e == null);
-                //        ListResultSearch = new ObservableCollection<string>(terms);
-                //    }
-                //    break;
-                //case "Download":
-                //    terms = filterDL();
-                //    if (terms != null)
-                //    {
-                //        terms.RemoveAll(e => e == null);
-                //        ListResultSearch = new ObservableCollection<string>(terms);
-                //    }
-                //    break;
-                default:
-                    break;
-            }
-        }
-
-
 
         private void updateInfo(catalogRecordInfo catalogrecordInfo)
         {
@@ -609,26 +520,6 @@ namespace GeoPunt.Dockpanes.Catalogus
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
         }
 
-        private void loadArcgis()
-        {
-            //string selVal = SelectedResultSearch;
-            //string arcName;
-            //string arcUrl;
-
-            //bool hasArc = cataList.geturl(selVal, "Esri Rest API", out arcUrl, out arcName, 0);
-            //if (hasArc)
-            //{
-            //    arcUrl = arcUrl.Split('?')[0] + "?";
-            //    if (geopuntHelper.websiteExists(arcUrl, true) == false)
-            //    {
-            //        MessageBox.Show("Kan geen connectie maken met de Service.", "Connection timed out");
-            //        return;
-            //    }
-            //    geopuntHelper.addAGS2map(MapView.Active.Map, arcUrl, arcName);
-
-            //}
-
-        }
 
         private void addWMS()
         {
