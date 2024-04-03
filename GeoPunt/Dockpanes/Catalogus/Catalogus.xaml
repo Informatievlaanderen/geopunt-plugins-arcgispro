@@ -74,7 +74,7 @@
                 <ComboBox Grid.Row="3" Grid.Column="1" Margin="5" IsEditable="True" ItemsSource="{Binding ListType}" SelectedItem="{Binding SelectedType}" SelectedValuePath="Key" DisplayMemberPath="Value" />
 
                 <TextBlock Grid.Row="4" Grid.Column="0" FontSize="13" Margin="5"  Text="INSPIRE-thema:"  />
-                <ComboBox Grid.Row="4" Grid.Column="1" Margin="5" IsEditable="True"   ItemsSource="{Binding ListInspireThema}" SelectedItem="{Binding SelectedInspireThema}" />
+                <ComboBox Grid.Row="4" Grid.Column="1" Margin="5" IsEditable="True" ItemsSource="{Binding ListInspireThema}" SelectedItem="{Binding SelectedInspireThema}" SelectedValuePath="Key" DisplayMemberPath="Value"  />
 
 
             </Grid>

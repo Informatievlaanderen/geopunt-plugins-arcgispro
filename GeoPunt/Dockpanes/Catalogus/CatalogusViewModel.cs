@@ -27,6 +27,7 @@ namespace GeoPunt.Dockpanes.Catalogus
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_Catalogus_Catalogus";
         private catalog clg;
+        private inspire inspire;
         private datacontract.catalogResponse cataList = null;
 
 
@@ -74,6 +75,7 @@ namespace GeoPunt.Dockpanes.Catalogus
         public void initGui()
         {
             clg = new catalog(timeout: 8000);
+            inspire = new inspire(timeout: 8000);
 
             //ListKeyword = new ObservableCollection<string>(
             //    clg.getKeyWords()
@@ -101,11 +103,7 @@ namespace GeoPunt.Dockpanes.Catalogus
             ListType = new ObservableDictionary<string, string>(dictionaryWithEmptyValue.Concat(clg.dataTypes).ToDictionary(x => x.Key, x => x.Value));
 
 
-
-            ListInspireThema = new ObservableCollection<string>(
-                 clg.inspireKeywords()
-                );
-            ListInspireThema.Insert(0, "");
+            ListInspireThema = new ObservableDictionary<string, string>(dictionaryWithEmptyValue.Concat(inspire.inspireKeywords()).ToDictionary(x => x.Key, x => x.Value));
 
 
             StackPanelControl = new System.Windows.Controls.StackPanel();
@@ -233,8 +231,8 @@ namespace GeoPunt.Dockpanes.Catalogus
             }
         }
 
-        private ObservableCollection<string> _listInspireThema = new ObservableCollection<string>();
-        public ObservableCollection<string> ListInspireThema
+        private ObservableDictionary<string, string> _listInspireThema = new ObservableDictionary<string, string>();
+        public ObservableDictionary<string, string> ListInspireThema
         {
             get { return _listInspireThema; }
             set
@@ -242,8 +240,8 @@ namespace GeoPunt.Dockpanes.Catalogus
                 SetProperty(ref _listInspireThema, value);
             }
         }
-        private string _selectedInspireThema;
-        public string SelectedInspireThema
+        private KeyValuePair<string, string> _selectedInspireThema;
+        public KeyValuePair<string, string> SelectedInspireThema
         {
             get { return _selectedInspireThema; }
             set
@@ -409,9 +407,10 @@ namespace GeoPunt.Dockpanes.Catalogus
 
 
                 string selectedType = SelectedType.Key == "None" || SelectedType.Key == null ? "" : SelectedType.Value;
+                string selectedInspireThema = SelectedInspireThema.Key == "None" || SelectedInspireThema.Key == null ? "" : SelectedInspireThema.Key;
 
-                // cataList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
-                cataList = clg.search(SelectedKeyword, 0, 100, SelectedGDIThema, SelectedOrganisationName, selectedType, "", SelectedInspireThema);
+                // cataList = clg.searchAll(SelectedKeyword, SelectedGDIThema, SelectedOrganisationName, selectedType, "", selectedInspireThema);
+                cataList = clg.search(SelectedKeyword, 0, 100, SelectedGDIThema, SelectedOrganisationName, selectedType, "", selectedInspireThema);
 
                 if (cataList.TotalItems != 0)
                 {
