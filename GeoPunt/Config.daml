@@ -48,7 +48,7 @@
           <button refID="GeoPunt_Dockpanes_CSVfile_ShowButton" size="large" />
           <button refID="GeoPunt_Dockpanes_SearchPlace_ShowButton" size="large" />
           <button refID="GeoPunt_Dockpanes_SearchPerceel_ShowButton" size="large" />
-          <button refID="GeoPunt_Dockpanes_GipodButton" size="large" />
+          <!--<button refID="GeoPunt_Dockpanes_GipodButton" size="large"  />-->
           <button refID="GeoPunt_ElevationProfileButton" size="large" />
           <button refID="GeoPunt_Dockpanes_CatalogueButton" size="large" />
           <button refID="GeoPunt_ProWindowInfo" size="large" />
