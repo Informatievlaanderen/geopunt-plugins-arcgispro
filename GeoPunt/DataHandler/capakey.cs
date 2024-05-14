@@ -51,15 +51,20 @@ namespace GeoPunt.DataHandler
 
         public datacontract.municipalityList getMunicipalities()
         {
+
+            addExtraDefaultParameter();
             Uri capkeyUri = new Uri(baseUri + "Municipality/");
             string json = client.DownloadString(capkeyUri);
             datacontract.municipalityList response = JsonConvert.DeserializeObject<datacontract.municipalityList>(json);
+            client.QueryString.Clear();
             return response;
         }
-        
+
+      
 
         public datacontract.municipality getMunicipalitiy(int NIScode, DataHandler.CRS srs, DataHandler.capakeyGeometryType geomType)
         {
+            addExtraDefaultParameter();
             qryValues.Add("srs", Convert.ToString((int)srs));
             if (geomType == capakeyGeometryType.no) qryValues.Add("geometry", "no");
             else if (geomType == capakeyGeometryType.bbox) qryValues.Add("geometry", "bbox");
@@ -76,13 +81,16 @@ namespace GeoPunt.DataHandler
 
         public datacontract.departmentList getDepartments(int NIScode)
         {
+            addExtraDefaultParameter();
             Uri capkeyUri = new Uri(baseUri + "Municipality/" + NIScode.ToString() + "/department");
             string json = client.DownloadString(capkeyUri);
             datacontract.departmentList response = JsonConvert.DeserializeObject<datacontract.departmentList>(json);
+            client.QueryString.Clear();
             return response;
         }
         public datacontract.department getDepartment(int NIScode, int departmentCode, CRS srs, capakeyGeometryType geomType)
         {
+            addExtraDefaultParameter();
             qryValues.Add("srs", Convert.ToString((int)srs));
             if (geomType == capakeyGeometryType.no) qryValues.Add("geometry", "no");
             else if (geomType == capakeyGeometryType.bbox) qryValues.Add("geometry", "bbox");
@@ -99,13 +107,16 @@ namespace GeoPunt.DataHandler
 
         public datacontract.sectionList getSecties(int NIScode, int departmentCode)
         {
+            addExtraDefaultParameter();
             Uri capkeyUri = new Uri(baseUri + "Municipality/" + NIScode.ToString() + "/department/" + departmentCode.ToString() + "/section");
             string json = client.DownloadString(capkeyUri);
             datacontract.sectionList response = JsonConvert.DeserializeObject<datacontract.sectionList>(json);
+            client.QueryString.Clear();
             return response;
         }
         public datacontract.section getSectie(int NIScode, int departmentCode, string sectie, CRS srs, capakeyGeometryType geomType)
         {
+            addExtraDefaultParameter();
             qryValues.Add("srs", Convert.ToString((int)srs));
             if (geomType == capakeyGeometryType.no) qryValues.Add("geometry", "no");
             else if (geomType == capakeyGeometryType.bbox) qryValues.Add("geometry", "bbox");
@@ -123,13 +134,16 @@ namespace GeoPunt.DataHandler
 
         public datacontract.parcelList getParcels(int NIScode, int departmentCode, string sectie)
         {
+            addExtraDefaultParameter();
             Uri capkeyUri = new Uri(baseUri + "Municipality/" + NIScode.ToString() + "/department/" + departmentCode.ToString() + "/section/" + sectie + "/parcel");
             string json = client.DownloadString(capkeyUri);
             datacontract.parcelList response = JsonConvert.DeserializeObject<datacontract.parcelList>(json);
+            client.QueryString.Clear();
             return response;
         }
         public datacontract.parcel getParcel(int NIScode, int departmentCode, string sectie, string perceelsNr, CRS srs, capakeyGeometryType geomType)
         {
+            addExtraDefaultParameter();
             qryValues.Add("srs", Convert.ToString((int)srs));
             if (geomType == capakeyGeometryType.no) qryValues.Add("geometry", "no");
             else if (geomType == capakeyGeometryType.bbox) qryValues.Add("geometry", "bbox");
@@ -142,6 +156,12 @@ namespace GeoPunt.DataHandler
 
             client.QueryString.Clear();
             return response;
+        }
+        private void addExtraDefaultParameter()
+        {
+            qryValues.Add("data", "adp");
+            qryValues.Add("status", "actual");
+            client.QueryString = qryValues;
         }
     }
 }
