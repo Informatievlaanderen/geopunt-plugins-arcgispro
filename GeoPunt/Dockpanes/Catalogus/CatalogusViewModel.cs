@@ -5,10 +5,12 @@ using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Internal.Core.CommonControls;
+using ArcGIS.Desktop.Internal.GeoProcessing.Controls;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Mapping.Events;
 using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
+using GeoPunt.ProWindows.ConfirmDialog;
 using geopunt4Arcgis;
 using ScottPlot;
 using System;
@@ -28,8 +30,10 @@ namespace GeoPunt.Dockpanes.Catalogus
     {
         private const string _dockPaneID = "GeoPunt_Dockpanes_Catalogus_Catalogus";
         private catalog clg;
+        private wfsHelper wfsHelper;
         private inspire inspire;
         private datacontract.catalogResponse cataList = null;
+        private ChooseBetweenMultipleItems chooseBetweenMultipleItems;
 
 
         protected CatalogusViewModel()
@@ -77,6 +81,7 @@ namespace GeoPunt.Dockpanes.Catalogus
         {
             clg = new catalog(timeout: 8000);
             inspire = new inspire(timeout: 8000);
+            wfsHelper = new wfsHelper(timeout: 8000);
 
             //ListKeyword = new ObservableCollection<string>(
             //    clg.getKeyWords()
@@ -647,25 +652,42 @@ namespace GeoPunt.Dockpanes.Catalogus
 
                     // TODO change below part to make able to select which layer to add
 
-                    var serverConnection = new CIMInternetServerConnection { URL = WFSUrl };
-                    var connection = new CIMWFSServiceConnection { ServerConnection = serverConnection };
+                    //var serverConnection = new CIMInternetServerConnection { URL = WFSUrl };
+                    //var connection = new CIMWFSServiceConnection { ServerConnection = serverConnection };
 
-                    // Add a new layer to the map
-                    var layerParams = new LayerCreationParams(connection);
+                    //// Add a new layer to the map
+                    //var layerParams = new LayerCreationParams(connection);
+
+                   
+                    Dictionary<string, string> test = wfsHelper.getFeatureTypes(WFSUrl);
+                    Debug.WriteLine(test);
 
 
-                    QueuedTask.Run(() =>
+                    if (test.Count == 0)
                     {
+                        MessageBox.Show("We have a problem ! (TO CHANGE !)");
+                        return;
+                    }
 
-                        try
+                    if (test.Count > 1) {
+
+                        if(chooseBetweenMultipleItems != null )
                         {
-                            LayerFactory.Instance.CreateLayer<FeatureLayer>(layerParams, MapView.Active.Map);
+                            chooseBetweenMultipleItems.Close();
                         }
-                        catch (Exception ex)
+
+                        chooseBetweenMultipleItems = new ChooseBetweenMultipleItems
                         {
-                            MessageBox.Show(ex.Message, $@"Error trying to add layer");
-                        }
-                    });
+                            DataContext = new ShowChooseBetweenMultipleItems("Catalogus WFS services",test, addWFSToMap),
+                            Owner = FrameworkApplication.Current.MainWindow
+                        };
+
+                        chooseBetweenMultipleItems.Show();
+                        
+                        return;
+                    }
+
+                    addWFSToMap(test.First().Key);
                 }
                 catch (Exception ex)
                 {
@@ -673,6 +695,38 @@ namespace GeoPunt.Dockpanes.Catalogus
                 }
             }
         }
+
+
+        private void addWFSToMap(string datasetName)
+        {
+
+            CIMStandardDataConnection cIMStandardDataConnection = new CIMStandardDataConnection()
+            {
+                WorkspaceConnectionString = @$"URL={WFSUrl}",
+                WorkspaceFactory = WorkspaceFactory.WFS,
+                DatasetType = esriDatasetType.esriDTFeatureClass,
+                Dataset = datasetName
+
+            };
+
+            // Add a new layer to the map
+            var layerPamsDC = new LayerCreationParams(cIMStandardDataConnection);
+
+
+            QueuedTask.Run(() =>
+            {
+
+                try
+                {
+                    LayerFactory.Instance.CreateLayer<FeatureLayer>(layerPamsDC, MapView.Active.Map);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, $@"Error trying to add layer");
+                }
+            });
+        }
+
 
 
         //private List<string> filterDL()
