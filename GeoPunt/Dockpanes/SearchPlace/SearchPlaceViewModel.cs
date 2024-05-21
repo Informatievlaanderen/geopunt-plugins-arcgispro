@@ -754,9 +754,15 @@ namespace GeoPunt.Dockpanes.SearchPlace
                     {
 
 
-                        Envelope env4326 = MapView.Active.Extent;
-                        env4326 = GeometryEngine.Instance.Project(env4326, SpatialReferenceBuilder.CreateSpatialReference(4326)) as Envelope;
-                        string extentBeforeTransform = env4326.XMin + "|" + env4326.YMin + "|" + env4326.XMax + "|" + env4326.YMax;
+                        //Envelope env4326 = MapView.Active.Extent;
+                        //env4326 = GeometryEngine.Instance.Project(env4326, SpatialReferenceBuilder.CreateSpatialReference(4326)) as Envelope;
+                        //string extentBeforeTransform = env4326.XMin + "|" + env4326.YMin + "|" + env4326.XMax + "|" + env4326.YMax;
+                        //extent = extentBeforeTransform.Replace(',', '.');
+                        //nis = null;
+
+                        Envelope mapExtent = MapView.Active.Extent;
+                        mapExtent = GeometryEngine.Instance.Project(mapExtent, SpatialReferenceBuilder.CreateSpatialReference(31370)) as Envelope;
+                        string extentBeforeTransform = mapExtent.XMin + "|" + mapExtent.YMin + "|" + mapExtent.XMax + "|" + mapExtent.YMax;
                         extent = extentBeforeTransform.Replace(',', '.');
                         nis = null;
                     }
@@ -769,7 +775,7 @@ namespace GeoPunt.Dockpanes.SearchPlace
                     int count = 1000;
 
                     poiData = poiDH.getMaxmodel(keyWord, count, cluster, themeCode, catCode, poiTypeCode,
-                    CRS.WGS84, null, nis, extent);
+                    CRS.Lambert72, null, nis, extent);
 
                     List<poiMaxModel> pois = poiData.pois;
 

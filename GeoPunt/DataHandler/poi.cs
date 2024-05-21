@@ -174,6 +174,7 @@ namespace GeoPunt.DataHandler
             client.QueryString.Add("maxcount", "32");
             client.QueryString.Add("clustering", "false");
             client.QueryString.Add("poitype", POItype);
+            client.QueryString.Add("crs", srs.ToString());
             client.QueryString.Add("keyword", q);
             client.QueryString.Add("region", niscode);
             client.QueryString.Add("category", category);
