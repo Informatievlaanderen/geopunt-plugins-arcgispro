@@ -1,19 +1,25 @@
-﻿using ArcGIS.Core.Geometry;
+﻿using ArcGIS.Core.Data.UtilityNetwork.Trace;
+using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Core.CommonControls;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Mapping.Events;
+using GeoPunt.datacontract;
 using GeoPunt.DataHandler;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -28,6 +34,10 @@ namespace GeoPunt.Dockpanes.CSVFile
         private SpatialReference lambertSpatialReference = SpatialReferenceBuilder.CreateSpatialReference(31370);
         adresLocation adresLocation;
         MapPoint MapPointSelectedAddress = null;
+        adresSuggestion sug;
+        int straatCol;
+        int huisnrCol;
+        int gemeenteCol;
 
         private const string defaultPlaceHolder = "Nog geen bestand gekozen";
 
@@ -99,6 +109,21 @@ namespace GeoPunt.Dockpanes.CSVFile
                 updateCSVMarkeer();
             }
         }
+
+
+
+
+        private ObservableCollection<Graphic> _graphicsList  = new ObservableCollection<Graphic>();
+        public ObservableCollection<Graphic> GraphicsList
+        {
+            get { return _graphicsList; }
+            set
+            {
+                SetProperty(ref _graphicsList, value);
+
+            }
+        }
+
 
 
 
@@ -364,6 +389,7 @@ namespace GeoPunt.Dockpanes.CSVFile
             set
             {
                 SetProperty(ref _dataTableCSV, value);
+                GraphicsList = new ObservableCollection<Graphic>();
                 SelectedDataRowChanged();
                 if (_dataTableCSV != null && _dataTableCSV.Rows.Count > 0)
                 {
@@ -647,10 +673,24 @@ namespace GeoPunt.Dockpanes.CSVFile
             }
         }
 
-        adresSuggestion sug;
-        int straatCol;
-        int huisnrCol;
-        int gemeenteCol;
+        private MapPoint getRowLocation(string street, string houseNr, string municapality)
+        {
+            string adres = string.Format("{0} {1}, {2}", street, houseNr, municapality);
+
+            List<datacontract.locationResult> loc = adresLocation.getAdresLocation(adres, 1);
+           
+            if (loc.Count == 1)
+            {
+               
+                datacontract.locationResult firstResult = loc.FirstOrDefault();
+                MapPointSelectedAddress = utils.CreateMapPoint(firstResult.Location.X_Lambert72, firstResult.Location.Y_Lambert72, lambertSpatialReference);
+                return MapPointSelectedAddress;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         private List<string> validateRow(string street, string houseNr, string municapality)
         {
@@ -680,8 +720,8 @@ namespace GeoPunt.Dockpanes.CSVFile
                         try
                         {
 
-
-                            List<string> suggestions;
+                            GraphicsList = new ObservableCollection<Graphic>();
+                            List<Graphic> graphics = new List<Graphic>();
                             string street; string huisnr; string gemeente;
 
 
@@ -725,17 +765,26 @@ namespace GeoPunt.Dockpanes.CSVFile
                                 huisnr = row[huisnrIndex].ToString();
                                 gemeente = row[gemeenteIndex].ToString();
 
-                                suggestions = validateRow(street, huisnr, gemeente);
-
-                                if (suggestions.Count == 0)
+                                MapPoint mapPoint = getRowLocation(street, huisnr, gemeente);
+                                if (mapPoint != null)
                                 {
-                                    row[Bestaan] = "NOK";
+                                    Dictionary<string, object> attributes = new Dictionary<string, object>();
+
+                                    foreach (DataColumn column in DataTableCSV.Columns)
+                                    {
+                                        attributes[column.ColumnName] = row[column.ColumnName];
+                                    }
+
+                                    graphics.Add(new Graphic(attributes, mapPoint));
+                                    row[Bestaan] = "OK";
                                 }
                                 else
                                 {
-                                    row[Bestaan] = "OK";
+                                    row[Bestaan] = "NOK";
                                 }
                             }
+
+                            GraphicsList = new ObservableCollection<Graphic>(graphics);
                             // refreshDatGrid(csvDataTbl);
                             SelectedDataRowChanged();
                         }
@@ -766,7 +815,6 @@ namespace GeoPunt.Dockpanes.CSVFile
                         try
                         {
 
-                            List<string> suggestions;
                             string street; string huisnr; string gemeente;
 
 
@@ -808,15 +856,33 @@ namespace GeoPunt.Dockpanes.CSVFile
                             huisnr = SelectedDataCsvList[huisnrIndex].ToString();
                             gemeente = SelectedDataCsvList[gemeenteIndex].ToString();
 
-                            suggestions = validateRow(street, huisnr, gemeente);
+                            MapPoint mapPoint = getRowLocation(street, huisnr, gemeente);
 
-                            if (suggestions.Count == 0)
+
+
+
+                            if (mapPoint != null)
                             {
-                                SelectedDataCsvList[Bestaan] = "NOK";
+                                SelectedDataCsvList[Bestaan] = "OK";
+
+                                Dictionary<string, object> attributes = new Dictionary<string, object>();
+
+                                foreach (DataColumn column in DataTableCSV.Columns)
+                                {
+                                    attributes[column.ColumnName] = SelectedDataCsvList[column.ColumnName];
+                                }
+
+                                Graphic newGraphic = new Graphic(attributes, mapPoint);
+
+                                if (!GraphicsList.Any(graphic => graphic.Attributes.Count == newGraphic.Attributes.Count && !graphic.Attributes.Except(newGraphic.Attributes).Any()))
+                                {
+                                    GraphicsList.Add(newGraphic);
+                                }
+
                             }
                             else
                             {
-                                SelectedDataCsvList[Bestaan] = "OK";
+                                SelectedDataCsvList[Bestaan] = "NOK";
                             }
 
                             SelectedDataCsvList = null;
@@ -830,6 +896,18 @@ namespace GeoPunt.Dockpanes.CSVFile
                         }
                     });
 
+                });
+            }
+        }
+
+
+        public ICommand CmdExport
+        {
+            get
+            {
+                return new RelayCommand(async () =>
+                {
+                    utils.ExportToGeoJson(GraphicsList.ToList());
                 });
             }
         }
