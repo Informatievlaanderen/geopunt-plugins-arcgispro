@@ -57,7 +57,7 @@
         </group>
         <!--Others Group-->
         <group id="GeoPunt_Group_Others" caption="Others" appearsOnAddInTab="false">
-          <button refID="GeoPunt_SettingsButton" size="large" />
+          <!--<button refID="GeoPunt_SettingsButton" size="large" />-->
           <button refID="GeoPunt_InformationButton" size="large" />
         </group>
       </groups>
