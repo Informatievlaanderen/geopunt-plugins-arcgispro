@@ -45,10 +45,10 @@
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-perceel-in-arcgis">
                  •   Perceel 
                 </Hyperlink>
-                <LineBreak></LineBreak>
+                <!--<LineBreak></LineBreak>
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/gipod-data-gebruiken-in-arcgis">
                  •   Gipod
-                </Hyperlink>
+                </Hyperlink>-->
                 <LineBreak></LineBreak>
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/hoogteprofiel-gebruiken-in-arcgis">
                     •   Hoogte  
