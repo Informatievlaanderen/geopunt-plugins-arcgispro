@@ -25,8 +25,8 @@ namespace GeoPunt.DataHandler
         public string geoNetworkUrl = "https://datavindplaats.api.vlaanderen.be/v1/catalogrecords";
 
         public Dictionary<string, string> dataTypes = new Dictionary<string, string>() {
-                   {"Dataset","dataset"}, {"Datasetserie","series"},
-                   {"Objectencatalogus","model"}, {"Service","service"} };
+                   {"Dataset","dataset"}/* , {"Datasetserie","series"},
+                   {"Objectencatalogus","model"} */, {"Service","service"} };
 
 
         public catalog(string proxyUrl = "", int port = 80, int timeout = 5000)
