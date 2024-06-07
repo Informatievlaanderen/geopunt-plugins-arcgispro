@@ -362,6 +362,8 @@ namespace GeoPunt.Dockpanes.SearchPerceel
             PerceelExist = false;
             ListSecties = new ObservableCollection<section>();
             ListParcels = new ObservableCollection<parcel>();
+            if (SelectedListGemeente == null) return;
+            if (SelectedListDepartments == null) return;
 
             string niscode = SelectedListGemeente.municipalityCode;
             string depCode = SelectedListDepartments.departmentCode;

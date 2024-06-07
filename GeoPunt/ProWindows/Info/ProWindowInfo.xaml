@@ -24,7 +24,7 @@
 
 
                 <Span FontSize="22">
-                    <Bold>Functies</Bold> (url per functionaliteit)</Span>
+                    <Bold>Functies</Bold> (URL per functionaliteit)</Span>
                 <LineBreak></LineBreak>
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/geopunt/plug-ins/arcgis-plug-in/functionaliteiten-arcgis-plug-in/zoek-een-adres-in-arcgis">
                  •   Adres
@@ -73,7 +73,7 @@
                 <LineBreak></LineBreak>
             • Minimaal: Windows XP, ArcGIS Pro versie 3.1.0 of hoger, .net-framework versie 6.05
                 <LineBreak></LineBreak>
-            • Een verbinding met het internet, restrictieve firewalls kunnen mogelijk de connectie blokkeren.<LineBreak></LineBreak>
+            • Een verbinding met het internet, restrictieve firewalls kunnen mogelijk de connectie blokkeren<LineBreak></LineBreak>
                 <LineBreak></LineBreak>
 
                 <Bold>
@@ -85,7 +85,7 @@
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.vlaanderen.be/digitaal-vlaanderen">
      Digitaal Vlaanderen
                 </Hyperlink> 
-                en andere Agentschappen van de Vlaamse Overheid ontsluit naar ArcGIS-gebruikers. De add-in wordt aangeboden en beheerd door 
+                en andere agentschappen van de Vlaamse Overheid ontsluit naar ArcGIS-gebruikers. De add-in wordt aangeboden en beheerd door 
                 <Hyperlink RequestNavigate="Hyperlink_RequestNavigate" NavigateUri="https://www.geopunt.be/">
      Geopunt
                 </Hyperlink>, het geoportaal van Vlaanderen. 
@@ -96,13 +96,13 @@
                 <LineBreak></LineBreak>
                 De kaartdiensten zijn gebaseerd op de OGC open standaard WMS of WMTS en kunnen gemakkelijk worden toegevoegd aan desktop GIS. 
                 <LineBreak></LineBreak>
-                GIS-gebruikers kunnen deze diensten ontdekken via Metadata Vlaanderen. De achterliggende zoekservice voor deze diensten is niet direct bruikbaar in ArcGIS en wordt daarom ook in deze add-in ingebouwd. 
+                GIS-gebruikers kunnen deze diensten ontdekken via Datavindplaats. De achterliggende zoekservice voor deze diensten is niet direct bruikbaar in ArcGIS en wordt daarom ook in deze add-in ingebouwd. 
                 <LineBreak></LineBreak>
                 <LineBreak></LineBreak>
                 Sommige diensten aangeboden door Digitaal Vlaanderen zijn niet gebaseerd op een open standaard omdat het gaat om diensten die geen courant gebruikte open standaard hebben. Deze publieke webdiensten bieden een REST-interface aan, die eenvoudiger in gebruik is voor programmeurs dan OGC-diensten, maar omdat ze niet gestandaardiseerd zijn, kunnen ze niet zomaar binnengetrokken worden in software. 
                 <LineBreak></LineBreak>
                 <LineBreak></LineBreak>
-                Om GIS gebruikers binnen en buiten de Vlaamse overheid dezelfde functionaliteit ter beschikking te stellen als aangeboden in Geopunt, wenst Digitaal Vlaanderen deze gebruikers te voorzien van software plug-ins die deze functionaliteit geïntegreerd aanbieden binnen de meest gangbare GIS-desktop omgevingen. Op basis van voorafgaand overleg met de GDI-Vlaanderen gemeenschap werd volgende GIS-software geselecteerd: Quantum GIS (QGIS) en ESRI ArcGIS Pro 
+                Om GIS-gebruikers binnen en buiten de Vlaamse overheid dezelfde functionaliteit ter beschikking te stellen als aangeboden in Geopunt, wenst Digitaal Vlaanderen deze gebruikers te voorzien van software plug-ins die deze functionaliteit geïntegreerd aanbieden binnen de meest gangbare GIS-desktop omgevingen. Op basis van voorafgaand overleg met de GDI-Vlaanderen gemeenschap werd volgende GIS-software geselecteerd: Quantum GIS (QGIS) en ESRI ArcGIS Pro. 
                 <LineBreak></LineBreak>
                 <LineBreak></LineBreak>
 
