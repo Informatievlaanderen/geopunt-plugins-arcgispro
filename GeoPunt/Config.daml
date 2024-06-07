@@ -1,9 +1,9 @@
 ﻿<ArcGIS defaultAssembly="GeoPunt.dll" defaultNamespace="GeoPunt" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{745d0755-336e-47db-b65a-83656f8478bf}" version="1.0" desktopVersion="3.0.36057">
-    <Name>GeoPunt</Name>
-    <Description>GeoPunt description</Description>
+    <Name>Geopunt</Name>
+    <Description>Geopunt-functionaliteiten ter beschikking binnen ArcGIS Pro.</Description>
     <Image>Images\AddInProRadarPlotTraceIcon.png</Image>
-    <Author>DSi,HBr,EL</Author>
+    <Author>Digitaal Vlaanderen</Author>
     <Company>ESRI BeLux</Company>
     <Date>2/13/2023 9:25:48 AM</Date>
     <Subject>Framework</Subject>
